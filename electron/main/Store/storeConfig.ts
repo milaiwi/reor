@@ -36,6 +36,10 @@ export type RAGConfig = {
   maxRAGExamples: number;
 };
 
+export type ChunkConfig = {
+  chunkSize: number;
+}
+
 export type HardwareConfig = {
   useGPU: boolean;
   useCUDA: boolean;
@@ -56,6 +60,7 @@ export interface StoreSchema {
   defaultLLM: string;
   defaultEmbedFuncRepo: string;
   RAG?: RAGConfig;
+  chunk: ChunkConfig;
   hardware: HardwareConfig;
   llmGenerationParameters: LLMGenerationParameters;
   chatHistories: {
@@ -74,5 +79,6 @@ export enum StoreKeys {
   MaxRAGExamples = "RAG.maxRAGExamples",
   Hardware = "hardware",
   LLMGenerationParameters = "llmGenerationParameters",
+  ChunkSize = "chunk",
   ChatHistories = "chatHistories",
 }
