@@ -5,6 +5,7 @@ import EmbeddingModelSettings from "./EmbeddingSettings";
 import RagSettings from "./RagSettings";
 import HardwareSettings from "./HardwareSettings";
 import TextGenerationSettings from "./TextGenerationSettings";
+import ChunksSettings from "./ChunksSettings";
 
 interface ModalProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ enum SettingsTab {
   Hardware = "hardware",
   TextGeneration = "textGeneration",
   RAG = "RAG",
+  ChunksSize = "chunksSize", 
 }
 
 const SettingsModal: React.FC<ModalProps> = ({
@@ -97,6 +99,16 @@ const SettingsModal: React.FC<ModalProps> = ({
           >
             RAG{" "}
           </div>
+          <div
+            className={`flex items-center rounded cursor-pointer p-2 border-b border-gray-200 hover:bg-neutral-600 text-sm ${
+              activeTab === SettingsTab.ChunksSize
+                ? "bg-neutral-700 text-white font-semibold"
+                : "text-gray-200"
+            }`}
+            onClick={() => setActiveTab(SettingsTab.ChunksSize)}
+          >
+            Chunks Size{" "}
+          </div>
         </div>
 
         {/* Right Content Area */}
@@ -142,6 +154,12 @@ const SettingsModal: React.FC<ModalProps> = ({
                   Number of notes to feed to the LLM during Q&A:
                 </p>
               </RagSettings>
+            </div>
+          )}
+
+          {activeTab === SettingsTab.ChunksSize && (
+            <div className="w-full">
+              <ChunksSettings />
             </div>
           )}
         </div>
