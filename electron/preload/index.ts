@@ -6,6 +6,7 @@ import {
   HardwareConfig,
   LLMGenerationParameters,
   LLMConfig,
+  ChunkConfig,
 } from "electron/main/Store/storeConfig";
 import {
   AugmentPromptWithFileProps,
@@ -143,6 +144,8 @@ declare global {
       setHardwareConfig: (config: HardwareConfig) => void;
       getLLMGenerationParams: () => Promise<LLMGenerationParameters>;
       setLLMGenerationParams: (params: LLMGenerationParameters) => void;
+      getChunkConfig: () => Promise<ChunkConfig>; 
+      setChunkConfig: (chunkConfig: ChunkConfig) => void;
       getHasUserOpenedAppBefore: () => boolean;
       setHasUserOpenedAppBefore: () => void;
       getAllChatHistories: () => Promise<ChatHistory[]>;
@@ -268,6 +271,12 @@ contextBridge.exposeInMainWorld("electronStore", {
   },
   setLLMGenerationParams: (params: LLMGenerationParameters) => {
     ipcRenderer.invoke("set-llm-generation-params", params);
+  },
+  getChunkConfig: () => {
+    return ipcRenderer.invoke("get-chunk-config");
+  },
+  setChunkConfig: (chunkConfig: ChunkConfig) => {
+    ipcRenderer.invoke("set-chunk-config", chunkConfig);
   },
   getHasUserOpenedAppBefore: () => {
     return ipcRenderer.invoke("has-user-opened-app-before");
