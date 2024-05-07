@@ -129,6 +129,19 @@ export const registerStoreHandlers = (
     return store.get(StoreKeys.LLMGenerationParameters);
   });
 
+  ipcMain.handle("set-chunk-config", (event, chunkConfig) => {
+    console.log("setting chunk config", chunkConfig);
+    store.set(StoreKeys.ChunkSize, chunkConfig);
+  });
+
+  ipcMain.handle("get-chunk-config", () => {
+    console.log(
+      "getting chunk config",
+      store.get(StoreKeys.ChunkSize)
+    );
+    return store.get(StoreKeys.ChunkSize);
+  })
+
   ipcMain.handle("has-user-opened-app-before", () => {
     return store.get(StoreKeys.hasUserOpenedAppBefore);
   });
