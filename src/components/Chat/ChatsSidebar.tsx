@@ -1,7 +1,9 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { ChatHistoryMetadata } from './hooks/use-chat-history'
 import { ChatHistory } from './chatUtils'
+import { LuPanelLeftClose } from "react-icons/lu";
+import { RiChatNewFill } from "react-icons/ri";
 
 export interface ChatItemProps {
   chatMetadata: ChatHistoryMetadata
@@ -49,6 +51,8 @@ interface ChatListProps {
   onSelect: (chatID: string) => void
   newChat: () => void
   setShowChatbot: (showChat: boolean) => void
+  isSidebarOpen: boolean
+  setIsSidebarOpen: (showSidebar: boolean) => void
 }
 
 export const ChatsSidebar: React.FC<ChatListProps> = ({
@@ -57,8 +61,12 @@ export const ChatsSidebar: React.FC<ChatListProps> = ({
   onSelect,
   newChat,
   setShowChatbot,
+  isSidebarOpen,
+  setIsSidebarOpen
 }) => {
   const currentSelectedChatID = useRef<string | undefined>()
+  // const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+
   useEffect(() => {}, [chatHistoriesMetadata])
   useEffect(() => {
     const deleteChatRow = window.ipcRenderer.receive('remove-chat-at-id', (chatID) => {
@@ -77,16 +85,30 @@ export const ChatsSidebar: React.FC<ChatListProps> = ({
     }
   }, [chatHistoriesMetadata, setShowChatbot])
 
+  const handleToggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen)
+  }
+
   return (
     <div className="h-full overflow-y-auto bg-neutral-800">
       <div
-        className="m-1 flex cursor-pointer items-center justify-center rounded border border-transparent bg-dark-gray-c-ten px-4 py-[8px] text-white transition duration-150 ease-in-out hover:border-white hover:bg-neutral-700"
-        onClick={newChat}
+        className="m-1 flex justify-between rounded border border-transparent px-2 py-[8px] text-white transition duration-150 ease-in-out hover:border-white"
+        // onClick={newChat}
       >
-        <span className="text-sm"> + New Chat</span>
+        {/* <span className="text-sm"> + New Chat</span> */}
+        <LuPanelLeftClose 
+          onClick={handleToggleSidebar}
+          className="cursor-pointer"
+          size={22}
+        />
+        <RiChatNewFill 
+          className="cursor-pointer"
+          onClick={newChat}
+          size={22} 
+        />
       </div>
 
-      {chatHistoriesMetadata
+      {isSidebarOpen && chatHistoriesMetadata
         .slice()
         .reverse()
         .map((chatMetadata) => (

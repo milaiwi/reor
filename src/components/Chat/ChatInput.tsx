@@ -31,7 +31,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
         value={userTextFieldInput}
         className="mr-2 w-full bg-gray-300"
         name="Outlined"
-        placeholder="Type here to ask your notes..."
+        placeholder="Type your message"
         variant="outlined"
         style={{
           backgroundColor: 'rgba(255, 255, 255, 0)',

@@ -51,9 +51,10 @@ const SidebarManager: React.FC<SidebarManagerProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [searchResults, setSearchResults] = useState<DBQueryResult[]>([])
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
   return (
-    <div className="size-full overflow-y-hidden">
+    <div className={`transition-width duration-300 ${isSidebarOpen ? '' : 'w-[64px]'} overflow-y-hidden`}>
       {sidebarShowing === 'files' && (
         <FileSidebar
           files={files}
@@ -101,6 +102,8 @@ const SidebarManager: React.FC<SidebarManagerProps> = ({
             })
           }}
           setShowChatbot={setShowChatbot}
+          isSidebarOpen={isSidebarOpen}
+          setIsSidebarOpen={setIsSidebarOpen}
         />
       )}
     </div>

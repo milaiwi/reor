@@ -1,0 +1,21 @@
+/* CSS dedicated to the chat window */
+.markdown-content p {
+    word-break: break-word;
+    color: white;
+    line-height: 8px;
+}
+
+.assistant-chat-message {
+    background-color: #444141; /* Light red background */
+    padding: 0.5rem 1rem;
+}
+
+.error-chat-message {
+    background-color: #525252; /* Neutral grey background */
+    padding: 0.5rem 1rem
+}
+
+.user-chat-message {
+    /* background-color: #dbeafe; Light blue background */
+    padding: 0.5rem 1rem;
+}

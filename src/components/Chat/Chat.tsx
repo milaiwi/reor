@@ -18,9 +18,12 @@ import {
   getChatHistoryContext,
   resolveRAGContext,
 } from './chatUtils'
+import { getCurrentTime } from '@/utils/strings'
 
 import errorToStringRendererProcess from '@/utils/error'
 import SimilarEntriesComponent from '../Sidebars/SemanticSidebar/SimilarEntriesComponent'
+
+import '@/styles/chat.css'
 
 // convert ask options to enum
 enum AskOptions {
@@ -134,6 +137,7 @@ const ChatWithLLM: React.FC<ChatWithLLMProps> = ({
               role: 'assistant',
               content: newContent,
               messageType: newMessageType,
+              messageCreated: getCurrentTime(),
               context: [],
             })
           }
@@ -142,6 +146,7 @@ const ChatWithLLM: React.FC<ChatWithLLMProps> = ({
             role: 'assistant',
             content: newContent,
             messageType: newMessageType,
+            messageCreated: getCurrentTime(),
             context: [],
           })
         }
@@ -152,6 +157,7 @@ const ChatWithLLM: React.FC<ChatWithLLMProps> = ({
             role: message.role,
             content: message.content,
           })),
+          historyCreated: getCurrentTime(),
         }
       })
     },
@@ -176,6 +182,7 @@ const ChatWithLLM: React.FC<ChatWithLLMProps> = ({
         outputChatHistory = {
           id: chatID,
           displayableChatHistory: [],
+          messageCreated: getCurrentTime(),
         }
       }
       if (outputChatHistory.displayableChatHistory.length === 0) {
@@ -195,6 +202,7 @@ const ChatWithLLM: React.FC<ChatWithLLMProps> = ({
           role: 'user',
           content: userTextFieldInput,
           messageType: 'success',
+          messageCreated: getCurrentTime(),
           context: [],
         })
       }
@@ -251,35 +259,51 @@ const ChatWithLLM: React.FC<ChatWithLLMProps> = ({
   }, [appendNewContentToMessageHistory])
 
   const getClassName = (message: ChatMessageToDisplay): string => {
-    const baseClasses = 'markdown-content break-words rounded-lg p-1'
+    return message.messageType === 'error' ? `markdown-content ${message.messageType}-chat-message` : `markdown-content ${message.role}-chat-message`
+  }
 
-    if (message.messageType === 'error') {
-      return `${baseClasses} bg-red-100 text-red-800`
+  const getRoleName = (role: string): string => {
+    switch (role) {
+      case "user":
+        return "You"
+      case "assistant":
+        return "Chatbot"
+      default:
+        return "Error"
     }
-    if (message.role === 'assistant') {
-      return `${baseClasses} bg-neutral-600 text-gray-200`
-    }
-    return `${baseClasses} bg-blue-100 text-blue-800`
   }
 
   return (
     <div className="flex size-full items-center justify-center">
       <div className="mx-auto flex size-full flex-col overflow-hidden border-y-0 border-l-[0.001px] border-r-0 border-solid border-neutral-700 bg-neutral-800">
-        <div className="flex h-full flex-col overflow-auto bg-transparent p-3 pt-0">
-          <div className="mx-4 mt-2 grow space-y-2">
+        <div className="flex h-full flex-col overflow-auto bg-transparent pt-0">
+          <div className="mt-2 grow space-y-2">
             {currentChatHistory?.displayableChatHistory
               .filter((msg) => msg.role !== 'system')
               .map((message, index) => (
-                <ReactMarkdown
-                  // eslint-disable-next-line react/no-array-index-key
-                  key={index}
-                  rehypePlugins={[rehypeRaw]}
-                  className={getClassName(message)}
-                >
-                  {message.visibleContent
-                    ? message.visibleContent
-                    : formatOpenAIMessageContentIntoString(message.content)}
-                </ReactMarkdown>
+                <div className={getClassName(message)}>
+                  <div className="flex mb-1 items-center p-0">
+                    {message.role === 'assistant' && 
+                      <img
+                        className="w-[25px] mr-3" 
+                        src='/public/reor-logo.png' 
+                        alt='Reor' 
+                      />
+                    }
+                    <p className="font-bold">{getRoleName(message.role)}</p>
+                    <p className="text-gray-200 opacity-50 pl-2 chat-time-msg">{message.messageCreated ? message.messageCreated : '00:00'}</p>
+                  </div>
+                  <ReactMarkdown
+                    // eslint-disable-next-line react/no-array-index-key
+                    key={index}
+                    rehypePlugins={[rehypeRaw]}
+                    className="opacity-80 mt-2"
+                  >
+                    {message.visibleContent
+                      ? message.visibleContent
+                      : formatOpenAIMessageContentIntoString(message.content)}
+                  </ReactMarkdown>
+                </div>
               ))}
           </div>
           {(!currentChatHistory || currentChatHistory?.displayableChatHistory.length === 0) && (
