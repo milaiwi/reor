@@ -68,12 +68,7 @@ const MainPageComponent: React.FC = () => {
   })
 
   const [sidebarWidth, setSidebarWidth] = useState<number>(40)
-  const [resizableWidth, setResizableWidth] = useState<number>(300)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
-
-  const handleResize = (size: number) => {
-    setResizableWidth(size)
-  }
 
   // find all available files
   useEffect(() => {
@@ -118,7 +113,7 @@ const MainPageComponent: React.FC = () => {
   }, [setCurrentChatHistory, setChatFilters])
 
   return (
-    <div>
+    <div className="overflow-x-hidden">
       {/* Displays the dropdown tab when hovering. You cannot use z-index and position absolute inside 
           TitleBar since one of the Parent components inadvertently creates a new stacking context that 
           impacts the z-index. */}
@@ -132,7 +127,6 @@ const MainPageComponent: React.FC = () => {
           similarFilesOpen={showSimilarFiles} // This might need to be managed differently now
           toggleSimilarFiles={toggleSimilarFiles} // This might need to be managed differently now
           openFileAndOpenEditor={openFileAndOpenEditor}
-          sidebarWidth={resizableWidth}
         />
       </TabProvider>
 
@@ -148,8 +142,8 @@ const MainPageComponent: React.FC = () => {
           />
         </div>
 
-        <ResizableComponent resizeSide="right" onResize={handleResize} isSidebarOpen={isSidebarOpen}>
-          <div className="w-[160px] border-y-0 border-l-0 border-r-[0.001px] border-solid border-neutral-700">
+        <ResizableComponent resizeSide="right">
+          <div className="size-full border-y-0 border-l-0 border-r-[0.001px] border-solid border-neutral-700">
             <SidebarManager
               files={files}
               expandedDirectories={expandedDirectories}
