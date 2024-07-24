@@ -5,13 +5,13 @@ export type ChatMessageToDisplay = ChatCompletionMessageParam & {
   messageType: 'success' | 'error'
   context: DBEntry[]
   visibleContent?: string
-  messageCreated?: Date
+  messageCreated?: string
 }
 
 export type ChatHistory = {
   id: string
   displayableChatHistory: ChatMessageToDisplay[]
-  historyCreated?: Date
+  historyCreated?: string
 }
 
 export interface ChatFilters {

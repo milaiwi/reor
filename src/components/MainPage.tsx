@@ -69,6 +69,7 @@ const MainPageComponent: React.FC = () => {
 
   const [sidebarWidth, setSidebarWidth] = useState<number>(40)
   const [resizableWidth, setResizableWidth] = useState<number>(300)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
   const handleResize = (size: number) => {
     setResizableWidth(size)
@@ -147,8 +148,8 @@ const MainPageComponent: React.FC = () => {
           />
         </div>
 
-        <ResizableComponent resizeSide="right" onResize={handleResize}>
-          <div className="size-full border-y-0 border-l-0 border-r-[0.001px] border-solid border-neutral-700">
+        <ResizableComponent resizeSide="right" onResize={handleResize} isSidebarOpen={isSidebarOpen}>
+          <div className="w-[160px] border-y-0 border-l-0 border-r-[0.001px] border-solid border-neutral-700">
             <SidebarManager
               files={files}
               expandedDirectories={expandedDirectories}
@@ -166,6 +167,8 @@ const MainPageComponent: React.FC = () => {
               setCurrentChatHistory={openChatAndOpenChat}
               setChatFilters={setChatFilters}
               setShowChatbot={setShowChatbot}
+              isSidebarOpen={isSidebarOpen}
+              setIsSidebarOpen={setIsSidebarOpen}
             />
           </div>
         </ResizableComponent>

@@ -29,6 +29,8 @@ interface SidebarManagerProps {
   setCurrentChatHistory: (chat: ChatHistory | undefined) => void
   setChatFilters: (chatFilters: ChatFilters) => void
   setShowChatbot: (showChat: boolean) => void
+  isSidebarOpen: boolean
+  setIsSidebarOpen: (isOpen: boolean) => void
 }
 
 const SidebarManager: React.FC<SidebarManagerProps> = ({
@@ -48,13 +50,14 @@ const SidebarManager: React.FC<SidebarManagerProps> = ({
   setCurrentChatHistory,
   setChatFilters,
   setShowChatbot,
+  isSidebarOpen,
+  setIsSidebarOpen,
 }) => {
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [searchResults, setSearchResults] = useState<DBQueryResult[]>([])
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
   return (
-    <div className={`transition-width duration-300 ${isSidebarOpen ? '' : 'w-[64px]'} overflow-y-hidden`}>
+    <div className={`transition-width duration-300 ${isSidebarOpen ? '' : 'w-[90px]'} overflow-y-hidden`}>
       {sidebarShowing === 'files' && (
         <FileSidebar
           files={files}

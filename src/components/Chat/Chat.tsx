@@ -182,7 +182,7 @@ const ChatWithLLM: React.FC<ChatWithLLMProps> = ({
         outputChatHistory = {
           id: chatID,
           displayableChatHistory: [],
-          messageCreated: getCurrentTime(),
+          historyCreated: getCurrentTime(),
         }
       }
       if (outputChatHistory.displayableChatHistory.length === 0) {
@@ -259,17 +259,19 @@ const ChatWithLLM: React.FC<ChatWithLLMProps> = ({
   }, [appendNewContentToMessageHistory])
 
   const getClassName = (message: ChatMessageToDisplay): string => {
-    return message.messageType === 'error' ? `markdown-content ${message.messageType}-chat-message` : `markdown-content ${message.role}-chat-message`
+    return message.messageType === 'error'
+      ? `markdown-content ${message.messageType}-chat-message`
+      : `markdown-content ${message.role}-chat-message`
   }
 
   const getRoleName = (role: string): string => {
     switch (role) {
-      case "user":
-        return "You"
-      case "assistant":
-        return "Chatbot"
+      case 'user':
+        return 'You'
+      case 'assistant':
+        return 'Chatbot'
       default:
-        return "Error"
+        return 'Error'
     }
   }
 
@@ -282,22 +284,20 @@ const ChatWithLLM: React.FC<ChatWithLLMProps> = ({
               .filter((msg) => msg.role !== 'system')
               .map((message, index) => (
                 <div className={getClassName(message)}>
-                  <div className="flex mb-1 items-center p-0">
-                    {message.role === 'assistant' && 
-                      <img
-                        className="w-[25px] mr-3" 
-                        src='/public/reor-logo.png' 
-                        alt='Reor' 
-                      />
-                    }
+                  <div className="mb-1 flex items-center p-0">
+                    {message.role === 'assistant' && (
+                      <img className="mr-3 w-[25px]" src="/public/reor-logo.png" alt="Reor" />
+                    )}
                     <p className="font-bold">{getRoleName(message.role)}</p>
-                    <p className="text-gray-200 opacity-50 pl-2 chat-time-msg">{message.messageCreated ? message.messageCreated : '00:00'}</p>
+                    <p className="chat-time-msg pl-2 text-gray-200 opacity-50">
+                      {message.messageCreated ? message.messageCreated : '00:00'}
+                    </p>
                   </div>
                   <ReactMarkdown
                     // eslint-disable-next-line react/no-array-index-key
                     key={index}
                     rehypePlugins={[rehypeRaw]}
-                    className="opacity-80 mt-2"
+                    className="mt-2 opacity-80"
                   >
                     {message.visibleContent
                       ? message.visibleContent

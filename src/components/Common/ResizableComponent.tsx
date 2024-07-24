@@ -5,6 +5,7 @@ interface ResizableComponentProps {
   initialWidth?: number
   resizeSide: 'left' | 'right' | 'both'
   onResize?: (width: number) => void
+  isSidebarOpen?: boolean
 }
 
 const ResizableComponent: React.FC<ResizableComponentProps> = ({
@@ -12,6 +13,7 @@ const ResizableComponent: React.FC<ResizableComponentProps> = ({
   initialWidth = 200, // Default value if not provided
   resizeSide,
   onResize,
+  isSidebarOpen,
 }) => {
   const [width, setWidth] = useState<number>(initialWidth)
   const [isDragging, setIsDragging] = useState<boolean>(false)
@@ -73,7 +75,7 @@ const ResizableComponent: React.FC<ResizableComponentProps> = ({
   return (
     <div
       style={{
-        width: `${width}px`,
+        width: `${isSidebarOpen ? `${width}px` : '100px'}`,
         resize: 'none',
         overflow: 'auto',
         maxWidth: `${setMaximumWidthCap}px`,

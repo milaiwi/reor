@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 
+import { LuPanelLeftClose } from 'react-icons/lu'
+import { RiChatNewFill } from 'react-icons/ri'
 import { ChatHistoryMetadata } from './hooks/use-chat-history'
 import { ChatHistory } from './chatUtils'
-import { LuPanelLeftClose } from "react-icons/lu";
-import { RiChatNewFill } from "react-icons/ri";
 
 export interface ChatItemProps {
   chatMetadata: ChatHistoryMetadata
@@ -62,7 +62,7 @@ export const ChatsSidebar: React.FC<ChatListProps> = ({
   newChat,
   setShowChatbot,
   isSidebarOpen,
-  setIsSidebarOpen
+  setIsSidebarOpen,
 }) => {
   const currentSelectedChatID = useRef<string | undefined>()
   // const [isSidebarOpen, setIsSidebarOpen] = useState(true)
@@ -96,31 +96,24 @@ export const ChatsSidebar: React.FC<ChatListProps> = ({
         // onClick={newChat}
       >
         {/* <span className="text-sm"> + New Chat</span> */}
-        <LuPanelLeftClose 
-          onClick={handleToggleSidebar}
-          className="cursor-pointer"
-          size={22}
-        />
-        <RiChatNewFill 
-          className="cursor-pointer"
-          onClick={newChat}
-          size={22} 
-        />
+        <LuPanelLeftClose onClick={handleToggleSidebar} className="cursor-pointer" size={22} />
+        <RiChatNewFill className="cursor-pointer" onClick={newChat} size={22} />
       </div>
 
-      {isSidebarOpen && chatHistoriesMetadata
-        .slice()
-        .reverse()
-        .map((chatMetadata) => (
-          <ChatItem
-            key={chatMetadata.id}
-            // chat={chat}
-            chatMetadata={chatMetadata}
-            selectedChatID={currentChatHistory?.id || ''}
-            onChatSelect={onSelect}
-            // currentSelectedChatID={currentSelectedChatID}
-          />
-        ))}
+      {isSidebarOpen &&
+        chatHistoriesMetadata
+          .slice()
+          .reverse()
+          .map((chatMetadata) => (
+            <ChatItem
+              key={chatMetadata.id}
+              // chat={chat}
+              chatMetadata={chatMetadata}
+              selectedChatID={currentChatHistory?.id || ''}
+              onChatSelect={onSelect}
+              // currentSelectedChatID={currentSelectedChatID}
+            />
+          ))}
     </div>
   )
 }
