@@ -21,6 +21,8 @@ export default {
         "light-arsenic": "#182c44",
         "distinct-dark-purple": "#3a395e",
         "moodly-blue": "#7f7dcb",
+
+        'lime': '#91fe50'
       },
       fontFamily: {
         // "material-icons": ["Material Icons"],

@@ -10,6 +10,7 @@ import rehypeRaw from 'rehype-raw'
 import AddContextFiltersModal from './AddContextFiltersModal'
 import PromptSuggestion from './Chat-Prompts'
 import ChatInput from './ChatInput'
+import ScrollableContainer from './ChatScrollableIntoView'
 import {
   ChatFilters,
   ChatHistory,
@@ -269,7 +270,7 @@ const ChatWithLLM: React.FC<ChatWithLLMProps> = ({
       case 'user':
         return 'You'
       case 'assistant':
-        return 'Chatbot'
+        return 'Reor Chatbot'
       default:
         return 'Error'
     }
@@ -278,50 +279,55 @@ const ChatWithLLM: React.FC<ChatWithLLMProps> = ({
   return (
     <div className="flex size-full items-center justify-center">
       <div className="mx-auto flex size-full flex-col overflow-hidden border-y-0 border-l-[0.001px] border-r-0 border-solid border-neutral-700 bg-neutral-800">
-        <div className="flex h-full flex-col overflow-auto bg-transparent pt-0">
-          <div className="mt-2 grow space-y-2">
-            {currentChatHistory?.displayableChatHistory
-              .filter((msg) => msg.role !== 'system')
-              .map((message, index) => (
-                <div className={getClassName(message)}>
-                  <div className="mb-1 flex items-center p-0">
-                    {message.role === 'assistant' && (
-                      <img className="mr-3 w-[25px]" src="/public/reor-logo.png" alt="Reor" />
-                    )}
-                    <p className="font-bold">{getRoleName(message.role)}</p>
-                    <p className="chat-time-msg pl-2 text-gray-200 opacity-50">
-                      {message.messageCreated ? message.messageCreated : '00:00'}
-                    </p>
-                  </div>
-                  <ReactMarkdown
-                    // eslint-disable-next-line react/no-array-index-key
-                    key={index}
-                    rehypePlugins={[rehypeRaw]}
-                    className="mt-2 opacity-80"
-                  >
-                    {message.visibleContent
-                      ? message.visibleContent
-                      : formatOpenAIMessageContentIntoString(message.content)}
-                  </ReactMarkdown>
+        <ScrollableContainer>
+          {currentChatHistory?.displayableChatHistory
+            .filter((msg) => msg.role !== 'system')
+            .map((message, index) => (
+              <div className={getClassName(message)}>
+                <div className="mb-1 flex items-center p-0">
+                  {message.role === 'assistant' && (
+                    <img className="mr-3 w-[25px]" src="/public/reor-logo.png" alt="Reor" />
+                  )}
+                  <p className="font-bold">{getRoleName(message.role)}</p>
+                  <p className="chat-time-msg pl-2 text-gray-200 opacity-50">
+                    {message.messageCreated ? message.messageCreated : '00:00'}
+                  </p>
                 </div>
-              ))}
-          </div>
+                <ReactMarkdown
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={index}
+                  rehypePlugins={[rehypeRaw]}
+                  className="mt-2 opacity-80"
+                >
+                  {message.visibleContent
+                    ? message.visibleContent
+                    : formatOpenAIMessageContentIntoString(message.content)}
+                </ReactMarkdown>
+              </div>
+          ))}
           {(!currentChatHistory || currentChatHistory?.displayableChatHistory.length === 0) && (
             <>
-              <div className="flex items-center justify-center text-sm text-gray-300">
-                Start a conversation with your notes by typing a message below.
-              </div>
-              <div className="flex items-center justify-center text-sm text-gray-300">
-                <button
-                  className="m-2 h-6 w-40
-                  cursor-pointer rounded-lg border-none bg-slate-600 text-center text-white"
-                  onClick={() => {
-                    setIsAddContextFiltersModalOpen(true)
-                  }}
-                  type="button"
-                >
-                  {chatFilters.files.length > 0 ? 'Update RAG filters' : 'Customise context'}
-                </button>
+              <div className="h-full flex items-center justify-center text-gray-300">
+                <div className="flex-col max-w-[400px] text-center">
+                  <img className="mr-3 w-[80px]" src="/public/reor-logo.png" alt="Reor" />
+                  <h1 className="mb-2">How can I help you today?</h1>
+                  <span className="text-sm">
+                    This code will display a prompt asking the user for their name, and 
+                    then it will display a greeting message with the name entered by the user.
+                  </span>
+                  <div className="mt-2 flex items-center justify-center text-sm text-gray-300">
+                    <button
+                      className="m-2 h-6 w-40
+                      cursor-pointer rounded-lg border-none bg-slate-600 text-center text-white"
+                      onClick={() => {
+                        setIsAddContextFiltersModalOpen(true)
+                      }}
+                      type="button"
+                    >
+                      {chatFilters.files.length > 0 ? 'Update RAG filters' : 'Customise context'}
+                    </button>
+                  </div>
+                </div>
               </div>
             </>
           )}
@@ -359,7 +365,8 @@ const ChatWithLLM: React.FC<ChatWithLLMProps> = ({
               ))}
             </>
           ) : undefined}
-        </div>
+      </ScrollableContainer>
+      <div className="flex w-full justify-center p-3">
         <ChatInput
           userTextFieldInput={userTextFieldInput}
           setUserTextFieldInput={setUserTextFieldInput}
@@ -367,6 +374,7 @@ const ChatWithLLM: React.FC<ChatWithLLMProps> = ({
           loadingResponse={loadingResponse}
           askText={askText}
         />
+      </div>
       </div>
       {showSimilarFiles && (
         <SimilarEntriesComponent

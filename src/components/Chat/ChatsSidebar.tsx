@@ -1,9 +1,8 @@
 import React, { useEffect, useRef } from 'react'
 
-import { LuPanelLeftClose } from 'react-icons/lu'
-import { RiChatNewFill } from 'react-icons/ri'
 import { ChatHistoryMetadata } from './hooks/use-chat-history'
 import { ChatHistory } from './chatUtils'
+import { FaPlus } from "react-icons/fa6";
 
 export interface ChatItemProps {
   chatMetadata: ChatHistoryMetadata
@@ -20,9 +19,7 @@ export const ChatItem: React.FC<ChatItemProps> = ({
 }) => {
   const isSelected = chatMetadata.id === selectedChatID
 
-  const itemClasses = `flex items-center cursor-pointer px-2 py-1 border-b border-gray-200 hover:bg-neutral-700 h-full mt-0 mb-0 ${
-    isSelected ? 'bg-neutral-700 text-white font-semibold' : 'text-gray-200'
-  }`
+  const itemClasses = `flex items-center cursor-pointer px-2 py-2 border-b border-gray-200 hover:bg-neutral-700 h-full mt-0 mb-1 bg-neutral-700 text-white rounded-md`
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -39,7 +36,7 @@ export const ChatItem: React.FC<ChatItemProps> = ({
         className={itemClasses}
         onContextMenu={handleContextMenu}
       >
-        <span className="mt-0 flex-1 truncate text-[13px]">{chatMetadata.displayName}</span>
+        <span className="mt-0 mb-1 flex-1 truncate text-[13px]">{chatMetadata.displayName}</span>
       </div>
     </div>
   )
@@ -90,30 +87,39 @@ export const ChatsSidebar: React.FC<ChatListProps> = ({
   }
 
   return (
-    <div className="h-full overflow-y-auto bg-neutral-800">
+    <div className="relative h-full flex flex-col overflow-y-auto bg-neutral-800 p-2 opacity-80">
       <div
-        className="m-1 flex justify-between rounded border border-transparent px-2 py-[8px] text-white transition duration-150 ease-in-out hover:border-white"
-        // onClick={newChat}
+        className="m-1 mb-3 text-white text-[12px] font-bold"
       >
-        {/* <span className="text-sm"> + New Chat</span> */}
-        <LuPanelLeftClose onClick={handleToggleSidebar} className="cursor-pointer" size={22} />
-        <RiChatNewFill className="cursor-pointer" onClick={newChat} size={22} />
+        Chats
       </div>
 
-      {isSidebarOpen &&
-        chatHistoriesMetadata
-          .slice()
-          .reverse()
-          .map((chatMetadata) => (
-            <ChatItem
-              key={chatMetadata.id}
-              // chat={chat}
-              chatMetadata={chatMetadata}
-              selectedChatID={currentChatHistory?.id || ''}
-              onChatSelect={onSelect}
-              // currentSelectedChatID={currentSelectedChatID}
-            />
-          ))}
+      <div className="flex-grow">
+        {isSidebarOpen &&
+          chatHistoriesMetadata
+            .slice()
+            .reverse()
+            .map((chatMetadata) => (
+              <ChatItem
+                key={chatMetadata.id}
+                // chat={chat}
+                chatMetadata={chatMetadata}
+                selectedChatID={currentChatHistory?.id || ''}
+                onChatSelect={onSelect}
+                // currentSelectedChatID={currentSelectedChatID}
+              />
+            ))}
+      </div>
+
+      <div 
+        className="flex justify-between items-center px-2 py-1 mb-3 bg-lime text-[12px] cursor-pointer rounded-md"
+        onClick={newChat}
+      >  
+        <span className="text-black">New chat</span>
+        <div className="p-2 bg-white rounded-md">
+          <FaPlus className="text-black" />
+        </div>
+      </div>
     </div>
   )
 }

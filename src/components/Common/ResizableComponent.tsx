@@ -71,11 +71,12 @@ const ResizableComponent: React.FC<ResizableComponentProps> = ({
   })
 
   const resizeHandleStyle = getResizeHandleStyle()
+  const newWidth = isSidebarOpen ? '100px' : `${width}px`
 
   return (
     <div
       style={{
-        width: `${isSidebarOpen ? `${width}px` : '100px'}`,
+        width: newWidth,
         resize: 'none',
         overflow: 'auto',
         maxWidth: `${setMaximumWidthCap}px`,

@@ -16,6 +16,8 @@ interface TabProviderProps {
   openFileAndOpenEditor: (path: string) => void
   setFilePath: (path: string) => void
   currentFilePath: string | null
+  sidebarShowing: string
+  makeSidebarShow: (currentlyShowing: string) => void
 }
 
 interface TabContextType {
@@ -44,6 +46,8 @@ export const TabProvider: React.FC<TabProviderProps> = ({
   openFileAndOpenEditor,
   setFilePath,
   currentFilePath,
+  sidebarShowing,
+  makeSidebarShow
 }) => {
   const [openTabs, setOpenTabs] = useState<Tab[]>([])
 
@@ -142,6 +146,7 @@ export const TabProvider: React.FC<TabProviderProps> = ({
   /* Selects a tab and syncs it with the backend */
   const selectTab = useCallback(
     (selectedTab: Tab) => {
+      if (sidebarShowing !== 'files') makeSidebarShow('files')
       setOpenTabs((prevTabs) => {
         const newTabs = prevTabs.map((tab) => ({
           ...tab,

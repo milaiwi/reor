@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 
 import Textarea from '@mui/joy/Textarea'
 import { CircularProgress } from '@mui/material'
+import { PiPaperPlaneRight } from "react-icons/pi";
 
 interface ChatInputProps {
   userTextFieldInput: string
@@ -18,8 +19,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
   loadingResponse,
   askText,
 }) => (
-  <div className="border-0 border-t-[0.001px] border-solid border-neutral-700 bg-transparent p-3">
-    <div className="flex h-full">
+  <div className="border-0 bg-dark-gray-c-two mb-4 rounded-md p-2 max-w-[800px] w-full">
+    <div className="relative w-full h-full">
       <Textarea
         onKeyDown={(e) => {
           if (!e.shiftKey && e.key === 'Enter') {
@@ -29,7 +30,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
         }}
         onChange={(e) => setUserTextFieldInput(e.target.value)}
         value={userTextFieldInput}
-        className="mr-2 w-full bg-gray-300"
+        className="relative w-full "
         name="Outlined"
         placeholder="Type your message"
         variant="outlined"
@@ -39,7 +40,10 @@ const ChatInput: React.FC<ChatInputProps> = ({
           border: 'none',
         }}
       />
-      <div className="flex h-full items-center justify-center">
+      <div className={`absolute top-1/2 right-2 transform -translate-y-1/2 ${userTextFieldInput ? 'cursor-pointer' : ''}`}>
+        <PiPaperPlaneRight color={userTextFieldInput ? 'white' : 'gray'} />
+      </div>
+      {/* <div className="flex h-full items-center justify-center">
         {loadingResponse ? (
           <CircularProgress size={32} thickness={20} style={{ color: 'rgb(209 213 219 / var(--tw-bg-opacity))' }} />
         ) : (
@@ -57,7 +61,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
             {askText}
           </button>
         )}
-      </div>
+      </div> */}
     </div>
   </div>
 )

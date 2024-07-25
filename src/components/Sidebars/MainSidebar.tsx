@@ -57,7 +57,7 @@ const SidebarManager: React.FC<SidebarManagerProps> = ({
   const [searchResults, setSearchResults] = useState<DBQueryResult[]>([])
 
   return (
-    <div className={`transition-width duration-300 ${isSidebarOpen ? '' : 'w-[90px]'} overflow-y-hidden`}>
+    <div className={`transition-width duration-300 overflow-y-hidden h-full`}>
       {sidebarShowing === 'files' && (
         <FileSidebar
           files={files}
