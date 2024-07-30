@@ -118,9 +118,9 @@ const MainPageComponent: React.FC = () => {
           TitleBar since one of the Parent components inadvertently creates a new stacking context that 
           impacts the z-index. */}
       <div id="tooltip-container" />
-      <TabProvider 
-        openFileAndOpenEditor={openFileAndOpenEditor} 
-        setFilePath={setFilePath} 
+      <TabProvider
+        openFileAndOpenEditor={openFileAndOpenEditor}
+        setFilePath={setFilePath}
         currentFilePath={filePath}
         makeSidebarShow={setSidebarShowing}
       >

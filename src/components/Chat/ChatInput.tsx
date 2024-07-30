@@ -1,8 +1,7 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 
 import Textarea from '@mui/joy/Textarea'
-import { CircularProgress } from '@mui/material'
-import { PiPaperPlaneRight } from "react-icons/pi";
+import { PiPaperPlaneRight } from 'react-icons/pi'
 
 interface ChatInputProps {
   userTextFieldInput: string
@@ -19,8 +18,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
   loadingResponse,
   askText,
 }) => (
-  <div className="border-0 bg-dark-gray-c-two mb-4 rounded-md p-2 max-w-[800px] w-full">
-    <div className="relative w-full h-full">
+  <div className="mb-4 w-full max-w-[800px] rounded-md border-0 bg-dark-gray-c-two p-2">
+    <div className="relative size-full">
       <Textarea
         onKeyDown={(e) => {
           if (!e.shiftKey && e.key === 'Enter') {
@@ -40,7 +39,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           border: 'none',
         }}
       />
-      <div className={`absolute top-1/2 right-2 transform -translate-y-1/2 ${userTextFieldInput ? 'cursor-pointer' : ''}`}>
+      <div className={`absolute right-2 top-1/2 -translate-y-1/2${userTextFieldInput ? 'cursor-pointer' : ''}`}>
         <PiPaperPlaneRight color={userTextFieldInput ? 'white' : 'gray'} />
       </div>
       {/* <div className="flex h-full items-center justify-center">

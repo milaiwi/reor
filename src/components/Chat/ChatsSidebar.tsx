@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react'
 
+import { FaPlus } from 'react-icons/fa6'
 import { ChatHistoryMetadata } from './hooks/use-chat-history'
 import { ChatHistory } from './chatUtils'
-import { FaPlus } from "react-icons/fa6";
 
 export interface ChatItemProps {
   chatMetadata: ChatHistoryMetadata
@@ -36,7 +36,7 @@ export const ChatItem: React.FC<ChatItemProps> = ({
         className={itemClasses}
         onContextMenu={handleContextMenu}
       >
-        <span className="mt-0 mb-1 flex-1 truncate text-[13px]">{chatMetadata.displayName}</span>
+        <span className="mb-1 mt-0 flex-1 truncate text-[13px]">{chatMetadata.displayName}</span>
       </div>
     </div>
   )
@@ -87,14 +87,10 @@ export const ChatsSidebar: React.FC<ChatListProps> = ({
   }
 
   return (
-    <div className="relative h-full flex flex-col overflow-y-auto bg-neutral-800 p-2 opacity-80">
-      <div
-        className="m-1 mb-3 text-white text-[12px] font-bold"
-      >
-        Chats
-      </div>
+    <div className="relative flex h-full flex-col overflow-y-auto bg-neutral-800 p-2 opacity-80">
+      <div className="m-1 mb-3 text-[12px] font-bold text-white">Chats</div>
 
-      <div className="flex-grow">
+      <div className="grow">
         {isSidebarOpen &&
           chatHistoriesMetadata
             .slice()
@@ -111,12 +107,12 @@ export const ChatsSidebar: React.FC<ChatListProps> = ({
             ))}
       </div>
 
-      <div 
-        className="flex justify-between items-center px-2 py-1 mb-3 bg-lime text-[12px] cursor-pointer rounded-md"
+      <div
+        className="mb-3 flex cursor-pointer items-center justify-between rounded-md bg-lime px-2 py-1 text-[12px]"
         onClick={newChat}
-      >  
+      >
         <span className="text-black">New chat</span>
-        <div className="p-2 bg-white rounded-md">
+        <div className="rounded-md bg-white p-2">
           <FaPlus className="text-black" />
         </div>
       </div>

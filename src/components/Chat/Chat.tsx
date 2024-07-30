@@ -304,32 +304,30 @@ const ChatWithLLM: React.FC<ChatWithLLMProps> = ({
                     : formatOpenAIMessageContentIntoString(message.content)}
                 </ReactMarkdown>
               </div>
-          ))}
+            ))}
           {(!currentChatHistory || currentChatHistory?.displayableChatHistory.length === 0) && (
-            <>
-              <div className="h-full flex items-center justify-center text-gray-300">
-                <div className="flex-col max-w-[400px] text-center">
-                  <img className="mr-3 w-[80px]" src="/public/reor-logo.png" alt="Reor" />
-                  <h1 className="mb-2">How can I help you today?</h1>
-                  <span className="text-sm">
-                    This code will display a prompt asking the user for their name, and 
-                    then it will display a greeting message with the name entered by the user.
-                  </span>
-                  <div className="mt-2 flex items-center justify-center text-sm text-gray-300">
-                    <button
-                      className="m-2 h-6 w-40
+            <div className="flex h-full items-center justify-center text-gray-300">
+              <div className="max-w-[400px] flex-col text-center">
+                <img className="mr-3 w-[80px]" src="/public/reor-logo.png" alt="Reor" />
+                <h1 className="mb-2">How can I help you today?</h1>
+                <span className="text-sm">
+                  This code will display a prompt asking the user for their name, and then it will display a greeting
+                  message with the name entered by the user.
+                </span>
+                <div className="mt-2 flex items-center justify-center text-sm text-gray-300">
+                  <button
+                    className="m-2 h-6 w-40
                       cursor-pointer rounded-lg border-none bg-slate-600 text-center text-white"
-                      onClick={() => {
-                        setIsAddContextFiltersModalOpen(true)
-                      }}
-                      type="button"
-                    >
-                      {chatFilters.files.length > 0 ? 'Update RAG filters' : 'Customise context'}
-                    </button>
-                  </div>
+                    onClick={() => {
+                      setIsAddContextFiltersModalOpen(true)
+                    }}
+                    type="button"
+                  >
+                    {chatFilters.files.length > 0 ? 'Update RAG filters' : 'Customise context'}
+                  </button>
                 </div>
               </div>
-            </>
+            </div>
           )}
           {isAddContextFiltersModalOpen && (
             <AddContextFiltersModal
@@ -365,16 +363,16 @@ const ChatWithLLM: React.FC<ChatWithLLMProps> = ({
               ))}
             </>
           ) : undefined}
-      </ScrollableContainer>
-      <div className="flex w-full justify-center p-3">
-        <ChatInput
-          userTextFieldInput={userTextFieldInput}
-          setUserTextFieldInput={setUserTextFieldInput}
-          handleSubmitNewMessage={() => handleSubmitNewMessage(currentChatHistory)}
-          loadingResponse={loadingResponse}
-          askText={askText}
-        />
-      </div>
+        </ScrollableContainer>
+        <div className="flex w-full justify-center p-3">
+          <ChatInput
+            userTextFieldInput={userTextFieldInput}
+            setUserTextFieldInput={setUserTextFieldInput}
+            handleSubmitNewMessage={() => handleSubmitNewMessage(currentChatHistory)}
+            loadingResponse={loadingResponse}
+            askText={askText}
+          />
+        </div>
       </div>
       {showSimilarFiles && (
         <SimilarEntriesComponent

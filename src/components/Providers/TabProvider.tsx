@@ -47,7 +47,7 @@ export const TabProvider: React.FC<TabProviderProps> = ({
   setFilePath,
   currentFilePath,
   sidebarShowing,
-  makeSidebarShow
+  makeSidebarShow,
 }) => {
   const [openTabs, setOpenTabs] = useState<Tab[]>([])
 
