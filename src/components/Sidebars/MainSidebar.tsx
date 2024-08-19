@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 
 import { FileInfoTree } from 'electron/main/filesystem/types'
 import { DBQueryResult } from 'electron/main/vector-database/schema'
+import { MenuChildItems } from '../Common/Menus'
 import posthog from 'posthog-js'
 
 import { ChatsSidebar } from '../Chat/ChatsSidebar'
@@ -29,6 +30,7 @@ interface SidebarManagerProps {
   setCurrentChatHistory: (chat: ChatHistory | undefined) => void
   setChatFilters: (chatFilters: ChatFilters) => void
   setShowChatbot: (showChat: boolean) => void
+  handleContextMenu: (event: React.MouseEvent, items: MenuChildItems[]) => void
 }
 
 const SidebarManager: React.FC<SidebarManagerProps> = ({
@@ -48,6 +50,7 @@ const SidebarManager: React.FC<SidebarManagerProps> = ({
   setCurrentChatHistory,
   setChatFilters,
   setShowChatbot,
+  handleContextMenu
 }) => {
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [searchResults, setSearchResults] = useState<DBQueryResult[]>([])
@@ -66,6 +69,7 @@ const SidebarManager: React.FC<SidebarManagerProps> = ({
           setNoteToBeRenamed={setNoteToBeRenamed}
           fileDirToBeRenamed={fileDirToBeRenamed}
           setFileDirToBeRenamed={setFileDirToBeRenamed}
+          handleContextMenu={handleContextMenu}
         />
       )}
       {sidebarShowing === 'search' && (

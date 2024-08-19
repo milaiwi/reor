@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import CustomContextMenu from '@/components/Common/Menus'
+import { MenuChildItems } from '@/components/Common/Menus'
 
 import { FileInfoNode } from 'electron/main/filesystem/types'
 import posthog from 'posthog-js'
@@ -16,6 +18,7 @@ interface FileInfoProps {
   onDirectoryToggle: (path: string) => void
   isExpanded?: boolean
   indentMultiplyer?: number
+  handleContextMenu: (event: React.MouseEvent, items: MenuChildItems[]) => void
 }
 
 const FileItem: React.FC<FileInfoProps> = ({
@@ -26,6 +29,7 @@ const FileItem: React.FC<FileInfoProps> = ({
   onDirectoryToggle,
   isExpanded,
   indentMultiplyer,
+  handleContextMenu
 }) => {
   const isDirectory = isFileNodeDirectory(file)
   const isSelected = file.path === selectedFilePath
@@ -76,21 +80,30 @@ const FileItem: React.FC<FileInfoProps> = ({
     handleDragStart(e, file)
   }
 
-  const handleContextMenu = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    window.electronUtils.showFileItemContextMenu(file)
-  }
+  // const handleContextMenu = (e: React.MouseEvent) => {
+  //   e.preventDefault()
+  //   e.stopPropagation()
+  //   window.electronUtils.showFileItemContextMenu(file)
+  // }
 
   const itemClasses = `flex items-center cursor-pointer px-2 py-1 border-b border-gray-200 hover:bg-neutral-700 h-full mt-0 mb-0 text-cyan-100 font-sans text-xs leading-relaxed rounded-md ${
     isSelected ? 'bg-neutral-700 text-white font-semibold' : 'text-gray-200'
   } ${isDragOver ? 'bg-neutral-500' : ''}`
 
+  const menuItems: MenuChildItems[] = [
+    { name: 'New Note', onSelect: () => console.log('New Note') },
+    { name: 'New Directory', onSelect: () => console.log('New Directory') },
+    { name: 'Delete', onSelect: () => window.ipcRenderer.send('rename-file-listener', file.path) },
+    { name: 'Rename', onSelect: () => console.log('Renaming Note') },
+    { name: 'Create a flashcard set', onSelect: () => console.log('Create a flashcard') },
+    { name: 'Add a file to chat context', onSelect: () => console.log("Add to chat context") },
+  ]
+
   return (
     <div
       draggable
       onDragStart={localHandleDragStart}
-      onContextMenu={handleContextMenu}
+      onContextMenu={(e) => handleContextMenu(e, menuItems)}
       style={{ paddingLeft: `${indentation}px` }}
       onDragOver={handleDragOver}
       onDrop={handleDrop}

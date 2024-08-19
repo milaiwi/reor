@@ -18,6 +18,7 @@ import { ChatFilters, ChatHistory } from './Chat/chatUtils'
 import EmptyPage from './EmptyPage'
 import { TabProvider } from './Providers/TabProvider'
 import { ModalProvider } from './Providers/ModalProvider'
+import CustomContextMenu, { useCustomMenu } from './Common/Menus'
 
 const MainPageComponent: React.FC = () => {
   const [showChatbot, setShowChatbot] = useState<boolean>(false)
@@ -43,6 +44,7 @@ const MainPageComponent: React.FC = () => {
   } = useFileByFilepath()
 
   const { currentChatHistory, setCurrentChatHistory, chatHistoriesMetadata } = useChatHistory()
+  const { menuVisible, menuPosition, menuItems, handleContextMenu, handleCloseMenu } = useCustomMenu()
 
   const { files, flattenedFiles, expandedDirectories, handleDirectoryToggle } = useFileInfoTree(filePath)
 
@@ -113,7 +115,7 @@ const MainPageComponent: React.FC = () => {
   }, [setCurrentChatHistory, setChatFilters])
 
   return (
-    <div className="relative overflow-x-hidden">
+    <div className="relative overflow-x-hidden" onClick={handleCloseMenu}>
       {/* Displays the dropdown tab when hovering. You cannot use z-index and position absolute inside 
           TitleBar since one of the Parent components inadvertently creates a new stacking context that 
           impacts the z-index. */}
@@ -171,6 +173,7 @@ const MainPageComponent: React.FC = () => {
               setCurrentChatHistory={openChatAndOpenChat}
               setChatFilters={setChatFilters}
               setShowChatbot={setShowChatbot}
+              handleContextMenu={handleContextMenu}
             />
           </div>
         </ResizableComponent>
@@ -230,6 +233,15 @@ const MainPageComponent: React.FC = () => {
               }}
             />
           </div>
+        )}
+
+        {/* Custom Context Menu */}
+        {menuVisible && (
+          <CustomContextMenu
+            position={menuPosition}
+            items={menuItems}
+            onClose={handleCloseMenu}
+          />
         )}
       </div>
     </div>

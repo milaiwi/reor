@@ -191,6 +191,7 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
       ipcRenderer.removeListener(channel, subscription)
     }
   },
+  
 })
 
 // Type declarations
