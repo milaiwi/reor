@@ -17,14 +17,24 @@ export default {
         'dark-gray-c-nine': '#343434',
         'dark-gray-c-ten': '#383838',
         'dark-gray-c-eleven': '#191919',
-
         "dark-slate-gray": "#2F4F4F",
         "light-arsenic": "#182c44",
         "distinct-dark-purple": "#3a395e",
         "moodly-blue": "#7f7dcb",
+        'bg-000': 'hsl(var(--bg-000) / 1.0)', 
+
+        'text-gen-100': 'hsl(var(--gen-100) / 1.0)',
       },
       fontFamily: {
-        // "material-icons": ["Material Icons"],
+        'styrene': [
+          'ui-sans-serif',
+          'system-ui',
+          'sans-serif',
+          '"Apple Color Emoji"',
+          '"Segoe UI Emoji"',
+          '"Segoe UI Symbol"',
+          '"Noto Color Emoji"',
+        ],
       },
       height: {
         titlebar: "30px",
@@ -49,9 +59,14 @@ export default {
           '0%': { transform: 'translateX(100%)', opacity: '0'},
           '100%': { transform: 'translateX(0)', opacity: '1'},
         },
+        bounce: {
+          '0%, 20%, 50%, 80%, 100%': { opacity: '1' },
+          '40%, 60%': { opacity: '0' },
+        }
       },
       animation: {
         'slide-in': 'slideIn 0.3s ease-out',
+        'bounce': 'bounce 1.4s infinite both',
       },
     },
   },
