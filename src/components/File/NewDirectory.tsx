@@ -38,26 +38,22 @@ const NewDirectoryComponent: React.FC<NewDirectoryComponentProps> = ({ isOpen, o
   }
 
   const sendNewDirectoryMsg = async () => {
-    try {
-      if (!directoryName || errorMessage || currentOpenFilePath === null) return
-      const invalidCharacters = await getInvalidCharacterInFileName(directoryName)
-      if (invalidCharacters) {
-        setErrorMessage(`Cannot put ${invalidCharacters} in directoryName`)
-        throw new Error(`Cannot put ${invalidCharacters} in directoryName`)
-      }
-      setErrorMessage(null)
-
-      const directoryPath =
-        currentOpenFilePath === ''
-          ? await window.electronStore.getVaultDirectoryForWindow()
-          : await window.path.dirname(currentOpenFilePath)
-      const finalPath = await window.path.join(directoryPath, directoryName)
-      window.fileSystem.createDirectory(finalPath)
-      posthog.capture('created_new_directory_from_new_directory_modal')
-      onClose()
-    } catch (e) {
-      console.error(e)
+    if (!directoryName || errorMessage || currentOpenFilePath === null) return
+    const invalidCharacters = await getInvalidCharacterInFileName(directoryName)
+    if (invalidCharacters) {
+      setErrorMessage(`Cannot put ${invalidCharacters} in directoryName`)
+      throw new Error(`Cannot put ${invalidCharacters} in directoryName`)
     }
+    setErrorMessage(null)
+
+    const directoryPath =
+      currentOpenFilePath === ''
+        ? await window.electronStore.getVaultDirectoryForWindow()
+        : await window.path.dirname(currentOpenFilePath)
+    const finalPath = await window.path.join(directoryPath, directoryName)
+    window.fileSystem.createDirectory(finalPath)
+    posthog.capture('created_new_directory_from_new_directory_modal')
+    onClose()
   }
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
