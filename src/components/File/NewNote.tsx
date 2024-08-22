@@ -5,7 +5,7 @@ import posthog from 'posthog-js'
 
 import ReorModal from '../Common/Modal'
 
-import { getInvalidCharacterInFilePath } from '@/utils/strings'
+import { getInvalidCharacterInFilePath, getInvalidCharacterInFileName } from '@/utils/strings'
 
 interface NewNoteComponentProps {
   isOpen: boolean
@@ -47,11 +47,20 @@ const NewNoteComponent: React.FC<NewNoteComponentProps> = ({
     if (!fileName || errorMessage) {
       return
     }
+
+    const invalidCharacters = await getInvalidCharacterInFileName(fileName)
+    if (invalidCharacters) {
+      setErrorMessage(`Cannot put ${invalidCharacters} in File`)
+      throw new Error(`Cannot put ${invalidCharacters} in File`)
+    }
+    setErrorMessage(null)
+
     let finalPath = fileName
     if (currentOpenFilePath !== '' && currentOpenFilePath !== null) {
       const directoryName = await window.path.dirname(currentOpenFilePath)
       finalPath = await window.path.join(directoryName, fileName)
     }
+
     openFileAndOpenEditor(finalPath)
     posthog.capture('created_new_note_from_new_note_modal')
     onClose()
@@ -76,14 +85,16 @@ const NewNoteComponent: React.FC<NewNoteComponentProps> = ({
           placeholder="Note Name"
         />
 
-        <Button
-          className="mb-2 mt-3 h-10 w-[80px] cursor-pointer border-none bg-blue-500 px-2 py-0 text-center hover:bg-blue-600"
-          onClick={sendNewNoteMsg}
-          placeholder=""
-        >
-          Create
-        </Button>
-        {errorMessage && <p className="text-xs text-red-500">{errorMessage}</p>}
+        <div className="flex items-center gap-3">
+          <Button
+            className="mb-2 mt-3 h-10 w-[80px] cursor-pointer border-none bg-blue-500 px-2 py-0 text-center hover:bg-blue-600"
+            onClick={sendNewNoteMsg}
+            placeholder=""
+          >
+            Create
+          </Button>
+          {errorMessage && <p className="text-xs text-red-500">{errorMessage}</p>}
+        </div>
       </div>
     </ReorModal>
   )
