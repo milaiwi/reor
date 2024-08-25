@@ -1,11 +1,5 @@
 import { Editor } from "@tiptap/react";
 
-export const getOnTransaction = (editor: Editor) => {
-  return () => {
-    editor = editor;
-  };
-};
-
 export const getHandlePaste = (editor: Editor) => {
   return async (view, event: ClipboardEvent, slice) => {
     try {
@@ -17,7 +11,6 @@ export const getHandlePaste = (editor: Editor) => {
         item.types.some((type) => type.startsWith("image/"))
       );
 
-      console.log("ImageItem:", imageItem)
       // If no image is found, let the paste event continue normally
       if (!imageItem) {
         return false;
@@ -37,12 +30,10 @@ export const getHandlePaste = (editor: Editor) => {
       reader.onload = (e) => {
         const imageUrl = e.target?.result as string;
         if (imageUrl) {
-          // Insert the image into Tiptap
           editor.chain().focus().setImage({ src: imageUrl }).run();
         }
       };
 
-      // Prevent the default paste behavior since we're handling it
       event.preventDefault();
       return true;
     } catch (error) {
