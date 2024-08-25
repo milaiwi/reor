@@ -28,6 +28,8 @@ import SearchAndReplace from '@/components/Editor/SearchAndReplace'
 import 'katex/dist/katex.min.css'
 import '../tiptap.scss'
 import welcomeNote from '../utils'
+import { Image as TiptapImage } from '@tiptap/extension-image'
+import { getOnTransaction, getHandlePaste } from '@/components/Editor/ImageView'
 
 const useFileByFilepath = () => {
   const [currentlyOpenedFilePath, setCurrentlyOpenedFilePath] = useState<string | null>(null)
@@ -184,8 +186,13 @@ const useFileByFilepath = () => {
         openOnClick: true,
       }),
       BacklinkExtension(openRelativePathRef, handleSuggestionsStateWithEventCapture),
+      TiptapImage.configure({
+        allowBase64: true,
+        inline: true,
+      }),
     ],
   })
+
 
   useEffect(() => {
     if (editor) {
@@ -194,7 +201,9 @@ const useFileByFilepath = () => {
           attributes: {
             spellcheck: spellCheckEnabled.toString(),
           },
+          handlePaste: getHandlePaste(editor)
         },
+        onTransaction: getOnTransaction(editor),
       })
     }
   }, [spellCheckEnabled, editor])
