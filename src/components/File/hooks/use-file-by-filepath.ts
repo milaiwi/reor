@@ -123,6 +123,7 @@ const useFileByFilepath = () => {
     setSuggestionsState(suggState)
   }
 
+  console.log("Creating editor!")
   // Check if we should display markdown or not
   useEffect(() => {
     const handleInitialStartup = async () => {
@@ -193,19 +194,20 @@ const useFileByFilepath = () => {
     ],
   })
 
-
+  const handlePaste = getHandlePaste(editor)
   useEffect(() => {
+    console.log("Inside useeffect")
     if (editor) {
       editor.setOptions({
         editorProps: {
           attributes: {
             spellcheck: spellCheckEnabled.toString(),
           },
-          handlePaste: getHandlePaste(editor)
+          handlePaste: handlePaste,
         },
       })
     }
-  }, [spellCheckEnabled, editor])
+  }, [spellCheckEnabled, editor, getHandlePaste])
 
   const [debouncedEditor] = useDebounce(editor?.state.doc.content, 4000)
 

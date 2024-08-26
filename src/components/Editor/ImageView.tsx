@@ -1,44 +1,25 @@
 import { Editor } from "@tiptap/react";
+import { useCallback } from "react";
 
-export const getHandlePaste = (editor: Editor) => {
-  return async (view, event: ClipboardEvent, slice) => {
-    try {
-      // Read clipboard contents
-      const clipboardItems = await navigator.clipboard.read();
+export const getHandlePaste = (editor: Editor | null) => {
 
-      // Find the first clipboard item that contains an image
-      const imageItem = clipboardItems.find((item) =>
-        item.types.some((type) => type.startsWith("image/"))
-      );
+  const handlePaste = useCallback((_, event: ClipboardEvent) => {
+    const item = event.clipboardData?.items[0];
+    console.log("Item:", item);
 
-      // If no image is found, let the paste event continue normally
-      if (!imageItem) {
-        return false;
-      }
+    if (item?.type.indexOf('image') !== 0) return false;
 
-      // Get the image blob from the item
-      const imageType = imageItem.types.find((type) =>
-        type.startsWith("image/")
-      );
-      if (!imageType) return false;
-
-      const imageBlob = await imageItem.getType(imageType);
-
-      // Convert the blob to a Data URL
+    const file = item.getAsFile();
+    if (file) {
       const reader = new FileReader();
-      reader.readAsDataURL(imageBlob);
+      reader.readAsDataURL(file);
       reader.onload = (e) => {
-        const imageUrl = e.target?.result as string;
-        if (imageUrl) {
-          editor.chain().focus().setImage({ src: imageUrl }).run();
-        }
+        if (e.target?.result)
+          editor?.commands.setImage({ src: e.target.result as string });
       };
-
-      event.preventDefault();
-      return true;
-    } catch (error) {
-      console.error("Failed to read clipboard contents:", error);
-      return false;
     }
-  };
+    return true;
+  }, [editor])
+
+  return handlePaste
 };
