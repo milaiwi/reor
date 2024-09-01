@@ -8,10 +8,9 @@ import {
   LLMGenerationParameters,
   Tab,
 } from 'electron/main/electron-store/storeConfig'
-import { FileInfoNode, FileInfoTree, RenameFileProps, WriteFileProps } from 'electron/main/filesystem/types'
+import { FileInfoTree, RenameFileProps, WriteFileProps } from 'electron/main/filesystem/types'
 import { DBEntry, DBQueryResult } from 'electron/main/vector-database/schema'
 
-import { ChatHistoryMetadata } from '@/components/Chat/hooks/use-chat-history'
 import { Chat } from '@/components/Chat/types'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

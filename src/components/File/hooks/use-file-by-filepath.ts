@@ -268,17 +268,6 @@ const useFileByFilepath = () => {
     }
   }
 
-  // open a new file rename dialog
-  // useEffect(() => {
-  //   const renameFileListener = window.ipcRenderer.receive('rename-file-listener', (noteName: string) =>
-  //     setFileNodeToBeRenamed(noteName),
-  //   )
-
-  //   return () => {
-  //     renameFileListener()
-  //   }
-  // }, [])
-
   useEffect(() => {
     const handleWindowClose = async () => {
       if (currentlyOpenedFilePath !== null && editor && editor.getHTML() !== null) {

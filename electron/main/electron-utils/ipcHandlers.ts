@@ -1,10 +1,8 @@
-import { app, BrowserWindow, dialog, ipcMain, Menu, MenuItem, shell } from 'electron'
+import { app, ipcMain, shell } from 'electron'
 import Store from 'electron-store'
 
 import WindowsManager from '../common/windowManager'
-import { StoreKeys, StoreSchema } from '../electron-store/storeConfig'
-import { ChatHistoryMetadata } from '@/components/Chat/hooks/use-chat-history'
-import { FileInfoNode } from '../filesystem/types'
+import { StoreSchema } from '../electron-store/storeConfig'
 
 const registerElectronUtilsHandlers = (
   store: Store<StoreSchema>,
