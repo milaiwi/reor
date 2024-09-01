@@ -3,17 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { Tab } from 'electron/main/electron-store/storeConfig'
 import { SidebarAbleToShow } from '../components/Sidebars/MainSidebar'
-
-interface TabProviderProps {
-  children: ReactNode
-  openTabContent: (path: string) => void
-  setFilePath: (path: string) => void
-  setCurrentChatHistory: (chatHistory: undefined) => void
-  currentTab: string | null
-  sidebarShowing: string | null
-  makeSidebarShow: (option: SidebarAbleToShow) => void
-  getChatIdFromPath: (path: string) => string
-}
+import { useChatContext } from './ChatContext'
 
 interface TabContextType {
   openTabs: Tab[]
@@ -33,20 +23,29 @@ const defaultTypeContext: TabContextType = {
 
 const TabContext = createContext<TabContextType>(defaultTypeContext)
 
-// Contains openTabs, addTab, selectTab, removeTabByID, updateTabOrder
 export const useTabs = (): TabContextType => useContext(TabContext)
+
+interface TabProviderProps {
+  children: ReactNode
+  openTabContent: (path: string) => void
+  setFilePath: (path: string) => void
+  currentTab: string | null
+  sidebarShowing: string | null
+  makeSidebarShow: (option: SidebarAbleToShow) => void
+  getChatIdFromPath: (path: string) => string
+}
 
 export const TabProvider: React.FC<TabProviderProps> = ({
   children,
   openTabContent,
   setFilePath,
-  setCurrentChatHistory,
   currentTab,
   sidebarShowing,
   makeSidebarShow,
   getChatIdFromPath,
 }) => {
   const [openTabs, setOpenTabs] = useState<Tab[]>([])
+  const { setCurrentChatHistory } = useChatContext()
 
   useEffect(() => {
     const fetchHistoryTabs = async () => {

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { FaSearch } from 'react-icons/fa'
 import { GrNewWindow } from 'react-icons/gr'
@@ -28,6 +28,8 @@ const IconsSidebar: React.FC<IconsSidebarProps> = ({
   makeSidebarShow,
   currentFilePath,
 }) => {
+  const [sidebarWidth, setSidebarWidth] = useState<number>(40)
+
   const {
     isNewNoteModalOpen,
     setIsNewNoteModalOpen,
@@ -58,8 +60,27 @@ const IconsSidebar: React.FC<IconsSidebarProps> = ({
     }
   }, [setIsFlashcardModeOpen, setInitialFileToCreateFlashcard])
 
+  useEffect(() => {
+    const updateWidth = async () => {
+      const isCompact = await window.electronStore.getSBCompact()
+      setSidebarWidth(isCompact ? 40 : 60)
+    }
+
+    // Listen for changes on settings
+    const handleSettingsChange = (isCompact: number) => {
+      setSidebarWidth(isCompact ? 40 : 60)
+    }
+
+    updateWidth()
+
+    window.ipcRenderer.receive('sb-compact-changed', handleSettingsChange)
+  }, [])
+
   return (
-    <div className="flex size-full flex-col items-center justify-between gap-1 bg-neutral-800">
+    <div
+      className="flex size-full flex-col items-center justify-between gap-1 bg-neutral-800"
+      style={{ width: `${sidebarWidth}px` }}
+    >
       <div
         className=" flex h-8 w-full cursor-pointer items-center justify-center"
         onClick={() => makeSidebarShow('files')}

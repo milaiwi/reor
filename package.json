@@ -1,6 +1,6 @@
 {
   "name": "reor-project",
-  "version": "0.2.19",
+  "version": "0.2.21",
   "productName": "Reor",
   "main": "dist-electron/main/index.js",
   "description": "An AI note-taking app that runs models locally.",
@@ -61,6 +61,7 @@
     "@tiptap/react": "^2.2.4",
     "@tiptap/starter-kit": "^2.2.4",
     "@xenova/transformers": "^2.8.0",
+    "adm-zip": "^0.5.15",
     "ai": "^3.3.17",
     "apache-arrow": "^14.0.2",
     "chokidar": "^3.5.3",

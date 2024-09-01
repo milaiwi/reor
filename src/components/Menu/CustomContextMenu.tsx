@@ -43,7 +43,7 @@ interface CustomContextMenuProps {
   handleDeleteChat: (chatID: string | undefined) => void
   setFileNodeToBeRenamed: (newName: string) => void
   openFileAndOpenEditor: (path: string, optionalContentToWriteOnCreate?: string) => void
-  handleAddFileToChatFilters: (file: string | null) => void
+  handleAddFileToChatFilters: (file: string) => void
 }
 
 const CustomContextMenu: React.FC<CustomContextMenuProps> = ({
@@ -125,7 +125,9 @@ const CustomContextMenu: React.FC<CustomContextMenuProps> = ({
         { title: 'Create flashcard set', onSelect: () => handleMakeFlashcard(file ? file.path : null), icon: '' },
         {
           title: 'Add File to chat context',
-          onSelect: () => handleAddFileToChatFilters(file ? file.path : null),
+          onSelect: () => {
+            if (file?.path) handleAddFileToChatFilters(file?.path)
+          },
           icon: '',
         },
       ]
@@ -144,7 +146,9 @@ const CustomContextMenu: React.FC<CustomContextMenuProps> = ({
         { title: 'Create flashcard set', onSelect: () => handleMakeFlashcard(file ? file.path : null), icon: '' },
         {
           title: 'Add file to chat context',
-          onSelect: () => handleAddFileToChatFilters(file ? file.path : null),
+          onSelect: () => {
+            if (file?.path) handleAddFileToChatFilters(file?.path)
+          },
           icon: '',
         },
       ]

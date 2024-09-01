@@ -20,7 +20,7 @@ Sentry.init({
 })
 
 const store = new Store<StoreSchema>()
-// store.clear(); // clear store for testing CAUTION: THIS WILL DELETE YOUR CHAT HISTORY
+// store.clear() // clear store for testing CAUTION: THIS WILL DELETE YOUR CHAT HISTORY
 const windowsManager = new WindowsManager()
 
 process.env.DIST_ELECTRON = join(__dirname, '../')
@@ -68,12 +68,16 @@ app.on('activate', () => {
 
 process.on('uncaughtException', (error: Error) => {
   windowsManager.appendNewErrorToDisplayInWindow(errorToStringMainProcess(error))
-  Sentry.captureException(error)
+  if (process.env.NODE_ENV === 'production') {
+    Sentry.captureException(error)
+  }
 })
 
 process.on('unhandledRejection', (reason: unknown) => {
   windowsManager.appendNewErrorToDisplayInWindow(errorToStringMainProcess(reason))
-  Sentry.captureException(reason as Error)
+  if (process.env.NODE_ENV === 'production') {
+    Sentry.captureException(reason as Error)
+  }
 })
 
 registerLLMSessionHandlers(store)

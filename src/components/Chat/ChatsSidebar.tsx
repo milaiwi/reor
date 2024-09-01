@@ -2,14 +2,13 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import { RiChatNewFill, RiArrowDownSLine } from 'react-icons/ri'
 import { IoChatbubbles } from 'react-icons/io5'
+import posthog from 'posthog-js'
 import { ChatHistoryMetadata } from './hooks/use-chat-history'
-import { Chat } from './types'
+import { useChatContext } from '@/providers/ChatContext'
 import { ContextMenuLocations, ContextMenuFocus } from '../Menu/CustomContextMenu'
 
 export interface ChatItemProps {
   chatMetadata: ChatHistoryMetadata
-  selectedChatID: string | null
-  onChatSelect: (path: string) => void
   handleFocusedItem: (
     event: React.MouseEvent<HTMLDivElement>,
     focusedItem: ContextMenuLocations,
@@ -17,25 +16,20 @@ export interface ChatItemProps {
   ) => void
 }
 
-export const ChatItem: React.FC<ChatItemProps> = ({
-  chatMetadata,
-  selectedChatID,
-  onChatSelect,
-  handleFocusedItem,
-  // currentSelectedChatID,
-}) => {
-  const isSelected = chatMetadata.id === selectedChatID
+export const ChatItem: React.FC<ChatItemProps> = ({ chatMetadata, handleFocusedItem }) => {
+  const { setCurrentChatHistory, currentChatHistory } = useChatContext()
 
   const itemClasses = `
     flex items-center cursor-pointer py-2 px-3 rounded-md
     transition-colors duration-150 ease-in-out
-    ${isSelected ? 'bg-neutral-700 text-white' : 'text-gray-300 hover:bg-neutral-800'}
+    ${chatMetadata.id === currentChatHistory?.id ? 'bg-neutral-700 text-white' : 'text-gray-300 hover:bg-neutral-800'}
   `
   return (
     <div>
       <div
-        onClick={() => {
-          onChatSelect(chatMetadata.id)
+        onClick={async () => {
+          const chat = await window.electronStore.getChatHistory(chatMetadata.id)
+          setCurrentChatHistory(chat)
         }}
         className={itemClasses}
         onContextMenu={(e) => {
@@ -51,11 +45,6 @@ export const ChatItem: React.FC<ChatItemProps> = ({
 }
 
 interface ChatListProps {
-  chatHistoriesMetadata: ChatHistoryMetadata[]
-  currentChatHistory: Chat | undefined
-  onSelect: (chatID: string) => void
-  newChat: () => void
-  setShowChatbot: (showChat: boolean) => void
   handleFocusedItem: (
     event: React.MouseEvent<HTMLDivElement>,
     focusedItem: ContextMenuLocations,
@@ -63,27 +52,16 @@ interface ChatListProps {
   ) => void
 }
 
-export const ChatsSidebar: React.FC<ChatListProps> = ({
-  chatHistoriesMetadata,
-  currentChatHistory,
-  onSelect,
-  newChat,
-  setShowChatbot,
-  handleFocusedItem,
-}) => {
+export const ChatsSidebar: React.FC<ChatListProps> = ({ handleFocusedItem }) => {
   const [isRecentsOpen, setIsRecentsOpen] = useState(true)
   const dropdownAnimationDelay = 0.2
 
+  const { setShowChatbot, chatHistoriesMetadata, setCurrentChatHistory, setChatFilters } = useChatContext()
+
   const toggleRecents = () => setIsRecentsOpen((prev) => !prev)
   const currentSelectedChatID = useRef<string | undefined>()
-
-  useEffect(() => {}, [chatHistoriesMetadata])
   useEffect(() => {
     const deleteChatRow = window.ipcRenderer.receive('remove-chat-at-id', (chatID) => {
-      // const filteredData = chatHistoriesMetadata.filter(
-      //   (item) => item.id !== chatID
-      // );
-      // setChatHistoriesMetadata(filteredData.reverse());
       if (chatID === currentSelectedChatID.current) {
         setShowChatbot(false)
       }
@@ -106,7 +84,17 @@ export const ChatsSidebar: React.FC<ChatListProps> = ({
                       shadow-md transition-colors duration-200 hover:bg-blue-400 hover:text-gray-200
                       hover:shadow-lg"
               type="button"
-              onClick={newChat}
+              onClick={() => {
+                posthog.capture('create_new_chat')
+                setCurrentChatHistory(undefined)
+
+                setChatFilters({
+                  files: [],
+                  numberOfChunksToFetch: 15,
+                  minDate: new Date(0),
+                  maxDate: new Date(),
+                })
+              }}
             >
               <RiChatNewFill className="text-xl" />
               <span className="text-xs font-bold">Start New Chat</span>
@@ -132,12 +120,7 @@ export const ChatsSidebar: React.FC<ChatListProps> = ({
                       style={{ animationDelay: `${index * dropdownAnimationDelay}s` }}
                       className="animate-dropdown-fadeIn"
                     >
-                      <ChatItem
-                        chatMetadata={chatMetadata}
-                        selectedChatID={currentChatHistory?.id || ''}
-                        onChatSelect={onSelect}
-                        handleFocusedItem={handleFocusedItem}
-                      />
+                      <ChatItem chatMetadata={chatMetadata} handleFocusedItem={handleFocusedItem} />
                     </li>
                   ))}
               </ul>
