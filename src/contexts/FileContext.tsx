@@ -17,6 +17,7 @@ import StarterKit from '@tiptap/starter-kit'
 import { toast } from 'react-toastify'
 import { Markdown } from 'tiptap-markdown'
 import { useDebounce } from 'use-debounce'
+import TurndownService from 'turndown';
 import useFileInfoTreeHook from '@/components/Sidebars/FileSideBar/hooks/use-file-info-tree'
 import { getInvalidCharacterInFilePath } from '@/utils/strings'
 import { BacklinkExtension } from '@/components/Editor/BacklinkExtension'
@@ -28,6 +29,7 @@ import '@/styles/tiptap.scss'
 import SearchAndReplace from '@/components/Editor/Search/SearchAndReplaceExtension'
 import getMarkdown from '@/components/Editor/utils'
 import welcomeNote from '@/components/File/utils'
+import { marked } from 'marked'; 
 
 type FileContextType = {
   currentlyOpenFilePath: string | null
@@ -75,6 +77,18 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     position: null,
   })
 
+  // Initialize TurndownService
+  const turndownService = new TurndownService({
+    headingStyle: 'atx',   // Use # for headings
+    bulletListMarker: '-', // Use - for bullet points
+    blankReplacement: function (content, node) {
+      if (node.nodeName === 'P' && node.innerHTML.trim() === '&nbsp;') {
+        console.log("Found nbsp")
+        return '<br/>';
+      }
+    },
+  });
+
   useEffect(() => {
     const fetchSpellCheckMode = async () => {
       const storedSpellCheckEnabled = await window.electronStore.getSpellCheckMode()
@@ -114,6 +128,13 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return absolutePath
   }
 
+  const postprocessBreaksToParagraphs = (htmlContent) => {
+    return htmlContent.replace(/<p>\s*(<br\s*\/?>\s*)+<\/p>/g, (match) => {
+      const brCount = (match.match(/<br\s*\/?>/g) || []).length;
+      return '<p>&nbsp;</p>'.repeat(brCount);
+    });
+  };
+
   const loadFileIntoEditor = async (filePath: string) => {
     setCurrentlyChangingFilePath(true)
     await writeEditorContentToDisk(editor, currentlyOpenFilePath)
@@ -122,7 +143,13 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setNeedToIndexEditorContent(false)
     }
     const fileContent = (await window.fileSystem.readFile(filePath)) ?? ''
-    editor?.commands.setContent(fileContent)
+    // const markdownContent = fileContent.replace(/&nbsp;/g, '\n\n');
+    const markedToHtmlContent = await marked.parse(fileContent);
+    console.log("LOGGING marked to html:", markedToHtmlContent)
+    const htmlContent = postprocessBreaksToParagraphs(markedToHtmlContent)
+    console.log("LOGGING Html contnet:", htmlContent)
+
+    editor?.commands.setContent(htmlContent)
     setCurrentlyOpenFilePath(filePath)
     setCurrentlyChangingFilePath(false)
   }
@@ -207,13 +234,21 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     await writeEditorContentToDisk(editor, currentlyOpenFilePath)
   }
 
+
   const writeEditorContentToDisk = async (_editor: Editor | null, filePath: string | null) => {
     if (filePath !== null && needToWriteEditorContentToDisk && _editor) {
-      const markdownContent = getMarkdown(_editor)
+      // const markdownContent = getMarkdown(_editor)
+      const htmlContent = editor?.getHTML()
+      if (htmlContent === undefined) return
+      const markdownContent = htmlContent.replace(/<p><\/p>/g, '<p>&nbsp;</p>');
+      console.log("Logging replacement markdown:", markdownContent)
+      let writableContent = turndownService.turndown(markdownContent);
+      console.log("LOGGING Markdown content:", writableContent)
+
       if (markdownContent !== null) {
         await window.fileSystem.writeFile({
           filePath,
-          content: markdownContent,
+          content: writableContent,
         })
         setNeedToWriteEditorContentToDisk(false)
       }
