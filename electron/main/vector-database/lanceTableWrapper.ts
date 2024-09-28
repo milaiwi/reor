@@ -1,5 +1,4 @@
-import { Connection, Table as LanceDBTable, MetricType, makeArrowTable } from 'vectordb'
-
+import { Connection, Table as LanceDBTable, makeArrowTable, QueryBase } from '@lancedb/lancedb'
 import { EmbeddingModelConfig } from '../electron-store/storeConfig'
 
 import { EnhancedEmbeddingFunction, createEmbeddingFunction } from './embeddings'
@@ -20,9 +19,9 @@ export function sanitizePathForDatabase(filePath: string): string {
   return filePath.replace(/'/g, "''")
 }
 
-class LanceDBTableWrapper {
+class LanceDBTableWrapper{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public lanceTable!: LanceDBTable<any>
+  public lanceTable!: LanceDBTable
 
   private embedFun!: EnhancedEmbeddingFunction<string | number[]>
 
@@ -105,26 +104,38 @@ class LanceDBTableWrapper {
 
   async search(
     query: string,
-    //   metricType: string,
     limit: number,
+    query_type?: string,
     filter?: string,
   ): Promise<DBQueryResult[]> {
-    const lanceQuery = await this.lanceTable.search(query).metricType(MetricType.Cosine).limit(limit)
+    const lanceQuery = this.lanceTable.search(query, query_type).limit(limit)
 
+    console.log("Using filter: ", filter)
     if (filter) {
-      lanceQuery.prefilter(true)
-      lanceQuery.filter(filter)
+      lanceQuery.where(filter)
     }
-    const rawResults = await lanceQuery.execute()
+    // const rawResults = lanceQuery.execute()
+    const rawResults = this.executeQuery(lanceQuery)
     const mapped = rawResults.map(convertRecordToDBType<DBQueryResult>)
     return mapped as DBQueryResult[]
   }
 
-  async filter(filterString: string, limit: number = 10): Promise<DBEntry[]> {
-    const rawResults = await this.lanceTable.filter(filterString).limit(limit).execute()
-    const mapped = rawResults.map(convertRecordToDBType<DBEntry>)
-    return mapped as DBEntry[]
-  }
+  // async filter(filterString: string, limit: number = 10): Promise<DBEntry[]> {
+  //   const rawResults = await this.lanceTable.where(filterString).limit(limit).execute()
+  //   const mapped = rawResults.map(convertRecordToDBType<DBEntry>)
+  //   return mapped as DBEntry[]
+  // }
+
+
+    /**
+   *  Need a public method that wraps the execute call
+   * 
+   * @param query: Query to execute
+   * @returns the result of executing the query
+   */
+    private executeQuery(query: any) {
+      return query.execute();
+    }  
 }
 
 export default LanceDBTableWrapper

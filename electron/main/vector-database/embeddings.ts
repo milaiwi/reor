@@ -3,7 +3,7 @@ import path from 'path'
 import { Pipeline, PreTrainedTokenizer } from '@xenova/transformers'
 import { app } from 'electron'
 import removeMd from 'remove-markdown'
-import * as lancedb from 'vectordb'
+import { EmbeddingFunction } from '@lancedb/lancedb/dist/embedding'
 
 import errorToStringMainProcess from '../common/error'
 import {
@@ -114,7 +114,7 @@ export async function createEmbeddingFunctionForLocalModel(
   return {
     name: functionName,
     contextLength: pipe.model.config.hidden_size,
-    sourceColumn,
+    sourceColumn: sourceColumn,
     embed,
     tokenize,
   }
@@ -162,9 +162,13 @@ export async function createEmbeddingFunctionForRepo(
   }
 }
 
-export interface EnhancedEmbeddingFunction<T> extends lancedb.EmbeddingFunction<T> {
+
+
+export interface EnhancedEmbeddingFunction<T> extends EmbeddingFunction<T> {
   name: string
   contextLength: number
+  sourceColumn: string
+  embed: (batch: (string | number[])[]) => Promise<number[][]>; 
   tokenize: (data: T[]) => string[]
 }
 export async function createEmbeddingFunction(
