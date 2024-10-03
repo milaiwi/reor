@@ -1,4 +1,4 @@
-import { Connection, Table as LanceDBTable, MetricType, makeArrowTable } from 'vectordb'
+import { Connection, Table as LanceDBTable, makeArrowTable } from '@lancedb/lancedb'
 
 import { EmbeddingModelConfig } from '../electron-store/storeConfig'
 

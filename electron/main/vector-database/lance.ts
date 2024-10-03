@@ -1,4 +1,4 @@
-import * as lancedb from 'vectordb'
+import * as lancedb from "@lancedb/lancedb";
 
 import { EnhancedEmbeddingFunction } from './embeddings'
 import CreateDatabaseSchema, { isStringifiedSchemaEqual } from './schema'

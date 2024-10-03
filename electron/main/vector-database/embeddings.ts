@@ -3,8 +3,9 @@ import path from 'path'
 import { Pipeline, PreTrainedTokenizer } from '@xenova/transformers'
 import { app } from 'electron'
 import removeMd from 'remove-markdown'
-import * as lancedb from 'vectordb'
+import { EmbeddingFunction } from '@lancedb/lancedb/dist/embedding'
 
+import { Float32 } from 'apache-arrow'
 import {
   EmbeddingModelConfig,
   EmbeddingModelWithLocalPath,
@@ -14,6 +15,7 @@ import { splitDirectoryPathIntoBaseAndRepo } from '../filesystem/filesystem'
 
 import DownloadModelFilesFromHFRepo from './downloadModelsFromHF'
 import { DBEntry } from './schema'
+import { EmbedType } from '../filesystem/types'
 
 export const defaultEmbeddingModelRepos = {
   'Xenova/UAE-Large-V1': { type: 'repo', repoName: 'Xenova/UAE-Large-V1' },
@@ -68,6 +70,61 @@ async function setupEmbedFunction(pipe: Pipeline): Promise<(batch: (string | num
   }
 }
 
+// EnhancedEmbeddingFunction class definition
+export class EnhancedEmbeddingFunction<T extends EmbedType> extends EmbeddingFunction<T> {
+  name: string
+
+  contextLength: number
+
+  sourceColumn: string
+
+  embed: (batch: (string | number[])[]) => Promise<number[][]>
+
+  tokenize: (data: (string | number[])[]) => string[]
+
+  constructor(params: {
+    name: string
+    contextLength: number
+    sourceColumn: string
+    embed: (batch: (string | number[])[]) => Promise<number[][]>
+    tokenize: (data: (string | number[])[]) => string[]
+  }) {
+    // Call super to invoke the constructor of the parent class
+    super()
+    this.name = params.name
+    this.contextLength = params.contextLength
+    this.sourceColumn = params.sourceColumn
+    this.embed = params.embed
+    this.tokenize = params.tokenize
+  }
+
+  toJSON(): Partial<FunctionOptions> {
+    return {
+      name: this.name,
+      contextLength: this.contextLength,
+      sourceColumn: this.sourceColumn,
+    }
+  }
+
+  /* eslint-disable-next-line class-methods-use-this */
+  embeddingDataType(): Float32 {
+    return new Float32()
+  }
+
+  async computeSourceEmbeddings(data: T[]): Promise<number[][]> {
+    return this.embed(data)
+  }
+
+  async computeQueryEmbeddings(data: T): Promise<number[]> {
+    const embeddings = await this.computeSourceEmbeddings([data])
+    return embeddings[0]
+  }
+
+  ndims(): number | undefined {
+    return this.contextLength
+  }
+}
+
 export async function createEmbeddingFunctionForLocalModel(
   embeddingModelConfig: EmbeddingModelWithLocalPath,
   sourceColumn: string,
@@ -94,13 +151,13 @@ export async function createEmbeddingFunctionForLocalModel(
   const tokenize = setupTokenizeFunction(pipe.tokenizer)
   const embed = await setupEmbedFunction(pipe)
 
-  return {
+  return new EnhancedEmbeddingFunction({
     name: functionName,
     contextLength: pipe.model.config.hidden_size,
     sourceColumn,
     embed,
     tokenize,
-  }
+  })
 }
 
 export async function createEmbeddingFunctionForRepo(
@@ -129,20 +186,23 @@ export async function createEmbeddingFunctionForRepo(
 
   // sanitize the embedding text to remove markdown content
 
-  return {
+  return new EnhancedEmbeddingFunction({
     name: functionName,
     contextLength: pipe.model.config.hidden_size,
     sourceColumn,
     embed,
     tokenize,
-  }
+  })
 }
 
-export interface EnhancedEmbeddingFunction<T> extends lancedb.EmbeddingFunction<T> {
+interface FunctionOptions {
   name: string
   contextLength: number
-  tokenize: (data: T[]) => string[]
+  sourceColumn: string
+  embed: (batch: (string | number[])[]) => Promise<number[][]>
+  tokenize: (data: EmbedType[]) => string[]
 }
+
 export async function createEmbeddingFunction(
   embeddingModelConfig: EmbeddingModelConfig,
   sourceColumn: string,

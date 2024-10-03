@@ -6,6 +6,8 @@ export type FileInfo = {
   dateCreated: Date
 }
 
+export type EmbedType = string | number[]
+
 export type FileInfoWithContent = FileInfo & {
   content: string
 }
