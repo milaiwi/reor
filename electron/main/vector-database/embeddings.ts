@@ -3,7 +3,7 @@ import path from 'path'
 import { Pipeline, PreTrainedTokenizer } from '@xenova/transformers'
 import { app } from 'electron'
 import removeMd from 'remove-markdown'
-import { EmbeddingFunction } from '@lancedb/lancedb/dist/embedding'
+import { EmbeddingFunction } from '@lancedb/lancedb/embedding'
 
 import { Float32 } from 'apache-arrow'
 import {

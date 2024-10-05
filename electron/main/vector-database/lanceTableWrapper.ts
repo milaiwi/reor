@@ -23,7 +23,7 @@ export function sanitizePathForDatabase(filePath: string): string {
 
 class LanceDBTableWrapper {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public lanceTable!: LanceDBTable<any>
+  public lanceTable!: LanceDBTable
 
   private embedFun!: EnhancedEmbeddingFunction<string | number[]>
 
@@ -56,15 +56,27 @@ class LanceDBTableWrapper {
 
     const totalChunks = chunks.length
 
+    console.log("Started reducing chunks")
+    console.log("Total chunks:", totalChunks)
+    console.log(`Chunks: ${JSON.stringify(chunks)}`)
     await chunks.reduce(async (previousPromise, chunk, index) => {
       await previousPromise
       const arrowTableOfChunk = makeArrowTable(chunk)
+      console.log("Started adding arrowTableOfChunk to lanceTable ")
+      console.log(`ArrowTableChunk: ${arrowTableOfChunk}`)
+
+      const arrowSchema = arrowTableOfChunk.schema
+      const tableSchema = await this.lanceTable.schema()
+      console.log(`Have schemal: ${arrowSchema}`)
+      console.log(`Missing schema: ${tableSchema}`)
       await this.lanceTable.add(arrowTableOfChunk)
+      console.log("Finished adding arrowTableOfChunk to lanceTable ")
       const progress = (index + 1) / totalChunks
       if (onProgress) {
         onProgress(progress)
       }
     }, Promise.resolve())
+    console.log("Finished reducing chunks")
   }
 
   async deleteDBItemsByFilePaths(filePaths: string[]): Promise<void> {
@@ -114,7 +126,8 @@ class LanceDBTableWrapper {
   }
 
   async filter(filterString: string, limit: number = 10): Promise<DBEntry[]> {
-    const rawResults = await this.lanceTable.filter(filterString).limit(limit).execute()
+    const rawResults = await this.lanceTable.query().where(filterString).limit(limit).toArray()
+
     const mapped = rawResults.map(convertRecordToDBType<DBEntry>)
     return mapped as DBEntry[]
   }

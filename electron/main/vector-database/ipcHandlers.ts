@@ -2,7 +2,7 @@ import * as path from 'path'
 
 import { app, BrowserWindow, ipcMain } from 'electron'
 import Store from 'electron-store'
-import * as lancedb from 'vectordb'
+import * as lancedb from '@lancedb/lancedb'
 
 import WindowsManager from '../common/windowManager'
 import { getDefaultEmbeddingModelConfig } from '../electron-store/ipcHandlers'
@@ -51,9 +51,13 @@ export const registerDBSessionHandlers = (store: Store<StoreSchema>, _windowMana
       windowInfo.vaultDirectoryForWindow,
       defaultEmbeddingModelConfig,
     )
+
+    console.log("Started repopulating table ")
     await RepopulateTableWithMissingItems(windowInfo.dbTableClient, windowInfo.vaultDirectoryForWindow, (progress) => {
       event.sender.send('indexing-progress', progress)
     })
+    console.log("Finished repopulating table ")
+    
     const win = BrowserWindow.fromWebContents(event.sender)
 
     if (win) {

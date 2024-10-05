@@ -35,9 +35,10 @@ export const convertFileInfoListToDBItems = async (filesInfoList: FileInfo[]): P
 
 const getTableAsArray = async (table: LanceDBTableWrapper): Promise<{ notepath: string; filemodified: Date }[]> => {
   const nonEmptyResults = await table.lanceTable
-    .filter(`${DatabaseFields.NOTE_PATH} != ''`)
+    .query()
+    .where(`${DatabaseFields.NOTE_PATH} != ''`)
     .select([DatabaseFields.NOTE_PATH, DatabaseFields.FILE_MODIFIED])
-    .execute()
+    .toArray()
 
   const mapped = nonEmptyResults.map(convertRecordToDBType<DBEntry>)
 
@@ -146,8 +147,12 @@ export const RepopulateTableWithMissingItems = async (
     return
   }
 
+  console.log("Started flattened items to add ")
   const flattenedItemsToAdd = dbItemsToAdd.flat()
+  console.log("Finished flatted items to add ")
+  console.log("Started adding to table")
   await table.add(flattenedItemsToAdd, onProgress)
+  console.log("Finished adding to table")
 
   if (onProgress) onProgress(1)
 }
