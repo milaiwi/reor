@@ -91,6 +91,7 @@ export class EnhancedEmbeddingFunction<T extends EmbedType> extends EmbeddingFun
   }) {
     // Call super to invoke the constructor of the parent class
     super()
+    console.log(`Params object on creation: ${JSON.stringify(params)}`)
     this.name = params.name
     this.contextLength = params.contextLength
     this.sourceColumn = params.sourceColumn
@@ -115,9 +116,8 @@ export class EnhancedEmbeddingFunction<T extends EmbedType> extends EmbeddingFun
     return this.embed(data)
   }
 
-  async computeQueryEmbeddings(data: T): Promise<number[]> {
-    const embeddings = await this.computeSourceEmbeddings([data])
-    return embeddings[0]
+  async computeQueryEmbeddings(data: T): Promise<number[][]> {
+    return await this.computeSourceEmbeddings([data])
   }
 
   ndims(): number | undefined {
@@ -151,6 +151,13 @@ export async function createEmbeddingFunctionForLocalModel(
   const tokenize = setupTokenizeFunction(pipe.tokenizer)
   const embed = await setupEmbedFunction(pipe)
 
+
+  console.log("Calling create EnhancedEmbeddingFunction in LOCAL")
+  console.log(`Name: ${functionName}`)
+  console.log(`contextLength: ${pipe.model.config.hidden_size}`)
+  console.log(`sourceColumn: ${sourceColumn}`)
+  console.log(`embed: ${JSON.stringify(embed)}`)
+  console.log(`tokenize: ${JSON.stringify(tokenize)}`)
   return new EnhancedEmbeddingFunction({
     name: functionName,
     contextLength: pipe.model.config.hidden_size,
@@ -186,6 +193,13 @@ export async function createEmbeddingFunctionForRepo(
 
   // sanitize the embedding text to remove markdown content
 
+
+  console.log("Calling create EnhancedEmbeddingFunction in REPO")
+  console.log(`Name: ${functionName}`)
+  console.log(`contextLength: ${pipe.model.config.hidden_size}`)
+  console.log(`sourceColumn: ${sourceColumn}`)
+  console.log(`embed: ${JSON.stringify(embed)}`)
+  console.log(`tokenize: ${JSON.stringify(tokenize)}`)
   return new EnhancedEmbeddingFunction({
     name: functionName,
     contextLength: pipe.model.config.hidden_size,

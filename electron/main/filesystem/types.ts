@@ -8,6 +8,8 @@ export type FileInfo = {
 
 export type EmbedType = string | number[]
 
+export type VectorType = number[]
+
 export type FileInfoWithContent = FileInfo & {
   content: string
 }

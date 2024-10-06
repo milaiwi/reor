@@ -1,7 +1,9 @@
 import { Schema, Field, Utf8, FixedSizeList, Float32, Float64, DateUnit, Date_ as ArrowDate } from 'apache-arrow'
+import { VectorType } from '../filesystem/types'
 
 export interface DBEntry {
   notepath: string
+  vector: VectorType
   content: string
   subnoteindex: number
   timeadded: Date

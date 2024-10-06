@@ -28,8 +28,8 @@ class LanceDBTableWrapper {
   private embedFun!: EnhancedEmbeddingFunction<string | number[]>
 
   async initialize(dbConnection: Connection, userDirectory: string, embeddingModelConfig: EmbeddingModelConfig) {
+    console.log("Initialized the embedding function")
     this.embedFun = await createEmbeddingFunction(embeddingModelConfig, 'content')
-
     this.lanceTable = await GetOrCreateLanceTable(dbConnection, this.embedFun, userDirectory)
   }
 
@@ -130,6 +130,15 @@ class LanceDBTableWrapper {
 
     const mapped = rawResults.map(convertRecordToDBType<DBEntry>)
     return mapped as DBEntry[]
+  }
+
+  async getVectorForContent(content: string, fileName?: string) {
+    console.log(`File: ${fileName}`)
+    
+    // const embeddings = await this.embedFun.computeSourceEmbeddings([content])
+    // console.log(`File: ${fileName} returned ${embeddings[0]}`)
+    // return embeddings[0]
+    return []
   }
 }
 
