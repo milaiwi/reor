@@ -157,7 +157,7 @@ export const RepopulateTableWithMissingItems = async (
   await table.deleteDBItemsByFilePaths(filePathsToRemove)
 
   console.log(`Started compute db items to add or update: ${table.getVectorForContent}`)
-  const dbItemsToAdd = await computeDbItemsToAddOrUpdate(filesInfoTree, tableArray, table.getVectorForContent)
+  const dbItemsToAdd = await computeDbItemsToAddOrUpdate(filesInfoTree, tableArray, table.getVectorForContent.bind(LanceDBTableWrapper))
 
   if (dbItemsToAdd.length === 0) {
     if (onProgress) onProgress(1)

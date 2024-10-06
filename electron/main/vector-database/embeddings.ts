@@ -43,12 +43,16 @@ function setupTokenizeFunction(tokenizer: PreTrainedTokenizer): (data: (string |
 }
 
 async function setupEmbedFunction(pipe: Pipeline): Promise<(batch: (string | number[])[]) => Promise<number[][]>> {
+  console.log(`inside setUpEmbedFunction`)
   return async (batch: (string | number[])[]): Promise<number[][]> => {
+    console.log(`Batch received:`, batch);
     if (batch.length === 0 || batch[0].length === 0) {
-      return []
+      console.log(`Returning empty array due to empty batch or first element`);
+      return [];
     }
 
     if (typeof batch[0][0] === 'number') {
+      console.log(`Type of batch[0][0]:`, typeof batch[0][0]);
       return batch as number[][]
     }
 
@@ -56,17 +60,23 @@ async function setupEmbedFunction(pipe: Pipeline): Promise<(batch: (string | num
       throw new Error('Pipeline not initialized')
     }
 
-    const result: number[][] = await Promise.all(
-      batch.map(async (text) => {
-        const res = await pipe(removeMd(text as string), {
-          pooling: 'mean',
-          normalize: true,
-        })
-        return Array.from(res.data)
-      }),
-    )
-
-    return result
+    try {
+      console.log(`Mapping batch`)
+      const result: number[][] = await Promise.all(
+        batch.map(async (text) => {
+          const res = await pipe(removeMd(text as string), {
+            pooling: 'mean',
+            normalize: true,
+          })
+          return Array.from(res.data)
+        }),
+      )
+      console.log(`Returning result`)
+      return result
+    } catch (error) {
+      console.error(`Result mapping got error:`, error)
+      throw error
+    }
   }
 }
 
@@ -151,12 +161,11 @@ export async function createEmbeddingFunctionForLocalModel(
   const tokenize = setupTokenizeFunction(pipe.tokenizer)
   const embed = await setupEmbedFunction(pipe)
 
-
   console.log("Calling create EnhancedEmbeddingFunction in LOCAL")
   console.log(`Name: ${functionName}`)
   console.log(`contextLength: ${pipe.model.config.hidden_size}`)
   console.log(`sourceColumn: ${sourceColumn}`)
-  console.log(`embed: ${JSON.stringify(embed)}`)
+  console.log(`Embed is undefined:`, embed)
   console.log(`tokenize: ${JSON.stringify(tokenize)}`)
   return new EnhancedEmbeddingFunction({
     name: functionName,
@@ -188,18 +197,11 @@ export async function createEmbeddingFunctionForRepo(
     pipe = (await pipeline('feature-extraction', repoName)) as Pipeline
   }
 
+  console.log(`Getting tokenizer and embed functions`)
   const tokenize = setupTokenizeFunction(pipe.tokenizer)
   const embed = await setupEmbedFunction(pipe)
 
   // sanitize the embedding text to remove markdown content
-
-
-  console.log("Calling create EnhancedEmbeddingFunction in REPO")
-  console.log(`Name: ${functionName}`)
-  console.log(`contextLength: ${pipe.model.config.hidden_size}`)
-  console.log(`sourceColumn: ${sourceColumn}`)
-  console.log(`embed: ${JSON.stringify(embed)}`)
-  console.log(`tokenize: ${JSON.stringify(tokenize)}`)
   return new EnhancedEmbeddingFunction({
     name: functionName,
     contextLength: pipe.model.config.hidden_size,

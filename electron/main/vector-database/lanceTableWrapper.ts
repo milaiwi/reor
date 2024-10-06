@@ -30,6 +30,7 @@ class LanceDBTableWrapper {
   async initialize(dbConnection: Connection, userDirectory: string, embeddingModelConfig: EmbeddingModelConfig) {
     console.log("Initialized the embedding function")
     this.embedFun = await createEmbeddingFunction(embeddingModelConfig, 'content')
+    console.log(`embedFun has embed with:`, this.embedFun.embed)
     this.lanceTable = await GetOrCreateLanceTable(dbConnection, this.embedFun, userDirectory)
   }
 
@@ -134,7 +135,7 @@ class LanceDBTableWrapper {
 
   async getVectorForContent(content: string, fileName?: string) {
     console.log(`File: ${fileName}`)
-    
+    console.log(`Embed Function:`, this.embedFun.embed)
     // const embeddings = await this.embedFun.computeSourceEmbeddings([content])
     // console.log(`File: ${fileName} returned ${embeddings[0]}`)
     // return embeddings[0]
