@@ -25,7 +25,7 @@ class LanceDBTableWrapper {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public lanceTable!: LanceDBTable
 
-  private embedFun!: EnhancedEmbeddingFunction<string | number[]>
+  private embedFun!: EnhancedEmbeddingFunction<string>
 
   async initialize(dbConnection: Connection, userDirectory: string, embeddingModelConfig: EmbeddingModelConfig) {
     console.log("Initialized the embedding function")
@@ -114,14 +114,21 @@ class LanceDBTableWrapper {
     }
   }
 
-  async search(query: string, limit: number, filter?: string): Promise<DBQueryResult[]> {
-    const lanceQuery = await this.lanceTable.search(query).metricType(MetricType.Cosine).limit(limit)
-
-    if (filter) {
-      lanceQuery.prefilter(true)
-      lanceQuery.filter(filter)
-    }
-    const rawResults = await lanceQuery.execute()
+  /**
+   * 
+   * @param query 
+   * @param limit 
+   * @param filter 
+   * @param query_type: vector, fts, or hybrid 
+   * @returns 
+   */
+  async search(query: string, limit: number, filter?: string, query_type?: string): Promise<DBQueryResult[]> {
+    const queryVector = await this.embedFun.computeSourceEmbeddings([query])
+    const searchResults = this.lanceTable.search(queryVector[0], query_type || "vector").limit(limit)
+    if (filter)
+      searchResults.where(filter)
+    
+    const rawResults = await searchResults.toArray()
     const mapped = rawResults.map(convertRecordToDBType<DBQueryResult>)
     return mapped as DBQueryResult[]
   }
@@ -134,12 +141,8 @@ class LanceDBTableWrapper {
   }
 
   async getVectorForContent(content: string, fileName?: string) {
-    console.log(`File: ${fileName}`)
-    console.log(`Embed Function:`, this.embedFun.embed)
-    // const embeddings = await this.embedFun.computeSourceEmbeddings([content])
-    // console.log(`File: ${fileName} returned ${embeddings[0]}`)
-    // return embeddings[0]
-    return []
+    const embeddings = await this.embedFun.computeSourceEmbeddings([content])
+    return embeddings[0]
   }
 }
 

@@ -14,13 +14,13 @@ import LanceDBTableWrapper, { convertRecordToDBType } from './lanceTableWrapper'
 import { DBEntry, DatabaseFields } from './schema'
 
 const convertFileTypeToDBType = async (
-  getVectorForContent: (content: string, fileName?: string) => Promise<number[]>, 
+  table: LanceDBTableWrapper, 
   file: FileInfo
 ): Promise<DBEntry[]> => {
-  console.log(`Started reading from file: ${file.name}`)
+  console.log(`Started reading from file:  ${file.name}`)
   const fileContent = readFile(file.path)
   const chunks = await chunkMarkdownByHeadingsAndByCharsIfBig(fileContent)
-  const vectorEmbeddings: number[] = await getVectorForContent(fileContent, file.name)
+  const vectorEmbeddings: number[] = await table.getVectorForContent(fileContent, file.name)
   console.log(`Finished reading from file: ${file.name}`)
   const entries = chunks.map((content, index) => ({
     notepath: file.path,
@@ -34,10 +34,9 @@ const convertFileTypeToDBType = async (
   return entries
 }
 
-export const convertFileInfoListToDBItems = async (filesInfoList: FileInfo[],  getVectorForContent: (content: string) => Promise<number[]>
-): Promise<DBEntry[][]> => {
+export const convertFileInfoListToDBItems = async (filesInfoList: FileInfo[],  table: LanceDBTableWrapper): Promise<DBEntry[][]> => {
   const promises = filesInfoList.map((fileInfo: FileInfo) => 
-    convertFileTypeToDBType(getVectorForContent, fileInfo)
+    convertFileTypeToDBType(table, fileInfo)
   );
   const filesAsChunksToAddToDB = await Promise.all(promises)
   return filesAsChunksToAddToDB
@@ -82,9 +81,9 @@ const areChunksMissingFromTable = (
 const computeDbItemsToAddOrUpdate = async (
   filesInfoList: FileInfo[],
   tableArray: { notepath: string; filemodified: Date }[],
-  getVectorForContent: (content: string) => Promise<number[]>
+  table: LanceDBTableWrapper
 ): Promise<DBEntry[][]> => {
-  const filesAsChunks = await convertFileInfoListToDBItems(filesInfoList, getVectorForContent)
+  const filesAsChunks = await convertFileInfoListToDBItems(filesInfoList, table)
 
   const fileChunksMissingFromTable = filesAsChunks.filter((chunksBelongingToFile) =>
     areChunksMissingFromTable(chunksBelongingToFile, tableArray),
@@ -103,12 +102,12 @@ const computeDBItemsToRemoveFromTable = async (
   return itemsInTableAndNotInFilesInfoList
 }
 
-const convertFileTreeToDBEntries = async (tree: FileInfoTree, getVectorForContent: (content: string) => Promise<number[]>): Promise<DBEntry[]> => {
+const convertFileTreeToDBEntries = async (tree: FileInfoTree, table: LanceDBTableWrapper): Promise<DBEntry[]> => {
   const flattened = flattenFileInfoTree(tree)
 
   // const promises = flattened.map(convertFileTypeToDBType)
   const promises = flattened.map((fileInfo: FileInfo) => 
-    convertFileTypeToDBType(getVectorForContent, fileInfo)
+    convertFileTypeToDBType(table, fileInfo)
   );
 
   const entries = await Promise.all(promises)
@@ -157,7 +156,7 @@ export const RepopulateTableWithMissingItems = async (
   await table.deleteDBItemsByFilePaths(filePathsToRemove)
 
   console.log(`Started compute db items to add or update: ${table.getVectorForContent}`)
-  const dbItemsToAdd = await computeDbItemsToAddOrUpdate(filesInfoTree, tableArray, table.getVectorForContent.bind(LanceDBTableWrapper))
+  const dbItemsToAdd = await computeDbItemsToAddOrUpdate(filesInfoTree, tableArray, table)
 
   if (dbItemsToAdd.length === 0) {
     if (onProgress) onProgress(1)
@@ -177,9 +176,8 @@ export const RepopulateTableWithMissingItems = async (
 export const addFileTreeToDBTable = async (
   dbTable: LanceDBTableWrapper, 
   fileTree: FileInfoTree,
-  getVectorForContent: (content: string) => Promise<number[]>
 ): Promise<void> => {
-  const dbEntries = await convertFileTreeToDBEntries(fileTree, getVectorForContent)
+  const dbEntries = await convertFileTreeToDBEntries(fileTree, dbTable)
   await dbTable.add(dbEntries)
 }
 
@@ -187,13 +185,12 @@ export const orchestrateEntryMove = async (
   table: LanceDBTableWrapper, 
   sourcePath: string, 
   destinationPath: string,
-  getVectorForContent: (content: string) => Promise<number[]>
 ) => {
   const fileSystemTree = GetFilesInfoTree(sourcePath)
   await removeFileTreeFromDBTable(table, fileSystemTree)
   moveFileOrDirectoryInFileSystem(sourcePath, destinationPath).then((newDestinationPath) => {
     if (newDestinationPath) {
-      addFileTreeToDBTable(table, GetFilesInfoTree(newDestinationPath), getVectorForContent)
+      addFileTreeToDBTable(table, GetFilesInfoTree(newDestinationPath))
     }
   })
 }

@@ -6,7 +6,7 @@ export type FileInfo = {
   dateCreated: Date
 }
 
-export type EmbedType = string | number[]
+export type EmbedType = string
 
 export type VectorType = number[]
 

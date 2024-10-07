@@ -83,13 +83,9 @@ async function setupEmbedFunction(pipe: Pipeline): Promise<(batch: (string | num
 // EnhancedEmbeddingFunction class definition
 export class EnhancedEmbeddingFunction<T extends EmbedType> extends EmbeddingFunction<T> {
   name: string
-
   contextLength: number
-
   sourceColumn: string
-
   embed: (batch: (string | number[])[]) => Promise<number[][]>
-
   tokenize: (data: (string | number[])[]) => string[]
 
   constructor(params: {
@@ -127,7 +123,7 @@ export class EnhancedEmbeddingFunction<T extends EmbedType> extends EmbeddingFun
   }
 
   async computeQueryEmbeddings(data: T): Promise<number[][]> {
-    return await this.computeSourceEmbeddings([data])
+    return await this.computeSourceEmbeddings(data)
   }
 
   ndims(): number | undefined {
@@ -138,7 +134,7 @@ export class EnhancedEmbeddingFunction<T extends EmbedType> extends EmbeddingFun
 export async function createEmbeddingFunctionForLocalModel(
   embeddingModelConfig: EmbeddingModelWithLocalPath,
   sourceColumn: string,
-): Promise<EnhancedEmbeddingFunction<string | number[]>> {
+): Promise<EnhancedEmbeddingFunction<string>> {
   // let pipe: Pipeline
   let repoName = ''
   let functionName = ''
@@ -179,7 +175,7 @@ export async function createEmbeddingFunctionForLocalModel(
 export async function createEmbeddingFunctionForRepo(
   embeddingModelConfig: EmbeddingModelWithRepo,
   sourceColumn: string,
-): Promise<EnhancedEmbeddingFunction<string | number[]>> {
+): Promise<EnhancedEmbeddingFunction<string>> {
   let pipe: Pipeline
   let repoName = ''
   let functionName = ''
@@ -222,7 +218,7 @@ interface FunctionOptions {
 export async function createEmbeddingFunction(
   embeddingModelConfig: EmbeddingModelConfig,
   sourceColumn: string,
-): Promise<EnhancedEmbeddingFunction<string | number[]>> {
+): Promise<EnhancedEmbeddingFunction<string>> {
   if (embeddingModelConfig.type === 'local') {
     return createEmbeddingFunctionForLocalModel(embeddingModelConfig, sourceColumn)
   }
