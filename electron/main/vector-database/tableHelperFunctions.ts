@@ -13,10 +13,7 @@ import { FileInfo, FileInfoTree } from '../filesystem/types'
 import LanceDBTableWrapper, { convertRecordToDBType } from './lanceTableWrapper'
 import { DBEntry, DatabaseFields } from './schema'
 
-const convertFileTypeToDBType = async (
-  table: LanceDBTableWrapper, 
-  file: FileInfo
-): Promise<DBEntry[]> => {
+const convertFileTypeToDBType = async (table: LanceDBTableWrapper, file: FileInfo): Promise<DBEntry[]> => {
   console.log(`Started reading from file:  ${file.name}`)
   const fileContent = readFile(file.path)
   const chunks = await chunkMarkdownByHeadingsAndByCharsIfBig(fileContent)
@@ -34,10 +31,11 @@ const convertFileTypeToDBType = async (
   return entries
 }
 
-export const convertFileInfoListToDBItems = async (filesInfoList: FileInfo[],  table: LanceDBTableWrapper): Promise<DBEntry[][]> => {
-  const promises = filesInfoList.map((fileInfo: FileInfo) => 
-    convertFileTypeToDBType(table, fileInfo)
-  );
+export const convertFileInfoListToDBItems = async (
+  filesInfoList: FileInfo[],
+  table: LanceDBTableWrapper,
+): Promise<DBEntry[][]> => {
+  const promises = filesInfoList.map((fileInfo: FileInfo) => convertFileTypeToDBType(table, fileInfo))
   const filesAsChunksToAddToDB = await Promise.all(promises)
   return filesAsChunksToAddToDB
 }
@@ -81,7 +79,7 @@ const areChunksMissingFromTable = (
 const computeDbItemsToAddOrUpdate = async (
   filesInfoList: FileInfo[],
   tableArray: { notepath: string; filemodified: Date }[],
-  table: LanceDBTableWrapper
+  table: LanceDBTableWrapper,
 ): Promise<DBEntry[][]> => {
   const filesAsChunks = await convertFileInfoListToDBItems(filesInfoList, table)
 
@@ -106,9 +104,7 @@ const convertFileTreeToDBEntries = async (tree: FileInfoTree, table: LanceDBTabl
   const flattened = flattenFileInfoTree(tree)
 
   // const promises = flattened.map(convertFileTypeToDBType)
-  const promises = flattened.map((fileInfo: FileInfo) => 
-    convertFileTypeToDBType(table, fileInfo)
-  );
+  const promises = flattened.map((fileInfo: FileInfo) => convertFileTypeToDBType(table, fileInfo))
 
   const entries = await Promise.all(promises)
 
@@ -163,29 +159,22 @@ export const RepopulateTableWithMissingItems = async (
     return
   }
 
-  console.log("Started flattened items to add ")
+  console.log('Started flattened items to add ')
   const flattenedItemsToAdd = dbItemsToAdd.flat()
-  console.log("Finished flatted items to add ")
-  console.log("Started adding to table")
+  console.log('Finished flatted items to add ')
+  console.log('Started adding to table')
   await table.add(flattenedItemsToAdd, onProgress)
-  console.log("Finished adding to table")
+  console.log('Finished adding to table')
 
   if (onProgress) onProgress(1)
 }
 
-export const addFileTreeToDBTable = async (
-  dbTable: LanceDBTableWrapper, 
-  fileTree: FileInfoTree,
-): Promise<void> => {
+export const addFileTreeToDBTable = async (dbTable: LanceDBTableWrapper, fileTree: FileInfoTree): Promise<void> => {
   const dbEntries = await convertFileTreeToDBEntries(fileTree, dbTable)
   await dbTable.add(dbEntries)
 }
 
-export const orchestrateEntryMove = async (
-  table: LanceDBTableWrapper, 
-  sourcePath: string, 
-  destinationPath: string,
-) => {
+export const orchestrateEntryMove = async (table: LanceDBTableWrapper, sourcePath: string, destinationPath: string) => {
   const fileSystemTree = GetFilesInfoTree(sourcePath)
   await removeFileTreeFromDBTable(table, fileSystemTree)
   moveFileOrDirectoryInFileSystem(sourcePath, destinationPath).then((newDestinationPath) => {

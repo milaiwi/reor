@@ -1,4 +1,4 @@
-import * as lancedb from "@lancedb/lancedb";
+import * as lancedb from '@lancedb/lancedb'
 
 import { EnhancedEmbeddingFunction } from './embeddings'
 import CreateDatabaseSchema, { isStringifiedSchemaEqual } from './schema'
@@ -46,7 +46,6 @@ export const generateTableName = (embeddingFuncName: string, userDirectory: stri
 //   return newTable
 // }
 
-
 const GetOrCreateLanceTable = async (
   db: lancedb.Connection,
   embedFunc: EnhancedEmbeddingFunction<string>,
@@ -66,7 +65,7 @@ const GetOrCreateLanceTable = async (
 
       const recreatedTable = await db.createTable(tableName, [], {
         schema: intendedSchema,
-      });
+      })
       return recreatedTable
     }
 
@@ -80,8 +79,8 @@ const GetOrCreateLanceTable = async (
   // })
   const schema = CreateDatabaseSchema(embedFunc.contextLength)
   const newTable = await db.createTable(tableName, [], {
-    schema: schema,
-  });
+    schema,
+  })
   return newTable
 }
 

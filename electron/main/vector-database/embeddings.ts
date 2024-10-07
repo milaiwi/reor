@@ -45,14 +45,14 @@ function setupTokenizeFunction(tokenizer: PreTrainedTokenizer): (data: (string |
 async function setupEmbedFunction(pipe: Pipeline): Promise<(batch: (string | number[])[]) => Promise<number[][]>> {
   console.log(`inside setUpEmbedFunction`)
   return async (batch: (string | number[])[]): Promise<number[][]> => {
-    console.log(`Batch received:`, batch);
+    console.log(`Batch received:`, batch)
     if (batch.length === 0 || batch[0].length === 0) {
-      console.log(`Returning empty array due to empty batch or first element`);
-      return [];
+      console.log(`Returning empty array due to empty batch or first element`)
+      return []
     }
 
     if (typeof batch[0][0] === 'number') {
-      console.log(`Type of batch[0][0]:`, typeof batch[0][0]);
+      console.log(`Type of batch[0][0]:`, typeof batch[0][0])
       return batch as number[][]
     }
 
@@ -83,9 +83,13 @@ async function setupEmbedFunction(pipe: Pipeline): Promise<(batch: (string | num
 // EnhancedEmbeddingFunction class definition
 export class EnhancedEmbeddingFunction<T extends EmbedType> extends EmbeddingFunction<T> {
   name: string
+
   contextLength: number
+
   sourceColumn: string
+
   embed: (batch: (string | number[])[]) => Promise<number[][]>
+
   tokenize: (data: (string | number[])[]) => string[]
 
   constructor(params: {
@@ -123,7 +127,7 @@ export class EnhancedEmbeddingFunction<T extends EmbedType> extends EmbeddingFun
   }
 
   async computeQueryEmbeddings(data: T): Promise<number[][]> {
-    return await this.computeSourceEmbeddings(data)
+    return this.computeSourceEmbeddings([data])
   }
 
   ndims(): number | undefined {
@@ -157,7 +161,7 @@ export async function createEmbeddingFunctionForLocalModel(
   const tokenize = setupTokenizeFunction(pipe.tokenizer)
   const embed = await setupEmbedFunction(pipe)
 
-  console.log("Calling create EnhancedEmbeddingFunction in LOCAL")
+  console.log('Calling create EnhancedEmbeddingFunction in LOCAL')
   console.log(`Name: ${functionName}`)
   console.log(`contextLength: ${pipe.model.config.hidden_size}`)
   console.log(`sourceColumn: ${sourceColumn}`)

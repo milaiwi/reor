@@ -28,7 +28,7 @@ class LanceDBTableWrapper {
   private embedFun!: EnhancedEmbeddingFunction<string>
 
   async initialize(dbConnection: Connection, userDirectory: string, embeddingModelConfig: EmbeddingModelConfig) {
-    console.log("Initialized the embedding function")
+    console.log('Initialized the embedding function')
     this.embedFun = await createEmbeddingFunction(embeddingModelConfig, 'content')
     console.log(`embedFun has embed with:`, this.embedFun.embed)
     this.lanceTable = await GetOrCreateLanceTable(dbConnection, this.embedFun, userDirectory)
@@ -57,13 +57,13 @@ class LanceDBTableWrapper {
 
     const totalChunks = chunks.length
 
-    console.log("Started reducing chunks")
-    console.log("Total chunks:", totalChunks)
+    console.log('Started reducing chunks')
+    console.log('Total chunks:', totalChunks)
     console.log(`Chunks: ${JSON.stringify(chunks)}`)
     await chunks.reduce(async (previousPromise, chunk, index) => {
       await previousPromise
       const arrowTableOfChunk = makeArrowTable(chunk)
-      console.log("Started adding arrowTableOfChunk to lanceTable ")
+      console.log('Started adding arrowTableOfChunk to lanceTable ')
       console.log(`ArrowTableChunk: ${arrowTableOfChunk}`)
 
       const arrowSchema = arrowTableOfChunk.schema
@@ -71,13 +71,13 @@ class LanceDBTableWrapper {
       console.log(`Have schemal: ${arrowSchema}`)
       console.log(`Missing schema: ${tableSchema}`)
       await this.lanceTable.add(arrowTableOfChunk)
-      console.log("Finished adding arrowTableOfChunk to lanceTable ")
+      console.log('Finished adding arrowTableOfChunk to lanceTable ')
       const progress = (index + 1) / totalChunks
       if (onProgress) {
         onProgress(progress)
       }
     }, Promise.resolve())
-    console.log("Finished reducing chunks")
+    console.log('Finished reducing chunks')
   }
 
   async deleteDBItemsByFilePaths(filePaths: string[]): Promise<void> {
@@ -115,24 +115,29 @@ class LanceDBTableWrapper {
   }
 
   /**
-   * 
-   * @param query 
-   * @param limit 
-   * @param filter 
-   * @param query_type: vector, fts, or hybrid 
-   * @returns 
+   * Returns a list of DB records after making a query search. Defaults to vector search
+   *
+   * @param query: the query
+   * @param limit:  the amount of elements to return after searching
+   * @param filter: condition to filter columns by (ex: id != 4)
+   * @param query_type: the type of query, "vector", "fts", or "hybrid"
+   * @returns a list of DB records
    */
   async search(query: string, limit: number, filter?: string, query_type?: string): Promise<DBQueryResult[]> {
     const queryVector = await this.embedFun.computeSourceEmbeddings([query])
-    const searchResults = this.lanceTable.search(queryVector[0], query_type || "vector").limit(limit)
-    if (filter)
-      searchResults.where(filter)
-    
+    const searchResults = this.lanceTable.search(queryVector[0], query_type || 'vector').limit(limit)
+    if (filter) searchResults.where(filter)
+
     const rawResults = await searchResults.toArray()
     const mapped = rawResults.map(convertRecordToDBType<DBQueryResult>)
     return mapped as DBQueryResult[]
   }
 
+  /**
+   *
+   * @param filterString: condition to filter columns by (ex: id != 4)
+   * @param limit: the amount of elements to return after searching
+   */
   async filter(filterString: string, limit: number = 10): Promise<DBEntry[]> {
     const rawResults = await this.lanceTable.query().where(filterString).limit(limit).toArray()
 
