@@ -73,11 +73,20 @@ const EditorManager: React.FC = () => {
 
     const handleUpdate = () => {
       try {
+        const imageType = '<image>'
         const { state } = editor
         const { from, to } = state.selection
 
         const $from = state.doc.resolve(from)
         const $to = state.doc.resolve(to)
+        const node = $from.node($from.depth)
+  
+        let nodeType = node.content
+        if (nodeType && nodeType.toString() == imageType) {
+          setShowPlaceholder(false)
+          return
+        }
+
         const start = $from.before()
         const end = $to.after()
 

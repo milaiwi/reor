@@ -1,4 +1,6 @@
 import path from 'path'
+import * as fs from 'fs'
+import sanitize from 'sanitize-filename'
 
 import { ipcMain } from 'electron'
 import Store from 'electron-store'
@@ -14,6 +16,8 @@ import WindowsManager from '../common/windowManager'
 
 import { initializeAndMaybeMigrateStore } from './storeSchemaMigrator'
 import { Chat, AgentConfig, ChatMetadata } from '@/lib/llm/types'
+
+import { app } from 'electron'
 
 export const registerStoreHandlers = (store: Store<StoreSchema>, windowsManager: WindowsManager) => {
   initializeAndMaybeMigrateStore(store)
@@ -212,6 +216,36 @@ export const registerStoreHandlers = (store: Store<StoreSchema>, windowsManager:
 
     chatHistoriesMap[vaultDir] = filteredChatHistories
     store.set(StoreKeys.Chats, chatHistoriesMap)
+  })
+
+  /**
+   * data:
+   *  {
+   *    base64Image: The image data in base64,
+   *    fileName: name of the file -- which is always image.png
+   *  }
+   */
+  ipcMain.handle('upload-image', async (event, data) => {
+    try {
+      const { base64Image, fileName } = data
+      // May need to replace data:image matches
+      const buffer = Buffer.from(base64Image, 'base64').toString()
+
+      const imagesDir = path.join(app.getPath('userData'), 'images')
+
+      if (!fs.existsSync(imagesDir)) 
+        fs.mkdirSync(imagesDir, { recursive: true })
+  
+      const safeFileName = sanitize(`${Date.now()}-${fileName}`)
+      // const relativeFilePath = path.join('images', safeFileName)
+      const absoluteFilePath = path.join(app.getPath('userData'), 'images', safeFileName)
+
+      await fs.promises.writeFile(absoluteFilePath, buffer)
+      return absoluteFilePath
+    } catch (error) {
+      console.error(`Failed to save image ${error}`)
+      throw error
+    }
   })
 }
 

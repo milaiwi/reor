@@ -76,6 +76,7 @@ const electronStore = {
   setEditorFlexCenter: createIPCHandler<(editorFlexCenter: boolean) => Promise<void>>('set-editor-flex-center'),
   getAgentConfigs: createIPCHandler<() => Promise<AgentConfig[]>>('get-agent-configs'),
   setAgentConfig: createIPCHandler<(agentConfig: AgentConfig) => Promise<void>>('set-agent-config'),
+  uploadImage: createIPCHandler<({ base64Image, fileName}: {base64Image: string, fileName: string}) => Promise<string>>('upload-image')
 }
 
 const fileSystem = {

@@ -188,7 +188,7 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }),
       BacklinkExtension(setSuggestionsState),
       CharacterCount,
-      new Image(null, null),
+      Image,
     ],
   })
 
