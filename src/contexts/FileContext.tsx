@@ -30,6 +30,7 @@ import SearchAndReplace from '@/components/Editor/Search/SearchAndReplaceExtensi
 import getMarkdown from '@/components/Editor/utils'
 import welcomeNote from '@/components/File/utils'
 import useOrderedSet from './hooks/use-ordered-set'
+import Image from '@/components/Editor/ImageExtension'
 
 type FileContextType = {
   currentlyOpenFilePath: string | null
@@ -187,6 +188,7 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }),
       BacklinkExtension(setSuggestionsState),
       CharacterCount,
+      new Image(null, null),
     ],
   })
 
