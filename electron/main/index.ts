@@ -1,7 +1,7 @@
 import { release } from 'node:os'
 import { join } from 'node:path'
 
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, protocol, net } from 'electron'
 import Store from 'electron-store'
 
 import * as Sentry from '@sentry/electron/main'
@@ -47,6 +47,12 @@ const indexHtml = join(process.env.DIST, 'index.html')
 app.whenReady().then(async () => {
   await ollamaService.init()
   windowsManager.createWindow(store, preload, url, indexHtml)
+
+  protocol.handle('local-resource', (request) => {
+    const splicedURL = request.url.substring('local-resource://'.length)
+    const decodedURL = decodeURIComponent(splicedURL)
+    return net.fetch(`file:///${decodedURL}`)
+  })
 })
 
 app.on('window-all-closed', () => {

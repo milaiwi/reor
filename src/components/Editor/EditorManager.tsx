@@ -80,9 +80,9 @@ const EditorManager: React.FC = () => {
         const $from = state.doc.resolve(from)
         const $to = state.doc.resolve(to)
         const node = $from.node($from.depth)
-  
-        let nodeType = node.content
-        if (nodeType && nodeType.toString() == imageType) {
+
+        const nodeType = node.content
+        if (nodeType && nodeType.toString() === imageType) {
           setShowPlaceholder(false)
           return
         }
