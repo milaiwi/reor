@@ -30,7 +30,7 @@ import SearchAndReplace from '@/components/Editor/Search/SearchAndReplaceExtensi
 import getMarkdown from '@/components/Editor/utils'
 import welcomeNote from '@/components/File/utils'
 import useOrderedSet from './hooks/use-ordered-set'
-import ImageExtension, { ImageContainer } from '@/components/Editor/ImageExtension'
+import ImageExtensions, { createCustomMarkdownParser } from '@/components/Editor/ImageExtension'
 
 type FileContextType = {
   currentlyOpenFilePath: string | null
@@ -188,10 +188,12 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }),
       BacklinkExtension(setSuggestionsState),
       CharacterCount,
-      ImageExtension,
-      ImageContainer,
+      ...ImageExtensions,
     ],
   })
+
+  const customMarkdownParser = editor?.schema ? createCustomMarkdownParser(editor?.schema) : null
+
 
   useEffect(() => {
     if (editor) {
@@ -200,6 +202,9 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           attributes: {
             spellcheck: spellCheckEnabled.toString(),
           },
+        },
+        parseOptions: {
+          parser: customMarkdownParser
         },
       })
     }
@@ -218,8 +223,11 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   const writeEditorContentToDisk = async (_editor: Editor | null, filePath: string | null) => {
+    console.log("Writing editor content to disk!")
     if (filePath !== null && needToWriteEditorContentToDisk && _editor) {
+      console.log("Fetching markdownContent")
       const markdownContent = getMarkdown(_editor)
+      console.log(`Printing Markdown content: ${JSON.stringify(markdownContent)}`)
       if (markdownContent !== null) {
         await window.fileSystem.writeFile({
           filePath,
@@ -228,6 +236,8 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setNeedToWriteEditorContentToDisk(false)
       }
     }
+
+    console.log("Finished writing editor content to disk!")
   }
 
   useEffect(() => {
