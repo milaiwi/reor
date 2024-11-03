@@ -5,6 +5,7 @@ import { EditorState } from '@tiptap/pm/state'
 import { Dispatch, Editor } from '@tiptap/react'
 
 import '../../styles/global.css'
+import '../../styles/images.css'
 
 interface MenuPosition {
   x: number

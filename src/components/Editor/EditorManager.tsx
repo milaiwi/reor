@@ -12,7 +12,7 @@ const EditorManager: React.FC = () => {
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
   const [editorFlex, setEditorFlex] = useState(true)
   const [showPlaceholder, setShowPlaceholder] = useState(false)
-  const [writingAssistantTextPosition, setWritingAssistantTextPosition] = useState({ top: 0, left: 0 })
+  // const [writingAssistantTextPosition, setWritingAssistantTextPosition] = useState({ top: 0, left: 0 })
 
   const { editor, suggestionsState, flattenedFiles } = useFileContext()
   const [showDocumentStats, setShowDocumentStats] = useState(false)
@@ -75,30 +75,13 @@ const EditorManager: React.FC = () => {
       try {
         const imageType = '<image>'
         const { state } = editor
-        const { from, to } = state.selection
+        const { from } = state.selection
 
         const $from = state.doc.resolve(from)
-        const $to = state.doc.resolve(to)
         const node = $from.node($from.depth)
 
         const nodeType = node.content
         if (nodeType && nodeType.toString() === imageType) {
-          setShowPlaceholder(false)
-          return
-        }
-
-        const start = $from.before()
-        const end = $to.after()
-
-        const currentLineText = state.doc.textBetween(start, end, '\n', ' ').trim()
-
-        if (currentLineText === '') {
-          const { node } = editor.view.domAtPos(from)
-          const rect = (node as HTMLElement).getBoundingClientRect()
-          const editorRect = editor.view.dom.getBoundingClientRect()
-          setWritingAssistantTextPosition({ top: rect.top - editorRect.top, left: rect.left - editorRect.left })
-          setShowPlaceholder(true)
-        } else {
           setShowPlaceholder(false)
         }
       } catch (error) {
@@ -161,10 +144,7 @@ const EditorManager: React.FC = () => {
             editor={editor}
           />
           {showPlaceholder && (
-            <div
-              className="pointer-events-none absolute text-gray-500"
-              style={{ top: writingAssistantTextPosition.top, left: writingAssistantTextPosition.left }}
-            >
+            <div className="pointer-events-none absolute text-gray-500">
               Press &apos;space&apos; for AI writing assistant
             </div>
           )}

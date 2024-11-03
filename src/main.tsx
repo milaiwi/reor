@@ -22,6 +22,7 @@ window.addEventListener('error', (event) => {
 
 window.addEventListener('unhandledrejection', (event) => {
   event.preventDefault()
+  console.log(`unhandledrejection: ${errorToStringRendererProcess(event.reason)}`)
   toast.error(errorToStringRendererProcess(event.reason))
   if (process.env.NODE_ENV === 'production') {
     Sentry.captureException(event.reason)

@@ -1,36 +1,24 @@
-import { Node, nodeInputRule } from '@tiptap/core'
-import { Attrs } from '@tiptap/pm/model'
-import { Plugin } from '@tiptap/pm/state'
+import { Node, nodeInputRule, findChildren } from '@tiptap/core'
+import { Node as ProseMirrorNode, Attrs, Schema } from '@tiptap/pm/model'
+import { Plugin, TextSelection, Transaction, EditorState } from '@tiptap/pm/state'
+import { EditorView } from '@tiptap/pm/view'
 
-/**
- * This is very similar to https://github.com/ueberdosis/tiptap/blob/main/packages/extension-image/src/image.ts
- * except for the fact that we take in an uploadFunc which sends it to our electron storage. This is more dynamic
- * which allows us to later convert the image to a vector and store it.
- *
- * Matches following attributes in Markdown-typed image: [, alt, src, title]
- *
- * Example:
- * ![Lorem](image.jpg) -> [, "Lorem", "image.jpg"]
- * ![](image.jpg "Ipsum") -> [, "", "image.jpg", "Ipsum"]
- * ![Lorem](image.jpg "Ipsum") -> [, "Lorem", "image.jpg", "Ipsum"]
- */
 const IMAGE_INPUT_REGEX = /!\[(.+|:?)\]\((\S+)(?:(?:\s+)["'](\S+)["'])?\)/
 
 const Image = Node.create({
   name: 'image',
 
-  inline: true,
-  group: 'inline',
+  group: '',
   draggable: true,
 
   addAttributes() {
     return {
-      src: {},
+      src: { },
       alt: {
-        default: null,
+        default: null as string | null,
       },
       title: {
-        default: null,
+        default: null as string | null,
       },
     }
   },
@@ -39,7 +27,7 @@ const Image = Node.create({
     return [
       {
         tag: 'img[src]',
-        getAttrs: (dom) => ({
+        getAttrs: (dom: HTMLElement) => ({
           src: dom.getAttribute('src'),
           title: dom.getAttribute('title'),
           alt: dom.getAttribute('alt'),
@@ -48,7 +36,7 @@ const Image = Node.create({
     ]
   },
 
-  renderHTML({ node, HTMLAttributes }) {
+  renderHTML({ HTMLAttributes }: { HTMLAttributes: Record<string, any> }) {
     return ['img', HTMLAttributes]
   },
 
@@ -56,11 +44,13 @@ const Image = Node.create({
     return {
       insertImage:
         (attrs: Attrs | null | undefined) =>
-        ({ state, dispatch }: { state: any; dispatch: any }) => {
+        ({ state, dispatch }: { state: EditorState; dispatch: (tr: Transaction) => void }) => {
           const { selection } = state
           const position = selection.$cursor ? selection.$cursor.pos : selection.$to.pos
-          const node = this.type.create(attrs)
-          const transaction = state.tr.insert(position, node)
+          console.log(`THIS object: ${JSON.stringify(this)}`)
+          const imageNode = this.type.create(attrs)
+          const imageContainerNode = state.schema.nodes.imageContainer.create({}, imageNode)
+          const transaction = state.tr.insert(position, imageContainerNode)
           dispatch(transaction)
           return true
         },
@@ -72,44 +62,125 @@ const Image = Node.create({
       nodeInputRule({
         find: IMAGE_INPUT_REGEX,
         type: this.type,
-        getAttributes: (match) => {
+        getAttributes: (match: RegExpMatchArray) => {
           const [, alt, src, title] = match
           return { src, alt, title }
         },
       }),
     ]
   },
+})
 
+export const ImageContainer = Node.create({
+  name: 'imageContainer',
+
+  group: 'block',
+  content: 'image+',
+  draggable: true,
+
+  parseHTML() {
+    return [
+      {
+        tag: 'div.image-container',
+      },
+    ]
+  },
+
+  renderHTML({ HTMLAttributes }: { HTMLAttributes: Record<string, any> }) {
+    return ['div', { ...HTMLAttributes, class: 'image-container' }, 0]
+  },
+})
+
+const imageDragAndDropPlugin = new Plugin({
+  props: {
+    handleDrop(view: EditorView, event: DragEvent, slice, moved) {
+      // Get the drop position
+      const coords = { left: event.clientX, top: event.clientY }
+      const pos = view.posAtCoords(coords)?.pos
+
+      if (pos == null) {
+        return false
+      }
+
+      // Get the node being dragged
+      const draggedNode = view.dragging?.slice.content.firstChild
+      if (!draggedNode) {
+        return false
+      }
+
+      // If the dragged node is not an image, let the default behavior occur
+      if (draggedNode.type.name !== 'image') {
+        return false
+      }
+
+      event.preventDefault()
+
+      const state = view.state
+      const tr = state.tr
+
+      // Remove the dragged image from its original position
+      if (moved) {
+        tr.deleteSelection()
+      }
+
+      // Determine if we're dropping onto an imageContainer
+      const $pos = tr.doc.resolve(pos)
+      let targetPos = pos
+      let insertInsideContainer = false
+
+      if ($pos.nodeAfter && $pos.nodeAfter.type.name === 'imageContainer') {
+        // Insert at the start of the imageContainer
+        targetPos = pos + 1 // Inside the imageContainer
+        insertInsideContainer = true
+      } else if ($pos.nodeBefore && $pos.nodeBefore.type.name === 'imageContainer') {
+        // Insert at the end of the imageContainer
+        targetPos = pos - $pos.nodeBefore.nodeSize + 1 // Inside the imageContainer
+        insertInsideContainer = true
+      }
+
+      if (insertInsideContainer) {
+        // Insert the image inside the existing imageContainer
+        tr.insert(targetPos, draggedNode)
+      } else {
+        // Create a new imageContainer with the image
+        const imageContainerNode = state.schema.nodes.imageContainer.create({}, draggedNode)
+        tr.insert(pos, imageContainerNode)
+      }
+
+      view.dispatch(tr)
+      return true
+    },
+  },
+})
+
+const ImageExtension = Image.extend({
   addProseMirrorPlugins() {
     return [
+      imageDragAndDropPlugin,
       new Plugin({
         props: {
-          handleDOMEvents: {
-            drop: (view, event) => {},
-          },
-          handlePaste: (view, event) => {
-            /**
-             *
-             * @param file the uploaded file
-             * @returns uploades the image as base64 along with its name to the file system
-             */
-            const uploadFunc = async (file: File) => {
+          handlePaste: (view: EditorView, event: ClipboardEvent): boolean => {
+            const uploadFunc = async (file: File): Promise<string> => {
               const reader = new FileReader()
               return new Promise((resolve, reject) => {
                 reader.onloadend = async () => {
                   try {
                     const base64Image = reader.result as string
                     const fileName = file.name
-                    const filePath = await window.electronStore.uploadImage({ base64Image, fileName })
+                    const filePath = await window.electronStore.uploadImage({
+                      base64Image,
+                      fileName,
+                    })
 
-                    const fileUrl = `local-resource://${encodeURIComponent(filePath)}` // Replace backslashes on Windows
+                    const fileUrl = `local-resource://${encodeURIComponent(filePath)}`
                     resolve(fileUrl)
                   } catch (error) {
-                    console.error(`Image upload failed: ${error}`)
+                    console.log("Rejecting in uploadFunc")
                     reject(error)
                   }
                 }
                 reader.onerror = () => {
+                  console.log("Rejecting since failed to read image file")
                   reject(new Error('Failed to read image file'))
                 }
 
@@ -130,14 +201,13 @@ const Image = Node.create({
                 if (!image) return false
 
                 const reader = new FileReader()
-                console.log(`Sending image to backend!`)
                 reader.onload = async () => {
                   const uploadedImageUrl = await uploadFunc(image)
-                  const node = view.state.schema.nodes.image.create({
+                  const imageNode = view.state.schema.nodes.image.create({
                     src: uploadedImageUrl,
                   })
-
-                  const transaction = view.state.tr.replaceSelectionWith(node)
+                  const imageContainerNode = view.state.schema.nodes.imageContainer.create({}, imageNode)
+                  const transaction = view.state.tr.replaceSelectionWith(imageContainerNode)
                   view.dispatch(transaction)
                 }
 
@@ -153,4 +223,4 @@ const Image = Node.create({
   },
 })
 
-export default Image
+export default ImageExtension

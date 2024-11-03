@@ -234,7 +234,6 @@ export const registerStoreHandlers = (store: Store<StoreSchema>, windowsManager:
       if (!fs.existsSync(imagesDir)) fs.mkdirSync(imagesDir, { recursive: true })
 
       const safeFileName = sanitize(`${Date.now()}-${fileName}`)
-      // const relativeFilePath = path.join('images', safeFileName)
       const absoluteFilePath = path.join(app.getPath('userData'), 'images', safeFileName)
 
       await fs.promises.writeFile(absoluteFilePath, buffer)

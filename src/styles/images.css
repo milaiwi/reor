@@ -1,0 +1,8 @@
+.image-container {
+    display: flex;
+    gap: 1rem;
+}
+
+.image-container > img {
+    padding: 0.5rem;
+}
