@@ -30,7 +30,11 @@ import SearchAndReplace from '@/components/Editor/Search/SearchAndReplaceExtensi
 import getMarkdown from '@/components/Editor/utils'
 import welcomeNote from '@/components/File/utils'
 import useOrderedSet from './hooks/use-ordered-set'
-import Image from '@/components/Editor/ImageExtension'
+
+import Image from '@/components/Editor/Images/ImageExtension'
+import ImageBlock from '@/components/Editor/Images/ImageBlock'
+import { createCustomMarkdownParser } from '@/components/Editor/customMarkdownParser'
+import customMarkdownSerializer from '@/components/Editor/customMarkdownSerializer'
 
 type FileContextType = {
   currentlyOpenFilePath: string | null
@@ -189,8 +193,11 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       BacklinkExtension(setSuggestionsState),
       CharacterCount,
       Image,
+      ImageBlock
     ],
   })
+
+  
 
   useEffect(() => {
     if (editor) {

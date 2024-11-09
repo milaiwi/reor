@@ -1,6 +1,7 @@
 import { Node, nodeInputRule } from '@tiptap/core'
 import { Attrs } from '@tiptap/pm/model'
 import { Plugin } from '@tiptap/pm/state'
+import { EditorView } from '@tiptap/pm/view'
 
 /**
  * This is very similar to https://github.com/ueberdosis/tiptap/blob/main/packages/extension-image/src/image.ts
@@ -19,8 +20,8 @@ const IMAGE_INPUT_REGEX = /!\[(.+|:?)\]\((\S+)(?:(?:\s+)["'](\S+)["'])?\)/
 const Image = Node.create({
   name: 'image',
 
-  inline: true,
-  group: 'inline',
+  inline: false,
+  group: 'block',
   draggable: true,
 
   addAttributes() {
@@ -87,7 +88,7 @@ const Image = Node.create({
           handleDOMEvents: {
             drop: (view, event) => {},
           },
-          handlePaste: (view, event) => {
+          handlePaste: (view: EditorView, event: ClipboardEvent) => {
             /**
              *
              * @param file the uploaded file
@@ -132,13 +133,18 @@ const Image = Node.create({
                 const reader = new FileReader()
                 console.log(`Sending image to backend!`)
                 reader.onload = async () => {
-                  const uploadedImageUrl = await uploadFunc(image)
-                  const node = view.state.schema.nodes.image.create({
-                    src: uploadedImageUrl,
-                  })
-
-                  const transaction = view.state.tr.replaceSelectionWith(node)
-                  view.dispatch(transaction)
+                  try {
+                    const uploadedImageUrl = await uploadFunc(image)
+                    const node = view.state.schema.nodes.image.create({
+                      src: uploadedImageUrl,
+                    })
+                    const imageBlockNode = view.state.schema.nodes.imageBlock.create({}, node)
+  
+                    const transaction = view.state.tr.replaceSelectionWith(imageBlockNode)
+                    view.dispatch(transaction)
+                  } catch (error) {
+                    console.error(`Error uploading images: ${error}`)
+                  }
                 }
 
                 reader.readAsDataURL(image)
