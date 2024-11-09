@@ -1,13 +1,11 @@
-// customMarkdownParser.ts
 import { MarkdownParser } from 'prosemirror-markdown'
 import markdownIt from 'markdown-it'
 import { defaultMarkdownSerializer } from 'prosemirror-markdown'
 import { Schema } from 'prosemirror-model'
 
-export const createCustomMarkdownParser = (schema: Schema) => {
+export const createCustomMarkdownParser = (schema: Schema | undefined) => {
   const md = markdownIt()
 
-  // Extend markdown-it to handle <div class="image-block">
   md.use((mdInstance) => {
     mdInstance.block.ruler.before('html_block', 'image_block', (state, startLine, endLine) => {
       const pos = state.bMarks[startLine] + state.tShift[startLine]
@@ -34,20 +32,29 @@ export const createCustomMarkdownParser = (schema: Schema) => {
         nextLine++
       }
 
+      console.log("Pushing state to token")
       const token = state.push('image_block', '', 0)
       token.content = content.trim()
       token.map = [startLine, state.line]
+      console.log("Returning true")
       return true
     })
   })
 
+  if (!schema) throw new Error("Schema is undefined, can't create MarkdownParser.")
+
+  console.log("Returning markdownParser")
   return new MarkdownParser(schema, md, {
     ...defaultMarkdownSerializer.nodes,
+    
+    // Add a custom rule for parsing the image_block
     image_block(state: any, token: any) {
+      console.log("Inside imageBlock")
       const content = token.content
       const imageMatches = content.match(/!\[.*?\]\(.*?\)/g)
       const imageNodes: any[] = []
 
+      console.log(`Content: ${content}`)
       if (imageMatches) {
         imageMatches.forEach((match: string) => {
           const altMatch = match.match(/!\[(.*?)\]/)
@@ -55,17 +62,20 @@ export const createCustomMarkdownParser = (schema: Schema) => {
           const alt = altMatch ? altMatch[1] : ''
           const src = srcMatch ? srcMatch[1] : ''
 
-          const imageNode = state.schema.nodes.image.create({ src, alt })
-          imageNodes.push(imageNode)
+          const imageNode = state.schema.nodes.image?.create({ src, alt })
+          if (imageNode) imageNodes.push(imageNode)
         })
       }
 
-      const imageBlockNode = state.schema.nodes.imageBlock.create({}, imageNodes)
-      state.addNode(imageBlockNode)
+      const imageBlockNode = state.schema.nodes.imageBlock?.create({}, imageNodes)
+      if (imageBlockNode) state.addNode(imageBlockNode)
     },
-    image(state: any, token: { attrs: {} }) {
+    
+    // Define the standard image node parsing
+    image(state: any, token: { attrs: any }) {
       const attrs = token.attrs || {}
-      state.addNode(state.schema.nodes.image, attrs)
+      const imageNode = state.schema.nodes.image?.create(attrs)
+      if (imageNode) state.addNode(imageNode)
     },
   })
 }

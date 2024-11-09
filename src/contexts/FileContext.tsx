@@ -128,14 +128,19 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   const loadFileIntoEditor = async (filePath: string) => {
+    console.log(`Loading file!: ${filePath}`)
     setCurrentlyChangingFilePath(true)
     await writeEditorContentToDisk(editor, currentlyOpenFilePath)
     if (currentlyOpenFilePath && needToIndexEditorContent) {
       window.database.indexFileInDatabase(currentlyOpenFilePath)
       setNeedToIndexEditorContent(false)
     }
+    console.log(`Getting fileContent`)
     const fileContent = (await window.fileSystem.readFile(filePath)) ?? ''
-    editor?.commands.setContent(fileContent)
+    const customParser = createCustomMarkdownParser(editor?.schema)
+    console.log(`CustomParser finished running!`)
+    const doc = customParser.parse(fileContent)
+    editor?.commands.setContent(doc?.toJSON())
     setCurrentlyOpenFilePath(filePath)
     setCurrentlyChangingFilePath(false)
   }
@@ -224,6 +229,7 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   const writeEditorContentToDisk = async (_editor: Editor | null, filePath: string | null) => {
+    console.log("Writing to disk!", filePath, needToWriteEditorContentToDisk)
     if (filePath !== null && needToWriteEditorContentToDisk && _editor) {
       const markdownContent = getMarkdown(_editor)
       if (markdownContent !== null) {
