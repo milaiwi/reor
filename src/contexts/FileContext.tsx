@@ -30,7 +30,8 @@ import SearchAndReplace from '@/components/Editor/Search/SearchAndReplaceExtensi
 import getMarkdown from '@/components/Editor/utils'
 import welcomeNote from '@/components/File/utils'
 import useOrderedSet from './hooks/use-ordered-set'
-import ImageExtensions, { createCustomMarkdownParser } from '@/components/Editor/ImageExtension'
+import ImageExtensions from '@/components/Editor/ImageExtension'
+import { createCustomMarkdownParser } from '@/components/Editor/utils'
 
 type FileContextType = {
   currentlyOpenFilePath: string | null
