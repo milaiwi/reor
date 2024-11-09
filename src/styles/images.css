@@ -1,0 +1,6 @@
+/* Centers images that are the only child of a paragraph */
+.ProseMirror p:only-child img:only-child {
+    display: block;
+    margin: 0 auto;
+}
+
