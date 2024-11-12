@@ -30,7 +30,8 @@ import SearchAndReplace from '@/components/Editor/Search/SearchAndReplaceExtensi
 import getMarkdown from '@/components/Editor/utils'
 import welcomeNote from '@/components/File/utils'
 import useOrderedSet from './hooks/use-ordered-set'
-import Image from '@/components/Editor/ImageExtension'
+import CustomImage from '@/components/Editor/Images/CustomImage'
+import ImageTableDragDropExtension from '@/components/Editor/Images/ImageTableDragDrop'
 
 type FileContextType = {
   currentlyOpenFilePath: string | null
@@ -159,6 +160,9 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }),
       Table.configure({
         resizable: true,
+        HTMLAttributes: {
+          class: 'image-table',
+        }
       }),
       TableRow,
       TableHeader,
@@ -188,7 +192,8 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }),
       BacklinkExtension(setSuggestionsState),
       CharacterCount,
-      Image,
+      CustomImage,
+      ImageTableDragDropExtension
     ],
   })
 
@@ -218,7 +223,12 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const writeEditorContentToDisk = async (_editor: Editor | null, filePath: string | null) => {
     if (filePath !== null && needToWriteEditorContentToDisk && _editor) {
-      const markdownContent = getMarkdown(_editor)
+      let markdownContent = ""
+      try {
+        markdownContent = getMarkdown(_editor)
+      } catch (error) {
+        console.error(`Received error: ${error}`)
+      }
       if (markdownContent !== null) {
         await window.fileSystem.writeFile({
           filePath,
