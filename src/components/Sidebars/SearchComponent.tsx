@@ -10,25 +10,21 @@ import { CiSearch } from "react-icons/ci";
 
 
 interface SearchComponentProps {
-  searchQuery: string
-  setSearchQuery: (query: string) => void
-  searchResults: DBQueryResult[]
-  setSearchResults: (results: DBQueryResult[]) => void
+  queryType: string
 }
 
 const SearchComponent: React.FC<SearchComponentProps> = ({
-  searchQuery,
-  setSearchQuery,
-  searchResults,
-  setSearchResults,
+  queryType
 }) => {
+  const [searchQuery, setSearchQuery] = useState<string>("")
+  const [searchResults, setSearchResults] = useState<DBQueryResult[]>([])
   const { openContent: openTabContent } = useWindowContentContext()
   const searchInputRef = useRef<HTMLInputElement>(null)
   
 
   const handleSearch = useCallback(
     async (query: string) => {
-      const results: DBQueryResult[] = await window.database.search(query, 50)
+      const results: DBQueryResult[] = await window.database.search(query, 50, undefined, queryType)
       setSearchResults(results)
     },
     [setSearchResults],
