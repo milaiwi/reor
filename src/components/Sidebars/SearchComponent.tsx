@@ -1,10 +1,13 @@
-import React, { useEffect, useRef, useCallback } from 'react'
+import React, { useEffect, useRef, useCallback, useState } from 'react'
 import { DBQueryResult } from 'electron/main/vector-database/schema'
 import posthog from 'posthog-js'
-import { FaSearch } from 'react-icons/fa'
 import { DBSearchPreview } from '../File/DBResultPreview'
 import debounce from './utils'
 import { useWindowContentContext } from '@/contexts/WindowContentContext'
+
+import { IconContext } from "react-icons";
+import { CiSearch } from "react-icons/ci";
+
 
 interface SearchComponentProps {
   searchQuery: string
@@ -21,6 +24,7 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
 }) => {
   const { openContent: openTabContent } = useWindowContentContext()
   const searchInputRef = useRef<HTMLInputElement>(null)
+  
 
   const handleSearch = useCallback(
     async (query: string) => {
@@ -58,18 +62,24 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
 
   return (
     <div className="h-below-titlebar overflow-y-auto overflow-x-hidden p-1">
-      <div className="relative mr-1 rounded bg-neutral-800 p-2">
-        <span className="absolute inset-y-0 left-0 mt-[2px] flex items-center pl-3">
-          <FaSearch className="text-lg text-gray-200" size={14} />
-        </span>
-        <input
-          ref={searchInputRef}
-          type="text"
-          className="mr-1 mt-1 h-8 w-full rounded-md border border-transparent bg-neutral-700 pl-7 pr-5 text-white focus:border-white focus:outline-none focus:ring-1 focus:ring-white"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Semantic search..."
-        />
+      <div className="relative mr-1 rounded bg-neutral-800 p-2 flex">
+      <form className="flex items-center w-full">
+        <div className="flex items-center bg-[#404040]/20 text-xs w-full h-8 border border-blue-600 rounded-md focus-within:border-gray-600 focus-within:ring-1 focus-within:ring-slate-500">
+          <div className="ml-2 flex items-center">
+            <IconContext.Provider value={{ size: '16px'}}>
+              <CiSearch />
+            </IconContext.Provider>
+          </div>
+          <input
+            type="text"
+            id="simple-search"
+            className="h-8 bg-transparent text-xs block w-full p-2.5 focus:outline-none focus:ring-0 focus:border-gray-300 text-white/40 placeholder-gray-400 placeholder-opacity-40"
+            placeholder="Search..."
+            required
+          />
+        </div>
+      </form>
+
       </div>
       <div className="mt-2 w-full">
         {searchResults.length > 0 && (

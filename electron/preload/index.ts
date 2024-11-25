@@ -21,7 +21,7 @@ function createIPCHandler<T extends (...args: any[]) => any>(channel: string): I
 }
 
 const database = {
-  search: createIPCHandler<(query: string, limit: number, filter?: string) => Promise<DBQueryResult[]>>('search'),
+  search: createIPCHandler<(query: string, limit: number, filter?: string, query_type?: string) => Promise<DBQueryResult[]>>('search'),
   deleteLanceDBEntriesByFilePath: createIPCHandler<(filePath: string) => Promise<void>>(
     'delete-lance-db-entries-by-filepath',
   ),
@@ -65,6 +65,8 @@ const electronStore = {
   setDocumentStats: createIPCHandler<(showWordCount: boolean) => Promise<void>>('set-document-stats'),
   getHasUserOpenedAppBefore: createIPCHandler<() => Promise<boolean>>('has-user-opened-app-before'),
   setHasUserOpenedAppBefore: createIPCHandler<() => Promise<void>>('set-user-has-opened-app-before'),
+  getSearchQueryType: createIPCHandler<() => Promise<string>>('get-query-type'),
+  setSearchQueryType: createIPCHandler<(query_type: string) => Promise<void>>('set-query-type'),
   getAllChatsMetadata: createIPCHandler<() => Promise<ChatMetadata[]>>('get-all-chats-metadata'),
   saveChat: createIPCHandler<(chat: Chat) => Promise<void>>('save-chat'),
   deleteChat: createIPCHandler<(chatID: string) => Promise<void>>('delete-chat'),

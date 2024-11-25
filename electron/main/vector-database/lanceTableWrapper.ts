@@ -120,7 +120,7 @@ class LanceDBTableWrapper {
    * @param query: the query
    * @param limit:  the amount of elements to return after searching
    * @param filter: condition to filter columns by (ex: id != 4)
-   * @param query_type: the type of query, "vector", "fts", or "hybrid"
+   * @param query_type: the type of query, "vector", "fts", or "hybrid". Defaults to vector
    * @returns a list of DB records
    */
   async search(query: string, limit: number, filter?: string, query_type?: string): Promise<DBQueryResult[]> {

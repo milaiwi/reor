@@ -1,5 +1,6 @@
 import React from 'react'
-import { AppearanceSection, EditorSection } from './GeneralSections'
+import { AppearanceSection, EditorSection, SearchSection } from './GeneralSections'
+
 
 /*
  *  General Page has the following format:
@@ -25,6 +26,7 @@ const GeneralSettings = () => {
       <h2 className="mb-0 text-2xl font-semibold text-white">General</h2>
       <AppearanceSection />
       <EditorSection />
+      <SearchSection />
     </div>
   )
 }

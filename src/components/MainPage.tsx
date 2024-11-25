@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import '../styles/global.css'
 import ChatComponent from './Chat'
@@ -19,10 +19,29 @@ import CommonModals from './Common/CommonModals'
 
 const MainPageContent: React.FC = () => {
   const [showSimilarFiles, setShowSimilarFiles] = useState(false)
+  const [queryType, setQueryType] = useState<string>("")
 
   const { currentlyOpenFilePath } = useFileContext()
 
   const { showChatbot } = useChatContext()
+
+  useEffect(() => {
+    const fetchParams = async () => {
+      const tempGetQueryType = await window.electronStore.getSearchQueryType()
+
+      if (tempGetQueryType !== undefined)
+        setQueryType(tempGetQueryType)
+    }
+
+    const handleQueryTypeChange = (query_type: string) => {
+      console.log(`Query_type changed: ${query_type}`)
+      setQueryType(query_type)
+    }
+
+    fetchParams()
+
+    window.ipcRenderer.receive('query-type-changed', handleQueryTypeChange)
+  }, [])
 
   return (
     <div className="relative overflow-x-hidden">
@@ -52,7 +71,7 @@ const MainPageContent: React.FC = () => {
             <WritingAssistant />
             {showSimilarFiles && (
               <div className="h-full shrink-0 overflow-y-auto overflow-x-hidden">
-                <SimilarFilesSidebarComponent />
+                <SimilarFilesSidebarComponent query_type={queryType}/>
               </div>
             )}
           </div>

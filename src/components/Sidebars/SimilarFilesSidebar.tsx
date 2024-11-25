@@ -13,10 +13,14 @@ import HighlightButton from './SemanticSidebar/HighlightButton'
 import { useFileContext } from '@/contexts/FileContext'
 import { useWindowContentContext } from '@/contexts/WindowContentContext'
 
-const SimilarFilesSidebarComponent: React.FC = () => {
+interface SimilarFilesSidebarProps {
+  query_type: string
+};
+
+const SimilarFilesSidebarComponent: React.FC<SimilarFilesSidebarProps> = ({ query_type }) => {
   const [similarEntries, setSimilarEntries] = useState<DBQueryResult[]>([])
   const [isLoadingSimilarEntries, setIsLoadingSimilarEntries] = useState(false)
-
+  console.log(`SimilarFilesSidebarComponent received query_type ${query_type}`)
   const { currentlyOpenFilePath, highlightData } = useFileContext()
   const { openContent: openTabContent } = useWindowContentContext()
 
@@ -41,7 +45,8 @@ const SimilarFilesSidebarComponent: React.FC = () => {
       const filterString = `${databaseFields.NOTE_PATH} != '${fileToBeExcluded}'`
 
       setIsLoadingSimilarEntries(true)
-      const searchResults: DBQueryResult[] = await window.database.search(sanitizedText, 20, filterString)
+      console.log(`Refetching queries for type: ${query_type}`)
+      const searchResults: DBQueryResult[] = await window.database.search(sanitizedText, 20, filterString, query_type)
 
       setIsLoadingSimilarEntries(false)
       return searchResults
@@ -73,7 +78,7 @@ const SimilarFilesSidebarComponent: React.FC = () => {
     if (currentlyOpenFilePath) {
       handleNewFileOpen(currentlyOpenFilePath)
     }
-  }, [currentlyOpenFilePath])
+  }, [currentlyOpenFilePath, query_type])
 
   const updateSimilarEntries = async () => {
     const sanitizedText = await getChunkForInitialSearchFromFile(currentlyOpenFilePath)

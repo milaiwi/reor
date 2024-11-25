@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import Switch from '@mui/material/Switch'
 
+import { IoMdArrowDropdown } from "react-icons/io";
+import { IconContext } from 'react-icons';
+
 export const AppearanceSection = () => {
   const [isIconSBCompact, setIsIconSBCompact] = useState<boolean>(false)
 
@@ -40,7 +43,6 @@ export const AppearanceSection = () => {
           }}
         />
       </div>
-      <div className="h-[2px] w-full bg-neutral-700" />
     </div>
   )
 }
@@ -135,6 +137,7 @@ export const EditorSection = () => {
           inputProps={{ 'aria-label': 'controlled' }}
         />
       </div>
+      <div className="h-[2px] w-full bg-neutral-700" />
       <div className="flex w-full flex-wrap items-center justify-between">
         <div className="flex w-[70%] flex-col justify-center">
           <p className="xs:text-xs flex flex-col text-base text-gray-100 opacity-80 sm:text-sm">
@@ -152,7 +155,65 @@ export const EditorSection = () => {
           inputProps={{ 'aria-label': 'controlled' }}
         />
       </div>
+    </div>
+  )
+}
+
+
+export const SearchSection = () => {
+  const [selectedQueryType, setSelectedQueryType] = useState("vector")
+
+  const handleQueryTypeChange = async (event: any) => {
+    const value = event.target.value
+    await window.electronStore.setSearchQueryType(value)
+    setSelectedQueryType(value)
+  }
+  
+  useEffect(() => {
+    const fetchParams = async () => {
+      const tempGetQueryType = await window.electronStore.getSearchQueryType()
+      if (tempGetQueryType !== undefined)
+        setSelectedQueryType(tempGetQueryType)
+    }
+
+    fetchParams()
+  }, []);
+
+
+  return (
+    <div className="w-full flex-col">
+      <h4 className="xs:text-sm mb-1 mt-10 flex w-full items-center justify-between gap-5 pb-2 text-lg text-white sm:text-base">
+        Search
+      </h4>
       <div className="h-[2px] w-full bg-neutral-700" />
+      <div className="flex w-full flex-wrap items-center justify-between">
+        <div className="flex w-[70%] flex-col justify-center">
+          <p className="xs:text-xs flex flex-col text-base text-gray-100 opacity-80 sm:text-sm">
+            Query Type
+            <span className="m-0 pt-1 text-xs text-gray-100">
+              Changes how Reor will fetch your content.
+            </span>
+          </p>
+        </div>
+        <div className="relative ml-1">
+          <select
+            className="appearance-none w-8 h-8 bg-[#a855f7]/20 rounded-sm text-transparent focus:outline-none focus:ring-0 focus:border-gray-300"
+            onChange={handleQueryTypeChange}
+            value={selectedQueryType}
+          >
+            <option value="vector">Vector</option>
+            <option value="fts">FTS</option>
+            <option value="hybrid">Hybrid</option>
+          </select>
+          <div className="absolute inset-y-0 right-0 flex items-center pointer-events-none pr-2">
+            <IconContext.Provider
+              value={{ color: "#3b82f6" }}
+            >
+              <IoMdArrowDropdown />
+            </IconContext.Provider>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

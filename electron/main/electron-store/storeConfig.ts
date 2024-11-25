@@ -66,6 +66,7 @@ export interface StoreSchema {
   EditorFlexCenter: boolean
   OpenTabs: Tab[]
   showDocumentStats: boolean
+  storeQueryType: string
 }
 
 export enum StoreKeys {
@@ -87,4 +88,5 @@ export enum StoreKeys {
   EditorFlexCenter = 'editorFlexCenter',
   OpenTabs = 'OpenTabs',
   showDocumentStats = 'showDocumentStats',
+  storeQueryType = 'storeQueryType',
 }

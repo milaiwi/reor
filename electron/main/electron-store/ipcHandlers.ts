@@ -139,6 +139,16 @@ export const registerStoreHandlers = (store: Store<StoreSchema>, windowsManager:
     store.set(StoreKeys.hasUserOpenedAppBefore, true)
   })
 
+  ipcMain.handle('get-query-type', () => {
+    return store.get(StoreKeys.storeQueryType, "vector")
+  })
+
+  ipcMain.handle('set-query-type', (event, query_type) => {
+    console.log(`Storing query_type: ${query_type}`)
+    store.set(StoreKeys.storeQueryType, query_type)
+    event.sender.send('query-type-changed', query_type) 
+  })
+
   ipcMain.handle('get-all-chats-metadata', (event) => {
     const vaultDir = windowsManager.getVaultDirectoryForWinContents(event.sender)
 
