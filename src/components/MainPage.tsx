@@ -71,7 +71,7 @@ const MainPageContent: React.FC = () => {
             <WritingAssistant />
             {showSimilarFiles && (
               <div className="h-full shrink-0 overflow-y-auto overflow-x-hidden">
-                <SimilarFilesSidebarComponent query_type={queryType}/>
+                <SimilarFilesSidebarComponent queryType={queryType}/>
               </div>
             )}
           </div>
