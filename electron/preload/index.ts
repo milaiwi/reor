@@ -21,7 +21,10 @@ function createIPCHandler<T extends (...args: any[]) => any>(channel: string): I
 }
 
 const database = {
-  search: createIPCHandler<(query: string, limit: number, filter?: string, query_type?: string) => Promise<DBQueryResult[]>>('search'),
+  search:
+    createIPCHandler<(query: string, limit: number, filter?: string, query_type?: string) => Promise<DBQueryResult[]>>(
+      'search',
+    ),
   deleteLanceDBEntriesByFilePath: createIPCHandler<(filePath: string) => Promise<void>>(
     'delete-lance-db-entries-by-filepath',
   ),

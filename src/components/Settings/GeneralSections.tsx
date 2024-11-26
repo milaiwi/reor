@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import Switch from '@mui/material/Switch'
 
-import { IoMdArrowDropdown } from "react-icons/io";
-import { IconContext } from 'react-icons';
+import { IoMdArrowDropdown } from 'react-icons/io'
+import { IconContext } from 'react-icons'
 
 export const AppearanceSection = () => {
   const [isIconSBCompact, setIsIconSBCompact] = useState<boolean>(false)
@@ -159,26 +159,25 @@ export const EditorSection = () => {
   )
 }
 
-
 export const SearchSection = () => {
-  const [selectedQueryType, setSelectedQueryType] = useState("vector")
+  const [selectedQueryType, setSelectedQueryType] = useState('vector')
 
   const handleQueryTypeChange = async (event: any) => {
-    const value = event.target.value
+    const { value } = event.target
     await window.electronStore.setSearchQueryType(value)
     setSelectedQueryType(value)
   }
-  
+
   useEffect(() => {
     const fetchParams = async () => {
       const tempGetQueryType = await window.electronStore.getSearchQueryType()
-      if (tempGetQueryType !== undefined)
-        setSelectedQueryType(tempGetQueryType)
+      if (tempGetQueryType !== undefined) setSelectedQueryType(tempGetQueryType)
     }
 
     fetchParams()
-  }, []);
+  }, [])
 
+  const mdArrowDropdownMemo: { color: string } = useMemo(() => ({ color: '#3b82f6' }), [])
 
   return (
     <div className="w-full flex-col">
@@ -190,14 +189,12 @@ export const SearchSection = () => {
         <div className="flex w-[70%] flex-col justify-center">
           <p className="xs:text-xs flex flex-col text-base text-gray-100 opacity-80 sm:text-sm">
             Query Type
-            <span className="m-0 pt-1 text-xs text-gray-100">
-              Changes how Reor will fetch your content.
-            </span>
+            <span className="m-0 pt-1 text-xs text-gray-100">Changes how Reor will fetch your content.</span>
           </p>
         </div>
         <div className="relative ml-1">
           <select
-            className="appearance-none w-8 h-8 bg-[#a855f7]/20 rounded-sm text-transparent focus:outline-none focus:ring-0 focus:border-gray-300"
+            className="size-8 appearance-none rounded-sm bg-[#a855f7]/20 text-transparent focus:border-gray-300 focus:outline-none focus:ring-0"
             onChange={handleQueryTypeChange}
             value={selectedQueryType}
           >
@@ -205,10 +202,8 @@ export const SearchSection = () => {
             <option value="fts">FTS</option>
             <option value="hybrid">Hybrid</option>
           </select>
-          <div className="absolute inset-y-0 right-0 flex items-center pointer-events-none pr-2">
-            <IconContext.Provider
-              value={{ color: "#3b82f6" }}
-            >
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+            <IconContext.Provider value={mdArrowDropdownMemo}>
               <IoMdArrowDropdown />
             </IconContext.Provider>
           </div>

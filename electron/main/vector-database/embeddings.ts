@@ -3,7 +3,7 @@ import path from 'path'
 import { Pipeline, PreTrainedTokenizer } from '@xenova/transformers'
 import { app } from 'electron'
 import removeMd from 'remove-markdown'
-import { EmbeddingFunction } from '@lancedb/lancedb/embedding'
+import { EmbeddingFunction } from '@lancedb/lancedb/dist/embedding'
 
 import { Float32 } from 'apache-arrow'
 import {
@@ -43,16 +43,12 @@ function setupTokenizeFunction(tokenizer: PreTrainedTokenizer): (data: (string |
 }
 
 async function setupEmbedFunction(pipe: Pipeline): Promise<(batch: (string | number[])[]) => Promise<number[][]>> {
-  console.log(`inside setUpEmbedFunction`)
   return async (batch: (string | number[])[]): Promise<number[][]> => {
-    console.log(`Batch received:`, batch)
     if (batch.length === 0 || batch[0].length === 0) {
-      console.log(`Returning empty array due to empty batch or first element`)
       return []
     }
 
     if (typeof batch[0][0] === 'number') {
-      console.log(`Type of batch[0][0]:`, typeof batch[0][0])
       return batch as number[][]
     }
 
@@ -61,7 +57,6 @@ async function setupEmbedFunction(pipe: Pipeline): Promise<(batch: (string | num
     }
 
     try {
-      console.log(`Mapping batch`)
       const result: number[][] = await Promise.all(
         batch.map(async (text) => {
           const res = await pipe(removeMd(text as string), {
@@ -71,11 +66,9 @@ async function setupEmbedFunction(pipe: Pipeline): Promise<(batch: (string | num
           return Array.from(res.data)
         }),
       )
-      console.log(`Returning result`)
       return result
     } catch (error) {
-      console.error(`Result mapping got error:`, error)
-      throw error
+      throw new Error('Failed to get data from pipe')
     }
   }
 }
@@ -101,7 +94,6 @@ export class EnhancedEmbeddingFunction<T extends EmbedType> extends EmbeddingFun
   }) {
     // Call super to invoke the constructor of the parent class
     super()
-    console.log(`Params object on creation: ${JSON.stringify(params)}`)
     this.name = params.name
     this.contextLength = params.contextLength
     this.sourceColumn = params.sourceColumn
@@ -126,8 +118,9 @@ export class EnhancedEmbeddingFunction<T extends EmbedType> extends EmbeddingFun
     return this.embed(data)
   }
 
-  async computeQueryEmbeddings(data: T): Promise<number[][]> {
-    return this.computeSourceEmbeddings([data])
+  async computeQueryEmbeddings(data: T): Promise<number[]> {
+    const sourceEmbeddings = await this.computeSourceEmbeddings([data])
+    return sourceEmbeddings.flat()
   }
 
   ndims(): number | undefined {
@@ -161,12 +154,6 @@ export async function createEmbeddingFunctionForLocalModel(
   const tokenize = setupTokenizeFunction(pipe.tokenizer)
   const embed = await setupEmbedFunction(pipe)
 
-  console.log('Calling create EnhancedEmbeddingFunction in LOCAL')
-  console.log(`Name: ${functionName}`)
-  console.log(`contextLength: ${pipe.model.config.hidden_size}`)
-  console.log(`sourceColumn: ${sourceColumn}`)
-  console.log(`Embed is undefined:`, embed)
-  console.log(`tokenize: ${JSON.stringify(tokenize)}`)
   return new EnhancedEmbeddingFunction({
     name: functionName,
     contextLength: pipe.model.config.hidden_size,
@@ -197,7 +184,6 @@ export async function createEmbeddingFunctionForRepo(
     pipe = (await pipeline('feature-extraction', repoName)) as Pipeline
   }
 
-  console.log(`Getting tokenizer and embed functions`)
   const tokenize = setupTokenizeFunction(pipe.tokenizer)
   const embed = await setupEmbedFunction(pipe)
 

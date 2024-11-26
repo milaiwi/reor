@@ -1,7 +1,6 @@
 import React from 'react'
 import { AppearanceSection, EditorSection, SearchSection } from './GeneralSections'
 
-
 /*
  *  General Page has the following format:
  *

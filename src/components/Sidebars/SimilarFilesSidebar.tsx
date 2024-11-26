@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 
 import { DBQueryResult } from 'electron/main/vector-database/schema'
 import { toast } from 'react-toastify'
@@ -14,13 +14,12 @@ import { useFileContext } from '@/contexts/FileContext'
 import { useWindowContentContext } from '@/contexts/WindowContentContext'
 
 interface SimilarFilesSidebarProps {
-  query_type: string
-};
+  queryType: string
+}
 
-const SimilarFilesSidebarComponent: React.FC<SimilarFilesSidebarProps> = ({ query_type }) => {
+const SimilarFilesSidebarComponent: React.FC<SimilarFilesSidebarProps> = ({ queryType }) => {
   const [similarEntries, setSimilarEntries] = useState<DBQueryResult[]>([])
   const [isLoadingSimilarEntries, setIsLoadingSimilarEntries] = useState(false)
-  console.log(`SimilarFilesSidebarComponent received query_type ${query_type}`)
   const { currentlyOpenFilePath, highlightData } = useFileContext()
   const { openContent: openTabContent } = useWindowContentContext()
 
@@ -36,30 +35,29 @@ const SimilarFilesSidebarComponent: React.FC<SimilarFilesSidebarProps> = ({ quer
     const sanitizedText = removeMd(fileContent.slice(0, 500))
     return sanitizedText
   }
-  const performSearchOnChunk = async (
-    sanitizedText: string,
-    fileToBeExcluded: string | null,
-  ): Promise<DBQueryResult[]> => {
-    try {
-      const databaseFields = await window.database.getDatabaseFields()
-      const filterString = `${databaseFields.NOTE_PATH} != '${fileToBeExcluded}'`
+  const performSearchOnChunk = useCallback(
+    async (sanitizedText: string, fileToBeExcluded: string | null): Promise<DBQueryResult[]> => {
+      try {
+        const databaseFields = await window.database.getDatabaseFields()
+        const filterString = `${databaseFields.NOTE_PATH} != '${fileToBeExcluded}'`
 
-      setIsLoadingSimilarEntries(true)
-      console.log(`Refetching queries for type: ${query_type}`)
-      const searchResults: DBQueryResult[] = await window.database.search(sanitizedText, 20, filterString, query_type)
+        setIsLoadingSimilarEntries(true)
+        const searchResults: DBQueryResult[] = await window.database.search(sanitizedText, 20, filterString, queryType)
 
-      setIsLoadingSimilarEntries(false)
-      return searchResults
-    } catch (error) {
-      toast.error(errorToStringRendererProcess(error), {
-        className: 'mt-5',
-        autoClose: false,
-        closeOnClick: false,
-        draggable: false,
-      })
-      return []
-    }
-  }
+        setIsLoadingSimilarEntries(false)
+        return searchResults
+      } catch (error) {
+        toast.error(errorToStringRendererProcess(error), {
+          className: 'mt-5',
+          autoClose: false,
+          closeOnClick: false,
+          draggable: false,
+        })
+        return []
+      }
+    },
+    [queryType],
+  )
 
   useEffect(() => {
     const handleNewFileOpen = async (path: string) => {
@@ -78,7 +76,7 @@ const SimilarFilesSidebarComponent: React.FC<SimilarFilesSidebarProps> = ({ quer
     if (currentlyOpenFilePath) {
       handleNewFileOpen(currentlyOpenFilePath)
     }
-  }, [currentlyOpenFilePath, query_type])
+  }, [currentlyOpenFilePath, queryType, performSearchOnChunk])
 
   const updateSimilarEntries = async () => {
     const sanitizedText = await getChunkForInitialSearchFromFile(currentlyOpenFilePath)

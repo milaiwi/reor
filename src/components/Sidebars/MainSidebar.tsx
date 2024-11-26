@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 import { ChatSidebar } from '../Chat/ChatSidebar'
 
@@ -19,11 +19,7 @@ const SidebarManager: React.FC<SidebarManagerProps> = ({ queryType }) => {
     <div className="size-full overflow-y-hidden">
       {sidebarShowing === 'files' && <FileExplorer />}
 
-      {sidebarShowing === 'search' && (
-        <SearchComponent
-          queryType={queryType}
-        />
-      )}
+      {sidebarShowing === 'search' && <SearchComponent queryType={queryType} />}
 
       {sidebarShowing === 'chats' && <ChatSidebar />}
     </div>

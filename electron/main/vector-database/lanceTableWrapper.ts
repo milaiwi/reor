@@ -28,9 +28,7 @@ class LanceDBTableWrapper {
   private embedFun!: EnhancedEmbeddingFunction<string>
 
   async initialize(dbConnection: Connection, userDirectory: string, embeddingModelConfig: EmbeddingModelConfig) {
-    console.log('Initialized the embedding function')
     this.embedFun = await createEmbeddingFunction(embeddingModelConfig, 'content')
-    console.log(`embedFun has embed with:`, this.embedFun.embed)
     this.lanceTable = await GetOrCreateLanceTable(dbConnection, this.embedFun, userDirectory)
   }
 
@@ -57,27 +55,16 @@ class LanceDBTableWrapper {
 
     const totalChunks = chunks.length
 
-    console.log('Started reducing chunks')
-    console.log('Total chunks:', totalChunks)
-    console.log(`Chunks: ${JSON.stringify(chunks)}`)
     await chunks.reduce(async (previousPromise, chunk, index) => {
       await previousPromise
       const arrowTableOfChunk = makeArrowTable(chunk)
-      console.log('Started adding arrowTableOfChunk to lanceTable ')
-      console.log(`ArrowTableChunk: ${arrowTableOfChunk}`)
 
-      const arrowSchema = arrowTableOfChunk.schema
-      const tableSchema = await this.lanceTable.schema()
-      console.log(`Have schemal: ${arrowSchema}`)
-      console.log(`Missing schema: ${tableSchema}`)
       await this.lanceTable.add(arrowTableOfChunk)
-      console.log('Finished adding arrowTableOfChunk to lanceTable ')
       const progress = (index + 1) / totalChunks
       if (onProgress) {
         onProgress(progress)
       }
     }, Promise.resolve())
-    console.log('Finished reducing chunks')
   }
 
   async deleteDBItemsByFilePaths(filePaths: string[]): Promise<void> {
@@ -145,7 +132,7 @@ class LanceDBTableWrapper {
     return mapped as DBEntry[]
   }
 
-  async getVectorForContent(content: string, fileName?: string) {
+  async getVectorForContent(content: string) {
     const embeddings = await this.embedFun.computeSourceEmbeddings([content])
     return embeddings[0]
   }

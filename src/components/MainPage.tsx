@@ -19,7 +19,7 @@ import CommonModals from './Common/CommonModals'
 
 const MainPageContent: React.FC = () => {
   const [showSimilarFiles, setShowSimilarFiles] = useState(false)
-  const [queryType, setQueryType] = useState<string>("")
+  const [queryType, setQueryType] = useState<string>('')
 
   const { currentlyOpenFilePath } = useFileContext()
 
@@ -29,12 +29,10 @@ const MainPageContent: React.FC = () => {
     const fetchParams = async () => {
       const tempGetQueryType = await window.electronStore.getSearchQueryType()
 
-      if (tempGetQueryType !== undefined)
-        setQueryType(tempGetQueryType)
+      if (tempGetQueryType !== undefined) setQueryType(tempGetQueryType)
     }
 
     const handleQueryTypeChange = (query_type: string) => {
-      console.log(`Query_type changed: ${query_type}`)
       setQueryType(query_type)
     }
 
@@ -59,7 +57,7 @@ const MainPageContent: React.FC = () => {
 
         <ResizableComponent resizeSide="right">
           <div className="size-full border-y-0 border-l-0 border-r-[0.001px] border-solid border-neutral-700">
-            <SidebarManager queryType={queryType}/>
+            <SidebarManager queryType={queryType} />
           </div>
         </ResizableComponent>
 
@@ -71,7 +69,7 @@ const MainPageContent: React.FC = () => {
             <WritingAssistant />
             {showSimilarFiles && (
               <div className="h-full shrink-0 overflow-y-auto overflow-x-hidden">
-                <SimilarFilesSidebarComponent query_type={queryType}/>
+                <SimilarFilesSidebarComponent queryType={queryType} />
               </div>
             )}
           </div>

@@ -14,11 +14,9 @@ import LanceDBTableWrapper, { convertRecordToDBType } from './lanceTableWrapper'
 import { DBEntry, DatabaseFields } from './schema'
 
 const convertFileTypeToDBType = async (table: LanceDBTableWrapper, file: FileInfo): Promise<DBEntry[]> => {
-  console.log(`Started reading from file:  ${file.name}`)
   const fileContent = readFile(file.path)
   const chunks = await chunkMarkdownByHeadingsAndByCharsIfBig(fileContent)
-  const vectorEmbeddings: number[] = await table.getVectorForContent(fileContent, file.name)
-  console.log(`Finished reading from file: ${file.name}`)
+  const vectorEmbeddings: number[] = await table.getVectorForContent(fileContent)
   const entries = chunks.map((content, index) => ({
     notepath: file.path,
     vector: vectorEmbeddings,
@@ -151,7 +149,6 @@ export const RepopulateTableWithMissingItems = async (
   const filePathsToRemove = itemsToRemove.map((x) => x.notepath)
   await table.deleteDBItemsByFilePaths(filePathsToRemove)
 
-  console.log(`Started compute db items to add or update: ${table.getVectorForContent}`)
   const dbItemsToAdd = await computeDbItemsToAddOrUpdate(filesInfoTree, tableArray, table)
 
   if (dbItemsToAdd.length === 0) {
@@ -159,12 +156,8 @@ export const RepopulateTableWithMissingItems = async (
     return
   }
 
-  console.log('Started flattened items to add ')
   const flattenedItemsToAdd = dbItemsToAdd.flat()
-  console.log('Finished flatted items to add ')
-  console.log('Started adding to table')
   await table.add(flattenedItemsToAdd, onProgress)
-  console.log('Finished adding to table')
 
   if (onProgress) onProgress(1)
 }
