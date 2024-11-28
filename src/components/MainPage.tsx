@@ -6,6 +6,7 @@ import React from 'react'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 
 import '../styles/global.css'
+import '../styles/editor.css'
 import ChatComponent from './Chat'
 import TitleBar from './TitleBar/TitleBar'
 import EditorManager from './Editor/EditorManager'

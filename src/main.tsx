@@ -6,6 +6,7 @@ import { toast } from 'react-toastify'
 
 import App from './App'
 import './styles/global.css'
+import './styles/editor.css'
 import errorToStringRendererProcess from './lib/error'
 
 if (process.env.NODE_ENV === 'production') {

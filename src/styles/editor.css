@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --heading-1: 2rem;
+    --heading-2: 1.5rem;
+}
+
+.bn-block-content[data-content-type="heading"] h1 {
+    font-size: var(--heading-1);
+  }
+  
+.bn-block-content[data-content-type="heading"] h2 {
+font-size: var(--heading-2);
+}
+
+.bn-container {
+    width: 100%;
+}
+
+.bn-block-group > .bn-block-outer:first-child {
+    padding-bottom: 1rem;
+}

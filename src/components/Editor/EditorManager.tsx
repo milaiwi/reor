@@ -67,34 +67,15 @@ const EditorManager: React.FC = () => {
 
   return (
     <div
-      className="relative size-full cursor-text overflow-hidden bg-dark-gray-c-eleven py-4 text-slate-400 opacity-80"
+      className="relative size-full cursor-text overflow-hidden bg-bn-colors-menu-background py-4 text-slate-400 text-white"
       onClick={() => editor?.focus()}
     >
-      {/* <SearchBar editor={editor} showSearch={showSearchBar} setShowSearch={setShowSearchBar} /> */}
-      {/* {contextMenuVisible && (
-        <EditorContextMenu
-          editor={editor}
-          menuPosition={menuPosition}
-          setMenuVisible={setContextMenuVisible}
-          hideMenu={hideMenu}
-        />
-      )} */}
-
       <div
-        className={`relative h-full ${editorFlex ? 'flex justify-center py-4 pl-4' : ''} ${showDocumentStats ? 'pb-3' : ''}`}
+        className={`relative h-full ${showDocumentStats ? 'pb-3' : ''}`}
       >
-        <div className="relative size-full overflow-y-auto">
-          {/* <EditorContent
-            className={`relative size-full bg-dark-gray-c-eleven ${editorFlex ? 'max-w-xl' : ''}`}
-            style={{
-              wordBreak: 'break-word',
-            }}
-            // onContextMenu={handleContextMenu}
-            onClick={handleClick}
-            editor={editor}
-          /> */}
+        <div className={`relative size-full overflow-y-auto ${editorFlex ? 'flex justify-center py-2' : ''}`}>
           <BlockNoteView
-            className={`relative size-full bg-dark-gray-c-eleven ${editorFlex ? 'max-w-xl' : ''}`}
+            className={`relative size-full  ${editorFlex ? 'max-w-3xl' : ''}`}
             style={{
               wordBreak: 'break-word',
             }}

@@ -23,6 +23,7 @@ export default {
   			'moodly-blue': '#7f7dcb',
   			'bg-000': 'hsl(var(--bg-000) / 1.0)',
   			'text-gen-100': 'hsl(var(--gen-100) / 1.0)',
+			'bn-colors-menu-background': '#1f1f1f',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
