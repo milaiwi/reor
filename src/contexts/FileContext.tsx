@@ -117,6 +117,7 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   const loadFileIntoEditor = async (filePath: string) => {
+    console.log(`Loading file into editor: ${filePath}`)
     setCurrentlyChangingFilePath(true)
     await writeEditorContentToDisk(editor, currentlyOpenFilePath)
     if (currentlyOpenFilePath && needToIndexEditorContent) {
@@ -125,7 +126,9 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
     const fileContent = (await window.fileSystem.readFile(filePath)) ?? ''
     // editor?.commands.setContent(fileContent)
-    editor.tryParseMarkdownToBlocks(fileContent)
+    console.log(`Parsing fileCOntent: ${fileContent}`)
+    const blocks = await editor.tryParseMarkdownToBlocks(fileContent)
+    editor.replaceBlocks(editor.document, blocks)
     setCurrentlyOpenFilePath(filePath)
     setCurrentlyChangingFilePath(false)
     const parentDirectory = await window.path.dirname(filePath)
@@ -133,6 +136,7 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   const openOrCreateFile = async (filePath: string, optionalContentToWriteOnCreate?: string): Promise<void> => {
+    console.log(`Inside openOrCreateFile: ${filePath}`)
     const absolutePath = await createFileIfNotExists(filePath, optionalContentToWriteOnCreate)
     await loadFileIntoEditor(absolutePath)
   }
