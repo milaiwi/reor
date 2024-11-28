@@ -1,24 +1,14 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import React, { createContext, useContext, ReactNode, useEffect, useState } from 'react'
-import { MathExtension } from '@aarkue/tiptap-math-extension'
-import Document from '@tiptap/extension-document'
-import Paragraph from '@tiptap/extension-paragraph'
-import Table from '@tiptap/extension-table'
-import TableCell from '@tiptap/extension-table-cell'
-import TableHeader from '@tiptap/extension-table-header'
-import TableRow from '@tiptap/extension-table-row'
-import TaskItem from '@tiptap/extension-task-item'
-import TaskList from '@tiptap/extension-task-list'
-import Text from '@tiptap/extension-text'
-import TextStyle from '@tiptap/extension-text-style'
-import { Editor, useEditor } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import CharacterCount from '@tiptap/extension-character-count'
 import { toast } from 'react-toastify'
-import { Markdown } from 'tiptap-markdown'
 import { useDebounce } from 'use-debounce'
 import { FileInfo, FileInfoTree } from 'electron/main/filesystem/types'
+import '@blocknote/core/fonts/inter.css'
+import '@blocknote/mantine/style.css'
+import { useCreateBlockNote } from '@blocknote/react'
+import { BlockNoteEditor } from '@blocknote/core'
 import {
   findRelevantDirectoriesToBeExpanded,
   flattenFileInfoTree,
@@ -29,10 +19,8 @@ import {
   sortFilesAndDirectories,
 } from '@/lib/file'
 import { SuggestionsState } from '@/components/Editor/BacklinkSuggestionsDisplay'
-import HighlightExtension, { HighlightData } from '@/components/Editor/HighlightExtension'
-import { RichTextLink } from '@/components/Editor/RichTextLink'
+import { HighlightData } from '@/components/Editor/HighlightExtension'
 import '@/styles/tiptap.scss'
-import SearchAndReplace from '@/components/Editor/Search/SearchAndReplaceExtension'
 import getMarkdown from '@/components/Editor/utils'
 import useOrderedSet from '../lib/hooks/use-ordered-set'
 import welcomeNote from '@/lib/welcome-note'
@@ -45,7 +33,7 @@ type FileContextType = {
   currentlyOpenFilePath: string | null
   setCurrentlyOpenFilePath: React.Dispatch<React.SetStateAction<string | null>>
   saveCurrentlyOpenedFile: () => Promise<void>
-  editor: Editor | null
+  editor: BlockNoteEditor | null
   navigationHistory: string[]
   addToNavigationHistory: (value: string) => void
   openOrCreateFile: (filePath: string, optionalContentToWriteOnCreate?: string) => Promise<void>
@@ -136,7 +124,8 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setNeedToIndexEditorContent(false)
     }
     const fileContent = (await window.fileSystem.readFile(filePath)) ?? ''
-    editor?.commands.setContent(fileContent)
+    // editor?.commands.setContent(fileContent)
+    editor.tryParseMarkdownToBlocks(fileContent)
     setCurrentlyOpenFilePath(filePath)
     setCurrentlyChangingFilePath(false)
     const parentDirectory = await window.path.dirname(filePath)
@@ -148,71 +137,75 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     await loadFileIntoEditor(absolutePath)
   }
 
-  const editor = useEditor({
-    autofocus: true,
-    onUpdate() {
-      setNeedToWriteEditorContentToDisk(true)
-      setNeedToIndexEditorContent(true)
-    },
-    editorProps: {},
-    extensions: [
-      StarterKit,
-      Document,
-      Paragraph,
-      Text,
-      TaskList,
-      MathExtension.configure({
-        evaluation: true,
-      }),
-      Table.configure({
-        resizable: true,
-      }),
-      TableRow,
-      TableHeader,
-      TableCell,
-      TextStyle,
-      SearchAndReplace.configure({
-        searchResultClass: 'bg-yellow-400',
-        disableRegex: false,
-      }),
-      Markdown.configure({
-        html: true,
-        tightLists: true,
-        tightListClass: 'tight',
-        bulletListMarker: '-',
-        linkify: true,
-        breaks: true,
-        transformPastedText: true,
-        transformCopiedText: false,
-      }),
-      TaskItem.configure({
-        nested: true,
-      }),
-      HighlightExtension(setHighlightData),
-      RichTextLink.configure({
-        linkOnPaste: true,
-        openOnClick: true,
-      }),
-      CharacterCount,
-    ],
-  })
+  // const editor = useEditor({
+  //   autofocus: true,
+  //   onUpdate() {
+  //     setNeedToWriteEditorContentToDisk(true)
+  //     setNeedToIndexEditorContent(true)
+  //   },
+  //   editorProps: {},
+  //   extensions: [
+  //     StarterKit,
+  //     Document,
+  //     Paragraph,
+  //     Text,
+  //     TaskList,
+  //     MathExtension.configure({
+  //       evaluation: true,
+  //     }),
+  //     Table.configure({
+  //       resizable: true,
+  //     }),
+  //     TableRow,
+  //     TableHeader,
+  //     TableCell,
+  //     TextStyle,
+  //     SearchAndReplace.configure({
+  //       searchResultClass: 'bg-yellow-400',
+  //       disableRegex: false,
+  //     }),
+  //     Markdown.configure({
+  //       html: true,
+  //       tightLists: true,
+  //       tightListClass: 'tight',
+  //       bulletListMarker: '-',
+  //       linkify: true,
+  //       breaks: true,
+  //       transformPastedText: true,
+  //       transformCopiedText: false,
+  //     }),
+  //     TaskItem.configure({
+  //       nested: true,
+  //     }),
+  //     HighlightExtension(setHighlightData),
+  //     RichTextLink.configure({
+  //       linkOnPaste: true,
+  //       openOnClick: true,
+  //     }),
+  //     CharacterCount,
+  //   ],
+  // })
+  const editor: BlockNoteEditor = useCreateBlockNote()
+
+  // useEffect(() => {
+  //   if (editor) {
+  //     editor.setOptions({
+  //       editorProps: {
+  //         attributes: {
+  //           spellcheck: spellCheckEnabled.toString(),
+  //         },
+  //       },
+  //     })
+  //   }
+  // }, [spellCheckEnabled, editor])
+
+  // const [debouncedEditor] = useDebounce(editor?.state.doc.content, 3000)
+  const [debouncedEditor] = useDebounce(editor.document, 3000)
 
   useEffect(() => {
-    if (editor) {
-      editor.setOptions({
-        editorProps: {
-          attributes: {
-            spellcheck: spellCheckEnabled.toString(),
-          },
-        },
-      })
-    }
-  }, [spellCheckEnabled, editor])
-
-  const [debouncedEditor] = useDebounce(editor?.state.doc.content, 3000)
-
-  useEffect(() => {
+    console.log(`File changed, writing to disk`)
     if (debouncedEditor && !currentlyChangingFilePath) {
+      console.log(`Called write editor`)
       writeEditorContentToDisk(editor, currentlyOpenFilePath)
       if (editor && currentlyOpenFilePath) {
         handleNewFileRenaming(editor, currentlyOpenFilePath)
@@ -224,9 +217,11 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     await writeEditorContentToDisk(editor, currentlyOpenFilePath)
   }
 
-  const writeEditorContentToDisk = async (_editor: Editor | null, filePath: string | null) => {
+  const writeEditorContentToDisk = async (_editor: BlockNoteEditor | null, filePath: string | null) => {
+    console.log(`Inside writeEditor at filePath ${filePath}`)
     if (filePath !== null && needToWriteEditorContentToDisk && _editor) {
-      const markdownContent = getMarkdown(_editor)
+      const markdownContent = await getMarkdown(_editor)
+      console.log(`Writing markdownContent: ${markdownContent}`)
       if (markdownContent !== null) {
         await window.fileSystem.writeFile({
           filePath,
@@ -237,14 +232,17 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }
 
-  const handleNewFileRenaming = async (_editor: Editor, filePath: string) => {
+  const handleNewFileRenaming = async (_editor: BlockNoteEditor, filePath: string) => {
     const fileInfo = vaultFilesFlattened.find((f) => f.path === filePath)
     if (
       fileInfo &&
       fileInfo.name.startsWith('Untitled') &&
       new Date().getTime() - fileInfo.dateCreated.getTime() < 60000
     ) {
-      const editorText = _editor.getText()
+      // const editorText = _editor.getText()
+      // const editorText = _editor.document[0].content?.toString()
+      const editorText = _editor.document[0]?.content ? _editor.document[0]?.content[0]?.text : ''
+      console.log(`Found editorText: ${editorText}`)
       if (editorText) {
         const newProposedFileName = generateFileNameFromFileContent(editorText)
         if (newProposedFileName) {
@@ -291,8 +289,8 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     const handleWindowClose = async () => {
-      if (currentlyOpenFilePath !== null && editor && editor.getHTML() !== null) {
-        const markdown = getMarkdown(editor)
+      if (currentlyOpenFilePath !== null && editor && editor.blocksToHTMLLossy() !== null) {
+        const markdown = await getMarkdown(editor)
         await window.fileSystem.writeFile({
           filePath: currentlyOpenFilePath,
           content: markdown,
@@ -312,7 +310,8 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (!path) return false
     await window.fileSystem.deleteFile(path)
     if (currentlyOpenFilePath === path) {
-      editor?.commands.setContent('')
+      // editor?.commands.setContent('')
+      editor.replaceBlocks(editor.document, [])
       setCurrentlyOpenFilePath(null)
     }
     return true
