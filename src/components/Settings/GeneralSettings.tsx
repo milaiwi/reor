@@ -110,7 +110,7 @@ export const EditorSection = () => {
 
 const GeneralSettings = () => {
   return (
-    <div className="w-full flex-col justify-between rounded bg-dark-gray-c-three">
+    <div className="w-full flex-col justify-between rounded bg-editor-two">
       <h2 className="mb-0 text-2xl font-semibold text-white">Editor</h2>
       <EditorSection />
     </div>

@@ -59,7 +59,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   return (
     <div className="flex w-full" ref={wrapperRef}>
       <div
-        className="flex w-full cursor-pointer items-center  justify-between rounded-md border border-gray-300 bg-dark-gray-c-eight py-2 hover:bg-dark-gray-c-ten"
+        className="flex w-full cursor-pointer items-center  justify-between rounded-md border border-gray-300 bg-editor-three py-2 hover:bg-editory-four"
         onClick={toggleDropdown}
       >
         {centerText ? <span /> : null}
@@ -81,7 +81,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
           {options.map((option) => (
             <div
               key={option.value}
-              className="flex cursor-pointer items-center justify-between bg-dark-gray-c-eight py-2 pl-6 pr-2 text-white hover:bg-dark-gray-c-ten "
+              className="flex cursor-pointer items-center justify-between bg-editor-three py-2 pl-6 pr-2 text-white hover:bg-editor-four"
               onClick={() => handleOptionClick(option.value)}
             >
               <span className="w-full">{option.label}</span>

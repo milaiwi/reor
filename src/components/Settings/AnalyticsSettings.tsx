@@ -31,7 +31,7 @@ const AnalyticsSettings: React.FC<AnalyticsSettingsProps> = () => {
   }
 
   return (
-    <div className="w-full rounded bg-dark-gray-c-three pb-7 ">
+    <div className="w-full rounded bg-editor-two pb-7 ">
       <h2 className="mb-0 text-2xl font-semibold text-white">Analytics</h2>{' '}
       <p className="mb-2 mt-5 text-sm text-gray-200">
         Reor tracks anonymous usage data to help us understand how the app is used and which features are popular. You

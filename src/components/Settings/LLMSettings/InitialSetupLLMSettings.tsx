@@ -21,7 +21,7 @@ const InitialSetupLLMSettings: React.FC<InitialSetupLLMSettingsProps> = () => {
   }
 
   return (
-    <div className="flex w-full flex-col justify-between rounded bg-dark-gray-c-three">
+    <div className="flex w-full flex-col justify-between rounded bg-editor-two">
       <div className="flex items-center justify-between border-0 border-b-2 border-solid border-neutral-700 py-1">
         <p className="mb-2 pb-3 text-gray-100">LLM</p>
         <Dialog open={isSetupModalOpen} onOpenChange={handleOpenChange}>
@@ -30,7 +30,7 @@ const InitialSetupLLMSettings: React.FC<InitialSetupLLMSettingsProps> = () => {
               className={`flex cursor-pointer items-center justify-between rounded-md border border-none border-gray-300 px-3 py-2 ${
                 isSetupComplete
                   ? 'bg-green-700 text-white hover:bg-green-800'
-                  : 'bg-dark-gray-c-eight hover:bg-dark-gray-c-ten'
+                  : 'bg-editor-three hover:bg-editor-four'
               } font-normal transition-colors duration-200`}
               placeholder=""
             >

@@ -2,11 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-@import './editor.css'
+@import './editor.css';
 
 :root {
   --bg-000: 60 1.8% 22%;
   --gen-100: 50 23.1% 94.9%;
+
+  --bg-editor-two: white;
+  --bg-editor-three: white;
+  --bg-editor-four: white;
+  --bg-editor-five: white;
 }
 
 html,
@@ -190,6 +195,13 @@ button {
 .my-day-picker .rdp-day {
   @apply w-6 h-6 leading-6;
   /* Adjust day cell size */
+}
+
+[data-theme="dark"] {
+  --bg-editor-two: '#1e1e1e';
+  --bg-editor-three: '#333333';
+  --bg-editor-four: '#242424';
+  --bg-editor-five: '#2e2e2e';
 }
 
 @layer base {

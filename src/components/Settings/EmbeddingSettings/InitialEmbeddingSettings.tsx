@@ -47,7 +47,7 @@ const InitialEmbeddingModelSettings: React.FC<InitialEmbeddingModelSettingsProps
   }
 
   return (
-    <div className="flex w-full items-center justify-between rounded bg-dark-gray-c-three">
+    <div className="flex w-full items-center justify-between rounded bg-editor-two">
       <div className="flex flex-col">
         <p className="mb-0 text-gray-100">Embedding Model</p>{' '}
         <p className="text-xs text-gray-400">

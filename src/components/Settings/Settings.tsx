@@ -48,7 +48,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     >
       <DialogContent className="border-none bg-transparent p-0 [&>button]:hidden">
         <div className="flex h-[80vh] w-[80vw] md:w-[70vw] lg:w-[50vw]">
-          <div className="flex w-[150px] flex-col rounded-l-lg border-y-0 border-l-0 border-r-[0.1px] border-solid border-gray-700 bg-dark-gray-c-seven p-2 text-white">
+          <div className="flex w-[150px] flex-col rounded-l-lg border-y-0 border-l-0 border-r-[0.1px] border-solid border-gray-700 bg-editor-five p-2 text-white">
             <div
               className={`mt-2 flex cursor-pointer items-center rounded border-b border-gray-200 p-2 text-sm hover:bg-neutral-600 ${
                 activeTab === SettingsTab.GeneralSettingsTab
@@ -87,7 +87,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
           </div>
 
-          <div className="w-full flex-1 overflow-y-auto rounded-r-lg bg-dark-gray-c-three px-4">
+          <div className="w-full flex-1 overflow-y-auto rounded-r-lg bg-editor-three px-4">
             {activeTab === SettingsTab.GeneralSettingsTab && <GeneralSettings />}
             {activeTab === SettingsTab.LLMSettingsTab && <LLMSettingsContent />}
             {activeTab === SettingsTab.EmbeddingModelTab && (

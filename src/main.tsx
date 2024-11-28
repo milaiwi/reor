@@ -8,6 +8,7 @@ import App from './App'
 import './styles/global.css'
 import './styles/editor.css'
 import errorToStringRendererProcess from './lib/error'
+import { ThemeProvider } from '@/contexts/ThemeContext'
 
 if (process.env.NODE_ENV === 'production') {
   Sentry.init({
@@ -31,4 +32,8 @@ window.addEventListener('unhandledrejection', (event) => {
   }
 })
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(<App />)
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+  <ThemeProvider>
+    <App />
+  </ThemeProvider>
+)
