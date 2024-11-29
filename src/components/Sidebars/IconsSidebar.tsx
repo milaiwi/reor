@@ -7,6 +7,8 @@ import { IoChatbubbleEllipsesOutline } from 'react-icons/io5'
 import { MdSettings } from 'react-icons/md'
 import { VscNewFolder } from 'react-icons/vsc'
 import { HiOutlinePencilAlt } from 'react-icons/hi'
+import { useTheme } from '@/contexts/ThemeContext'
+import { FaMoon, FaSun } from 'react-icons/fa';
 
 import { useModalOpeners } from '../../contexts/ModalContext'
 import { useChatContext } from '@/contexts/ChatContext'
@@ -18,6 +20,7 @@ export interface IconsSidebarProps {
 
 const IconsSidebar: React.FC<IconsSidebarProps> = ({ getShortcutDescription }) => {
   const { sidebarShowing, setSidebarShowing } = useChatContext()
+  const { theme, toggleTheme } = useTheme()
 
   const { isSettingsModalOpen, setIsSettingsModalOpen, setIsNewDirectoryModalOpen } = useModalOpeners()
   const { createUntitledNote } = useContentContext()
@@ -91,12 +94,19 @@ const IconsSidebar: React.FC<IconsSidebarProps> = ({ getShortcutDescription }) =
       </div>
 
       <div className="grow border-yellow-300" />
+      <button
+        className="gap-2 pb-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white bg-transparent cursor-pointer"
+        onClick={toggleTheme}
+      >
+        {theme === 'light' ? <FaSun /> : <FaMoon />}
+      </button>
       <div
         className="mb-[2px] flex w-full cursor-pointer items-center justify-center border-none bg-transparent pb-2"
         onClick={() => window.electronUtils.openNewWindow()}
       >
         <GrNewWindow className="text-gray-100" color="gray" size={18} title="Open New Vault" />
       </div>
+
       <button
         className="flex w-full cursor-pointer items-center justify-center border-none bg-transparent pb-2"
         onClick={() => setIsSettingsModalOpen(!isSettingsModalOpen)}

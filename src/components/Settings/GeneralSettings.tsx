@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Switch from '@mui/material/Switch'
 
+
 export const EditorSection = () => {
   const [tempSpellCheckEnabled, setTempSpellCheckEnabled] = useState(false)
   const [documentStatsEnabled, setDocumentStatsEnabled] = useState(false)
@@ -51,9 +52,9 @@ export const EditorSection = () => {
       <div className="h-[2px] w-full bg-neutral-700" />
       <div className="flex w-full flex-wrap items-center justify-between">
         <div className="flex w-[70%] flex-col justify-center">
-          <p className="xs:text-xs flex flex-col text-base text-gray-100 opacity-80 sm:text-sm">
+          <p className="xs:text-xs flex flex-col text-base text-generic-color opacity-80 sm:text-sm">
             Content Flex Center
-            <span className="m-0 pt-1 text-xs text-gray-100">
+            <span className="m-0 pt-1 text-xs text-generic-color">
               Centers content inside editor. Recommended for larger screens
             </span>
           </p>
@@ -71,9 +72,9 @@ export const EditorSection = () => {
       <div className="h-[2px] w-full bg-neutral-700" />
       <div className="flex w-full flex-wrap items-center justify-between">
         <div className="flex w-[70%] flex-col justify-center">
-          <p className="xs:text-xs flex flex-col text-base text-gray-100 opacity-80 sm:text-sm">
+          <p className="xs:text-xs flex flex-col text-base text-generic-color opacity-80 sm:text-sm">
             Spell Check
-            <span className="m-0 pt-1 text-xs text-gray-100">
+            <span className="m-0 pt-1 text-xs text-generic-color">
               Note: Quit and restart the app for this to take effect
             </span>
           </p>
@@ -88,9 +89,9 @@ export const EditorSection = () => {
       </div>
       <div className="flex w-full flex-wrap items-center justify-between">
         <div className="flex w-[70%] flex-col justify-center">
-          <p className="xs:text-xs flex flex-col text-base text-gray-100 opacity-80 sm:text-sm">
+          <p className="xs:text-xs flex flex-col text-base text-generic-color opacity-80 sm:text-sm">
             Document Statistics
-            <span className="m-0 pt-1 text-xs text-gray-100">
+            <span className="m-0 pt-1 text-xs text-generic-color">
               Display real-time word and character statistics while editing your document
             </span>
           </p>
@@ -111,7 +112,7 @@ export const EditorSection = () => {
 const GeneralSettings = () => {
   return (
     <div className="w-full flex-col justify-between rounded bg-editor-two">
-      <h2 className="mb-0 text-2xl font-semibold text-white">Editor</h2>
+      <h2 className="mb-0 text-2xl font-semibold text-generic-color">Editor</h2>
       <EditorSection />
     </div>
   )

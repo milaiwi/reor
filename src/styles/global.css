@@ -12,6 +12,8 @@
   --bg-editor-three: white;
   --bg-editor-four: white;
   --bg-editor-five: white;
+
+  --text-color: black;
 }
 
 html,
@@ -202,6 +204,8 @@ button {
   --bg-editor-three: '#333333';
   --bg-editor-four: '#242424';
   --bg-editor-five: '#2e2e2e';
+
+  --text-color: "white"
 }
 
 @layer base {

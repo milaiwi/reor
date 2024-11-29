@@ -30,7 +30,7 @@ interface FileExplorerProps {
 }
 
 const FileSidebar: React.FC<FileExplorerProps> = ({ lheight }) => {
-  const [listHeight, setListHeight] = useState(lheight ?? window.innerHeight - 50)
+  const [listHeight, setListHeight] = useState(lheight ?? window.innerHeight - 65)
   const { vaultFilesTree, expandedDirectories, renameFile, setSelectedDirectory } = useFileContext()
 
   const handleDrop = async (e: React.DragEvent) => {
@@ -53,7 +53,7 @@ const FileSidebar: React.FC<FileExplorerProps> = ({ lheight }) => {
 
   useEffect(() => {
     const updateHeight = () => {
-      setListHeight(lheight ?? window.innerHeight - 50)
+      setListHeight(lheight ?? window.innerHeight - 65)
     }
     window.addEventListener('resize', updateHeight)
     return () => {

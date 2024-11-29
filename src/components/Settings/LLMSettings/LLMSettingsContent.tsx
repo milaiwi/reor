@@ -28,7 +28,7 @@ const LLMSettingsContent: React.FC<LLMSettingsContentProps> = () => {
 
   return (
     <div>
-      <h2 className="mb-4 font-semibold text-white">LLM</h2>
+      <h2 className="mb-4 font-semibold text-generic-color">LLM</h2>
       {llmConfigs.length > 0 && (
         <SettingsRow title="Default LLM" description="Select your default language model">
           <DefaultLLMSelector llmConfigs={llmConfigs} defaultLLM={defaultLLM} setDefaultLLM={setDefaultLLM} />

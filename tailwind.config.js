@@ -20,6 +20,7 @@ export default {
 			'bn-colors-menu-background': '#1f1f1f',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
+			'generic-color': 'var(--text-color)',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'

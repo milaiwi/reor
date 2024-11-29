@@ -53,7 +53,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               className={`mt-2 flex cursor-pointer items-center rounded border-b border-gray-200 p-2 text-sm hover:bg-neutral-600 ${
                 activeTab === SettingsTab.GeneralSettingsTab
                   ? 'bg-neutral-700 font-semibold text-white'
-                  : 'text-gray-200'
+                  : 'text-generic-color'
               }`}
               onClick={() => setActiveTab(SettingsTab.GeneralSettingsTab)}
             >
@@ -61,7 +61,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
             <div
               className={`flex cursor-pointer items-center rounded border-b border-gray-200 p-2 text-sm hover:bg-neutral-600 ${
-                activeTab === SettingsTab.LLMSettingsTab ? 'bg-neutral-700 font-semibold text-white' : 'text-gray-200'
+                activeTab === SettingsTab.LLMSettingsTab ? 'bg-neutral-700 font-semibold text-white' : 'text-generic-color'
               }`}
               onClick={() => setActiveTab(SettingsTab.LLMSettingsTab)}
             >
@@ -71,7 +71,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               className={`flex cursor-pointer items-center rounded border-b border-gray-200 p-2 text-sm hover:bg-neutral-600 ${
                 activeTab === SettingsTab.EmbeddingModelTab
                   ? 'bg-neutral-700 font-semibold text-white'
-                  : 'text-gray-200'
+                  : 'text-generic-color'
               }`}
               onClick={() => setActiveTab(SettingsTab.EmbeddingModelTab)}
             >
@@ -79,7 +79,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
             <div
               className={`flex cursor-pointer items-center rounded border-b border-gray-200 p-2 text-sm hover:bg-neutral-600 ${
-                activeTab === SettingsTab.AnalyticsTab ? 'bg-neutral-700 font-semibold text-white' : 'text-gray-200'
+                activeTab === SettingsTab.AnalyticsTab ? 'bg-neutral-700 font-semibold text-white' : 'text-generic-color'
               }`}
               onClick={() => setActiveTab(SettingsTab.AnalyticsTab)}
             >
