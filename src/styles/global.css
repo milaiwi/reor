@@ -19,6 +19,8 @@
   --text-gray-color: #8f8d8d;
   --text-lgray-color: #CBD5E1;
   --header-gray-color: #595959;
+
+  --input-gray-color: #F4F4F4;
 }
 
 html,
@@ -217,6 +219,8 @@ button {
   --text-gray-color: #BABABA;
   --text-lgray-color: #94A3B8;
   --header-gray-color: white;
+
+  --input-gray-color: #2f2f2f;
 }
 
 input[type="text"] {

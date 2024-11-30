@@ -29,6 +29,7 @@ export default {
 			'gray-color': 'var(--text-gray-color)',
 			'lgray-color': 'var(--text-lgray-color)',
 			'hd-gray-color': 'var(--header-gray-color)',
+			'input-gray-color': 'var(--input-gray-color)',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'

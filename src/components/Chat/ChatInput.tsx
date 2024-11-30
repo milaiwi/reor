@@ -49,7 +49,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   return (
     <div className="flex w-full">
-      <div className="z-50 flex w-full flex-col overflow-hidden rounded border-2 border-solid border-border bg-neutral-700 focus-within:ring-1 focus-within:ring-ring">
+      <div className="z-50 flex w-full flex-col overflow-hidden rounded bg-input-gray-color focus-within:ring-1 focus-within:ring-ring hover:ring-1">
         {/* <Select value={selectedLLM}>
           <SelectTrigger className="h-7 w-32 border-0 text-[10px] text-gray-300 focus:ring-0 focus:ring-offset-0">
             <SelectValue placeholder="Tools" />

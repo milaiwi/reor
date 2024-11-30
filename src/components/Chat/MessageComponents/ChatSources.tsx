@@ -56,7 +56,7 @@ const ChatSources: React.FC<ChatSourcesProps> = ({ contextItems }) => {
           <HoverCard key={getItemPath(contextItem)} openDelay={600}>
             <HoverCardTrigger>
               <Card
-                className="flex h-10 w-28 shrink-0 cursor-pointer items-center justify-center bg-secondary"
+                className="flex h-10 w-28 shrink-0 cursor-pointer items-center justify-center bg-input-gray-color hover:bg-item-hover"
                 onClick={() => handleOpenContent(getItemPath(contextItem))}
               >
                 <CardDescription className="overflow-hidden break-all px-1 text-center text-xs">
@@ -64,7 +64,7 @@ const ChatSources: React.FC<ChatSourcesProps> = ({ contextItems }) => {
                 </CardDescription>
               </Card>
             </HoverCardTrigger>
-            <HoverCardContent className="z-[100] max-h-[60vh] w-80 overflow-y-auto" sideOffset={5}>
+            <HoverCardContent className="z-[100] max-h-[60vh] w-80 overflow-y-auto bg-input-gray-color" sideOffset={5}>
               <div className="">
                 <MarkdownRenderer content={getItemContent(contextItem)} />
               </div>
