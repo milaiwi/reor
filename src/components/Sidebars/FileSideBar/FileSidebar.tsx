@@ -66,7 +66,7 @@ const FileSidebar: React.FC<FileExplorerProps> = ({ lheight }) => {
 
   return (
     <div
-      className="h-full grow px-1 pt-2 opacity-70"
+      className="h-full grow px-1 pt-2 bg-editor-four"
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onClick={handleClick}

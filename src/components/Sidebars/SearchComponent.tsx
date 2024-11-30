@@ -57,8 +57,8 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
   )
 
   return (
-    <div className="h-below-titlebar overflow-y-auto overflow-x-hidden p-1">
-      <div className="relative mr-1 rounded bg-neutral-800 p-2">
+    <div className="h-below-titlebar overflow-y-auto overflow-x-hidden p-1 bg-editor-four">
+      <div className="relative mr-1 rounded m-2">
         <span className="absolute inset-y-0 left-0 mt-[2px] flex items-center pl-3">
           <FaSearch className="text-lg text-gray-200" size={14} />
         </span>

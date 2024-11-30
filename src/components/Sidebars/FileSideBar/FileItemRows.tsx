@@ -94,9 +94,9 @@ const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data })
     }
   }, [deleteFile, file.path, isDirectory])
 
-  const itemClasses = `flex items-center cursor-pointer px-2 py-1 border-b border-gray-200 hover:bg-neutral-700 h-full mt-0 mb-0 text-cyan-100 font-sans text-xs leading-relaxed rounded-md ${
-    isSelected ? 'bg-neutral-700 text-white font-semibold' : 'text-gray-200'
-  } ${isDragOver ? 'bg-neutral-500' : ''}`
+  const itemClasses = `flex items-center cursor-pointer px-2 py-1 border-b border-gray-200 hover:bg-item-hover 
+    h-full mt-0 mb-0 text-gray-color font-sans text-xs leading-relaxed rounded-md 
+    ${isSelected ? 'bg-item-hover  text-white font-semibold' : 'text-generic-color'} ${isDragOver ? 'bg-neutral-500' : ''}`
 
   const renderContextMenuItems = () => (
     <>
@@ -124,7 +124,7 @@ const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data })
           >
             <div onClick={clickOnFileOrDirectory} className={itemClasses}>
               {isDirectory && (
-                <span className="mr-2 mt-1 text-gray-200/20">
+                <span className="mr-2 mt-1 text-gray-color">
                   {isExpanded ? (
                     <FaChevronDown title="Collapse Directory" />
                   ) : (

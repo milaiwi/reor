@@ -60,14 +60,14 @@ const EmbeddingModelSettings: React.FC<EmbeddingModelManagerProps> = ({
   }
 
   return (
-    <div className="flex size-full flex-col justify-between rounded bg-editor-two">
+    <div className="flex size-full flex-col justify-between rounded">
       <div>
-        <h2 className="mb-0 text-2xl font-semibold text-white">Embedding Model</h2>{' '}
+        <h2 className="mb-0 text-2xl font-semibold text-generic-color">Embedding Model</h2>{' '}
         <div className="mt-2 flex w-full items-center justify-between gap-5 border-0 border-b-2 border-solid border-neutral-700 pb-2">
           <div className="flex-col">
-            <p className="mt-5 text-gray-100">
+            <p className="mt-5 text-generic-color">
               Select Model
-              <p className="text-xs text-gray-100 opacity-50">If you change this your files will be re-indexed</p>
+              <p className="text-xs text-generic-color opacity-50">If you change this your files will be re-indexed</p>
             </p>{' '}
           </div>
           <div className="flex w-[150px] items-end">
@@ -82,8 +82,8 @@ const EmbeddingModelSettings: React.FC<EmbeddingModelManagerProps> = ({
         </div>
         <div className="flex w-full items-center justify-between gap-5 border-0 border-b-2 border-solid border-neutral-700 pb-2">
           <div className="flex-col">
-            <h4 className="mb-0 font-normal text-gray-200">Custom Embedding Model</h4>
-            <p className="text-xs text-gray-100 opacity-50">
+            <h4 className="mb-0 font-normal text-generic-color">Custom Embedding Model</h4>
+            <p className="text-xs text-generic-color opacity-50">
               Reor will download a HuggingFace embedding model for you.
             </p>
           </div>
@@ -95,8 +95,8 @@ const EmbeddingModelSettings: React.FC<EmbeddingModelManagerProps> = ({
         </div>
         <ChunkSizeSettings>
           <div className="flex-col">
-            <h4 className="mb-0 font-normal text-gray-200">Change Chunk Size</h4>
-            <p className="text-xs text-gray-100 opacity-50">
+            <h4 className="mb-0 font-normal text-generic-color">Change Chunk Size</h4>
+            <p className="text-xs text-generic-color opacity-50">
               A larger chunk size means more context is fed to the model at the cost of &quot;needle in a haystack&quot;
               effects.
             </p>
@@ -104,7 +104,7 @@ const EmbeddingModelSettings: React.FC<EmbeddingModelManagerProps> = ({
         </ChunkSizeSettings>
       </div>
       {/* Warning message at the bottom */}
-      <p className="text-xs text-gray-100 opacity-50">
+      <p className="text-xs text-generic-color opacity-50">
         <i>
           Note: If you notice some lag in the editor it is likely because you chose too large of an embedding model...
         </i>

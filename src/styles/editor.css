@@ -19,6 +19,14 @@ font-size: var(--heading-2);
     width: 100%;
 }
 
+.ProseMirror.bn-editor.bn-default-styles {
+    background-color: white;
+}
+  
+[data-theme="dark"] .ProseMirror.bn-editor.bn-default-styles {
+    background-color: #1e1e1e;
+}
+
 .bn-block-group > .bn-block-outer:first-child {
     padding-bottom: 1rem;
 }

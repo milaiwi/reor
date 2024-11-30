@@ -17,7 +17,7 @@ export const ChatItem: React.FC<ChatItemProps> = ({ chatMetadata }) => {
   const itemClasses = `
     flex items-center cursor-pointer py-2 px-3 rounded-md
     transition-colors duration-150 ease-in-out
-    ${chatMetadata.id === currentChat?.id ? 'bg-neutral-700 text-white' : 'text-gray-300 hover:bg-neutral-800'}
+    ${chatMetadata.id === currentChat?.id ? 'bg-neutral-700 text-white' : 'text-gray-color hover:bg-item-hover'}
   `
 
   const handleDeleteChat = () => {
@@ -51,7 +51,7 @@ export const ChatSidebar: React.FC = () => {
   const toggleRecents = () => setIsRecentsOpen((prev) => !prev)
 
   return (
-    <div className="flex h-full flex-col overflow-y-auto bg-neutral-800 px-2 pb-4 pt-2.5">
+    <div className="flex h-full flex-col overflow-y-auto bg-editor-four px-2 pb-4 pt-2.5">
       <div className="flex h-full flex-col gap-2 text-white/90">
         <div className="flex min-h-0 flex-1 flex-col gap-4">
           <div className="mb-4 flex flex-col gap-6">
@@ -70,9 +70,9 @@ export const ChatSidebar: React.FC = () => {
 
           <div className="flex-1">
             <div className="flex cursor-pointer items-center justify-between" onClick={toggleRecents}>
-              <h4 className="mb-0 mt-1 text-xs font-medium tracking-wider text-gray-200">Recents</h4>
+              <h4 className="mb-0 mt-1 text-xs font-medium tracking-wider text-hd-gray-color">Recents</h4>
               <RiArrowDownSLine
-                className={`mt-1 transition-transform duration-200 ${!isRecentsOpen ? 'rotate-0' : 'rotate-180'}`}
+                className={`mt-1 transition-transform duration-200 text-generic-color ${!isRecentsOpen ? 'rotate-0' : 'rotate-180'}`}
               />
             </div>
             {isRecentsOpen && (

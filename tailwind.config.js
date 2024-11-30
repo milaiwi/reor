@@ -1,3 +1,6 @@
+import tailwindScrollbar from 'tailwind-scrollbar'
+import tailwindCssAnimate from 'tailwindcss-animate'
+
 /** @type {import('tailwindcss').Config} */
 export default {
     darkMode: ["class"],
@@ -11,6 +14,8 @@ export default {
 			'editor-three': 'var(--bg-editor-three)',
 			'editor-four': 'var(--bg-editor-four)',
 			'editor-five': 'var(--bg-editor-five)',
+			'neutral-800': 'var(--bg-neutral-800)',
+			'item-hover': 'var(--bg-file-hover)',
   			'dark-slate-gray': '#2F4F4F',
   			'light-arsenic': '#182c44',
   			'distinct-dark-purple': '#3a395e',
@@ -21,6 +26,9 @@ export default {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
 			'generic-color': 'var(--text-color)',
+			'gray-color': 'var(--text-gray-color)',
+			'lgray-color': 'var(--text-lgray-color)',
+			'hd-gray-color': 'var(--header-gray-color)',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'
@@ -113,8 +121,7 @@ export default {
     preflight: false,
   },
   plugins: [
-    require('tailwind-scrollbar'),
-      require("tailwindcss-animate"),
-	  require('tailwind-scrollbar')
-],
+      tailwindCssAnimate,
+	  tailwindScrollbar
+	],
 };

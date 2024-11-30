@@ -20,7 +20,7 @@ const TitleBar: React.FC = () => {
   }, [])
 
   return (
-    <div className="electron-drag flex justify-between bg-[#303030]">
+    <div className="electron-drag flex justify-between bg-editor-four">
       <div className="mt-px flex" style={platform === 'darwin' ? { marginLeft: '65px' } : { marginLeft: '2px' }}>
         <NavigationButtons />
       </div>

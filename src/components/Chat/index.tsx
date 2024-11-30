@@ -127,7 +127,7 @@ const ChatComponent: React.FC = () => {
 
   return (
     <div ref={containerRef} className="flex size-full items-center justify-center">
-      <div className="mx-auto flex size-full flex-col overflow-hidden bg-background">
+      <div className="mx-auto flex size-full flex-col overflow-hidden bg-editor-three">
         <ChatMessages
           currentChat={currentChat}
           setCurrentChat={setCurrentChat}

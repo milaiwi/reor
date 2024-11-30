@@ -67,7 +67,7 @@ const EditorManager: React.FC = () => {
 
   return (
     <div
-      className="relative size-full cursor-text overflow-hidden bg-bn-colors-menu-background py-4 text-slate-400 text-white"
+      className="relative size-full cursor-text overflow-hidden bg-bn-colors-menu-background py-4 text-slate-400 text-white bg-editor-two"
       onClick={() => editor?.focus()}
     >
       <div
@@ -75,7 +75,7 @@ const EditorManager: React.FC = () => {
       >
         <div className={`relative size-full overflow-y-auto ${editorFlex ? 'flex justify-center py-2' : ''}`}>
           <BlockNoteView
-            className={`relative size-full  ${editorFlex ? 'max-w-3xl' : ''}`}
+            className={`relative size-full bg-editor-two ${editorFlex ? 'max-w-3xl' : ''}`}
             style={{
               wordBreak: 'break-word',
             }}

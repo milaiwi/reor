@@ -72,7 +72,7 @@ const MainPageContent: React.FC = () => {
           <ResizableHandle />
 
           <ResizablePanel defaultSize={80}>
-            <div className="size-full">
+            <div className="size-full bg-editor-two">
               {currentlyOpenFilePath || showChatbot ? (
                 <ResizablePanelGroup direction="horizontal" className="size-full" key={panelGroupKey}>
                   {currentlyOpenFilePath && showEditor && (
@@ -85,7 +85,7 @@ const MainPageContent: React.FC = () => {
                   )}
                   {showChatbot && (
                     <ResizablePanel defaultSize={currentlyOpenFilePath && showEditor ? 35 : 100}>
-                      <div className="relative size-full bg-pink-200">
+                      <div className="relative size-full bg-pink-200 border-y-0 border-r-0 border-l-[0.001px] border-solid border-neutral-700">
                         <WindowControls
                           onClose={() => setShowChatbot(false)}
                           onMaximize={() => setShowEditor(false)}

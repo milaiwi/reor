@@ -119,7 +119,7 @@
 // interface EditorContextMenuProps {
 //   editor: BlockNoteEditor | null
 //   menuPosition: MenuPosition
-//   setMenuVisible: (visible: boolean) => void
+//   setMenuVisible: (visib˚†le: boolean) => void
 //   hideMenu: () => void
 // }
 

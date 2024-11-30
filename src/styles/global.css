@@ -13,7 +13,12 @@
   --bg-editor-four: white;
   --bg-editor-five: white;
 
+  --bg-neutral-800: white;
+  --bg-file-hover: #E5E5E5;
   --text-color: black;
+  --text-gray-color: #8f8d8d;
+  --text-lgray-color: #CBD5E1;
+  --header-gray-color: #595959;
 }
 
 html,
@@ -200,12 +205,22 @@ button {
 }
 
 [data-theme="dark"] {
-  --bg-editor-two: '#1e1e1e';
-  --bg-editor-three: '#333333';
-  --bg-editor-four: '#242424';
-  --bg-editor-five: '#2e2e2e';
+  --bg-editor-two: #1e1e1e;
+  --bg-editor-three: #333333;
+  --bg-editor-four: #2a2929;
+  --bg-editor-five: #2e2e2e;
 
-  --text-color: "white"
+  --bg-neutral-800: #737373;
+  --bg-file-hover: #404040;
+
+  --text-color: #E5E7EB;
+  --text-gray-color: #BABABA;
+  --text-lgray-color: #94A3B8;
+  --header-gray-color: white;
+}
+
+input[type="text"] {
+  color: var(--text-gray-color)
 }
 
 @layer base {
@@ -263,6 +278,7 @@ button {
     --chart-5: 340 75% 55%;
 
     --bn-colors-menu-background: #1f1f1f;
+    --editor-four: #242424;
   }
 }
 
@@ -271,6 +287,6 @@ button {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-editor-four text-foreground;
   }
 }

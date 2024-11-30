@@ -9,7 +9,7 @@ const EmptyPage: React.FC = () => {
 
   return (
     <div className="flex size-full flex-col items-center justify-center text-white">
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center text-generic-color">
         <div className="opacity-10">
           <ImFileEmpty size={168} />
         </div>
