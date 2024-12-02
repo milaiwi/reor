@@ -30,6 +30,7 @@ export default {
 			'lgray-color': 'var(--text-lgray-color)',
 			'hd-gray-color': 'var(--header-gray-color)',
 			'input-gray-color': 'var(--input-gray-color)',
+			'main-contrast': 'var(--text-main-contrast)',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'
@@ -89,26 +90,21 @@ export default {
   		},
   		keyframes: {
   			slideIn: {
-  				'0%': {
-  					transform: 'translateX(100%)',
-  					opacity: '0'
-  				},
-  				'100%': {
-  					transform: 'translateX(0)',
-  					opacity: '1'
-  				}
+  				'0%': { transform: 'translateX(100%)', opacity: '0' },
+  				'100%': { transform: 'translateX(0)', opacity: '1' }
   			},
+			slideOut: {
+				'0%': { transform: 'translateX(0)', opacity: '1' },
+				'100%': { transform: 'translateX(100%)', opacity: '0' },
+			},
   			bounce: {
-  				'0%, 20%, 50%, 80%, 100%': {
-  					opacity: '1'
-  				},
-  				'40%, 60%': {
-  					opacity: '0'
-  				}
-  			}
+  				'0%, 20%, 50%, 80%, 100%': { opacity: '1' },
+  				'40%, 60%': { opacity: '0' }
+  			},
   		},
   		animation: {
   			'slide-in': 'slideIn 0.3s ease-out',
+			'slide-out': 'slideOut 0.3s ease-out',
   			bounce: 'bounce 1.4s infinite both'
   		},
   		borderRadius: {

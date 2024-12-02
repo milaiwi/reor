@@ -215,6 +215,14 @@ export const registerStoreHandlers = (store: Store<StoreSchema>, windowsManager:
   ipcMain.handle('get-auto-context', () => {
     return store.get(StoreKeys.AutoContext, true) // Default to true
   })
+
+  ipcMain.handle('get-toggled-theme', () => {
+    return store.get(StoreKeys.ToggledTheme)
+  })
+
+  ipcMain.handle('set-toggled-theme', (event, toggledTheme: string) => {
+    store.set(StoreKeys.ToggledTheme, toggledTheme)
+  })
 }
 
 export function getDefaultEmbeddingModelConfig(store: Store<StoreSchema>): EmbeddingModelConfig {

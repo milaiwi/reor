@@ -61,6 +61,7 @@ export interface StoreSchema {
   EditorFlexCenter: boolean
   showDocumentStats: boolean
   autoContext: boolean
+  toggledTheme: string
 }
 
 export enum StoreKeys {
@@ -82,4 +83,5 @@ export enum StoreKeys {
   EditorFlexCenter = 'editorFlexCenter',
   showDocumentStats = 'showDocumentStats',
   AutoContext = 'autoContext',
+  ToggledTheme = 'toggledTheme',
 }

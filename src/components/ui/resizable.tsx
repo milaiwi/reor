@@ -28,7 +28,8 @@ const ResizableHandle = ({
        data-[panel-group-direction=vertical]:h-px data-[panel-group-direction=vertical]:w-full \
        data-[panel-group-direction=vertical]:after:left-0 data-[panel-group-direction=vertical]:after:h-1 \
        data-[panel-group-direction=vertical]:after:w-full data-[panel-group-direction=vertical]:after:-translate-y-1/2 \
-       data-[panel-group-direction=vertical]:after:translate-x-0 [&[data-panel-group-direction=vertical]>div]:rotate-90',
+       data-[panel-group-direction=vertical]:after:translate-x-0 [&[data-panel-group-direction=vertical]>div]:rotate-90 \
+       hover:bg-blue-500 hover:w-[4px]',
       className,
     )}
     {...props}

@@ -76,6 +76,8 @@ const electronStore = {
   setAgentConfig: createIPCHandler<(agentConfig: AgentConfig) => Promise<void>>('set-agent-config'),
   setAutoContext: createIPCHandler<(value: boolean) => Promise<void>>('set-auto-context'),
   getAutoContext: createIPCHandler<() => Promise<boolean>>('get-auto-context'),
+  setToggledTheme: createIPCHandler<(theme: string) => Promise<void>>('set-toggled-theme'),
+  getToggledTheme: createIPCHandler<() => Promise<string>>('get-toggled-theme'),
 }
 
 const fileSystem = {

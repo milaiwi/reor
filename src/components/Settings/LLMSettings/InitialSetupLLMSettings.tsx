@@ -23,7 +23,7 @@ const InitialSetupLLMSettings: React.FC<InitialSetupLLMSettingsProps> = () => {
   return (
     <div className="flex w-full flex-col justify-between rounded bg-editor-two">
       <div className="flex items-center justify-between border-0 border-b-2 border-solid border-neutral-700 py-1">
-        <p className="mb-2 pb-3 text-gray-100">LLM</p>
+        <p className="mb-2 pb-3 font-bold">LLM</p>
         <Dialog open={isSetupModalOpen} onOpenChange={handleOpenChange}>
           <DialogTrigger asChild>
             <Button

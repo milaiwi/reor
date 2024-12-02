@@ -83,7 +83,7 @@ const NewDirectoryComponent: React.FC<NewDirectoryComponentProps> = ({ isOpen, o
         <h2 className="mb-3 text-xl font-semibold text-generic-color">New Directory</h2>
         <input
           type="text"
-          className=" block w-full rounded-md border border-gray-300 px-3 py-2 transition duration-150 ease-in-out focus:border-blue-300 focus:outline-none"
+          className=" block w-full rounded-md border-2 border-solid border-gray-300 px-3 py-2 transition duration-150 ease-in-out focus:border-blue-300 focus:outline-none focus:ring-0"
           value={directoryRelativePath}
           onChange={handleNameChange}
           onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {

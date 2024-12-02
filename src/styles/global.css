@@ -20,8 +20,8 @@
   --text-lgray-color: #CBD5E1;
   --header-gray-color: #595959;
 
-  --text-editor-contrast: black;
   --input-gray-color: #F4F4F4;
+  --text-main-contrast: black;
 }
 
 html,
@@ -222,10 +222,10 @@ button {
   --header-gray-color: white;
 
   --input-gray-color: #2f2f2f;
-  --text-editor-contrast: white;
+  --text-main-contrast: white;
 }
 
-input[type="text"] {
+textarea {
   color: var(--text-editor-contrast)
 }
 

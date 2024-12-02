@@ -45,8 +45,8 @@ const DirectorySelector: React.FC<DirectorySelectorProps> = ({ setErrorMsg }) =>
         Select Directory
       </Button>
       {userDirectory && (
-        <p className="mt-2 w-full text-right text-xs text-gray-100">
-          Selected: <strong>{userDirectory}</strong>
+        <p className="mt-2 w-full text-right text-xs opacity-20">
+          <strong>{userDirectory}</strong>
         </p>
       )}
     </div>
