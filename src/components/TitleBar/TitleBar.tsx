@@ -31,20 +31,20 @@ const TitleBar: React.FC = () => {
         style={platform === 'win32' ? { marginRight: '8.5rem' } : { marginRight: '0.3rem' }}
       >
         <ExternalLink href="https://forms.gle/8H4GtEcE6MBnNAUa7" 
-          className="decoration-gray-200 cursor-pointer mr-3 mt-1 text-main-contrast">
+          className="decoration-gray-200 cursor-pointer mr-3 mt-1 text-gray-400">
           <VscFeedback size={20} />
         </ExternalLink>
 
         {showChatbot ? (
           <LuPanelLeftInactive
-            className="electron-no-drag mr-1 mt-[0.2rem] -scale-x-100 cursor-pointer p-[2px] text-main-contrast"
+            className="electron-no-drag mr-1 mt-[0.2rem] -scale-x-100 cursor-pointer p-[2px] text-gray-400"
             size={24}
             title="Hide Similar Files"
             onClick={() => setShowChatbot((show) => !show)}
           />
         ) : (
           <LuPanelLeftClose
-            className="electron-no-drag mr-1 mt-[0.2rem] -scale-x-100 cursor-pointer p-[2px] text-main-contrast"
+            className="electron-no-drag mr-1 mt-[0.2rem] -scale-x-100 cursor-pointer p-[2px] text-gray-400"
             size={24}
             title="Show Chatbot"
             onClick={() => setShowChatbot((show) => !show)}
