@@ -1,10 +1,11 @@
 import React from 'react'
 
-import { CiSearch } from "react-icons/ci";
+// import { CiSearch } from "react-icons/ci";
 import { GrNewWindow } from 'react-icons/gr'
 import { ImFilesEmpty } from 'react-icons/im'
-import { IoChatbubbleEllipsesOutline } from 'react-icons/io5'
-import { MdSettings } from 'react-icons/md'
+import { IoSearch } from 'react-icons/io5'
+import { RiChat3Line } from "react-icons/ri";
+import { MdOutlineCreateNewFolder, MdSettings } from 'react-icons/md'
 import { VscNewFolder } from 'react-icons/vsc'
 import { HiOutlinePencilAlt } from 'react-icons/hi'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -26,100 +27,103 @@ const IconsSidebar: React.FC<IconsSidebarProps> = ({ getShortcutDescription }) =
   const { createUntitledNote } = useContentContext()
 
   return (
-    <div className="flex size-full w-[55px] flex-col items-center justify-between gap-1 bg-editor-four pt-2">
-      <div
-        className=" flex h-8 w-full cursor-pointer items-center justify-center"
+    <div className="flex size-full w-[55px] flex-col items-center justify-between bg-editor-four pt-2">
+      <button
+        className=" flex h-8 w-full cursor-pointer border-none bg-transparent"
         onClick={() => setSidebarShowing('files')}
       >
-        <span className="flex size-4/5 items-center justify-center rounded">
+        <div className={`flex hover:bg-item-hover p-1 rounded-sm size-full items-center justify-center
+            ${sidebarShowing === 'files' ? 'bg-item-hover' : ''}`}>
           <ImFilesEmpty
-            className={`cursor-pointer mx-auto text-generic-color ${
-              sidebarShowing === 'files' ? '' : 'text-gray-400 hover:text-gray-color'
-            }`}
+          className="text-gray-400"
             size={18}
             title={getShortcutDescription('open-files') || 'Open Files'}
           />
-        </span>
-      </div>
-      <div
-        className="flex h-8 w-full cursor-pointer items-center justify-center"
+        </div>
+      </button>
+      <button
+        className="flex h-8 w-full cursor-pointer border-none bg-transparent"
         onClick={() => setSidebarShowing('chats')}
       >
-        <span className="flex size-4/5 items-center justify-center rounded">
-          <IoChatbubbleEllipsesOutline
-            className={`cursor-pointer text-generic-color ${
-              sidebarShowing === 'chats' ? '' : 'text-gray-400 hover:text-gray-color'
-            }`}
-            size={18}
+        <div className={`flex hover:bg-item-hover rounded-sm size-full items-center justify-center
+            ${sidebarShowing === 'chats' ? 'bg-item-hover' : ''}`}>
+          <RiChat3Line
+            className='text-gray-400'
+            size={20}
             title={getShortcutDescription('open-chat-bot') || 'Open Chatbot'}
           />
-        </span>
-      </div>
-      <div
-        className="flex h-8 w-full cursor-pointer items-center justify-center"
+        </div>
+      </button>
+      <button
+        className="flex w-full h-8 cursor-pointer border-none bg-transparent"
         onClick={() => setSidebarShowing('search')}
       >
-        <span className="flex size-4/5 items-center justify-center rounded">
-          <CiSearch
-            className={`cursor-pointer text-generic-color ${
-              sidebarShowing === 'search' ? '' : 'text-gray-400 hover:text-gray-color'
-            }`}
+        <div className={`flex hover:bg-item-hover p-1 rounded-sm size-full items-center justify-center
+            ${sidebarShowing === 'search' ? 'bg-item-hover' : ''}`}>
+          <IoSearch
+            className='text-gray-400'
             size={22}
             title={getShortcutDescription('open-search') || 'Semantic Search'}
           />
-        </span>
-      </div>
-      <div
-        className="flex h-8 w-full cursor-pointer items-center justify-center border-none bg-transparent "
+        </div>
+      </button>
+      <button
+        className="flex w-full h-8 cursor-pointer border-none bg-transparent"
         onClick={() => createUntitledNote()}
       >
-        <span className="flex size-4/5 items-center justify-center rounded">
+        <div className="flex hover:bg-item-hover p-1 rounded-sm size-full items-center justify-center">
           <HiOutlinePencilAlt
-              className="text-lgray-color hover:text-gray-color"
+              className="text-gray-400"
               size={22}
               title={getShortcutDescription('open-new-note') || 'New Note'}
             />
-        </span>
-      </div>
-      <div
-        className="mt-[2px] flex h-8 w-full cursor-pointer items-center justify-center border-none bg-transparent "
+        </div>
+      </button>
+      <button
+        className="mt-[2px] flex w-full h-8 cursor-pointer border-none bg-transparent"
         onClick={() => setIsNewDirectoryModalOpen(true)}
       >
-        <div className="flex size-4/5 items-center justify-center rounded">
-          <VscNewFolder
-            className="text-lgray-color hover:text-gray-color"
-            size={18}
+        <div className="flex hover:bg-item-hover p-1 rounded-sm size-full items-center justify-center">
+          <MdOutlineCreateNewFolder
+            className="text-gray-400"
+            size={21}
             title={getShortcutDescription('open-new-directory-modal') || 'New Directory'}
           />
         </div>
-      </div>
+      </button>
 
       <div className="grow border-yellow-300" />
       <button
-        className="gap-2 pb-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white bg-transparent cursor-pointer"
+        className="gap-2 flex w-full cursor-pointer text-sm text-gray-700 dark:text-gray-300 bg-transparent"
         onClick={toggleTheme}
       >
-        {theme === 'light' ? <FaSun /> : <FaMoon />}
+        <div className="hover:bg-item-hover p-1 rounded-sm size-full text-gray-400">
+          {theme === 'light' ? <FaSun /> : <FaMoon />}
+        </div>
       </button>
-      <div
-        className="mb-[2px] flex w-full cursor-pointer items-center justify-center border-none bg-transparent pb-2"
-        onClick={() => window.electronUtils.openNewWindow()}
-      >
-        <GrNewWindow className="text-gray-100" color="gray" size={18} title="Open New Vault" />
-      </div>
-
       <button
-        className="flex w-full cursor-pointer items-center justify-center border-none bg-transparent pb-2"
+        className="mb-[2px] flex w-full cursor-pointer items-center justify-center border-none bg-transparent"
+        onClick={() => window.electronUtils.openNewWindow()}
+        type="button"
+      >
+        <div className="hover:bg-item-hover p-1 rounded-sm size-full">
+          <GrNewWindow className="text-gray-400" size={18} title="Open New Vault" />
+        </div>
+      </button>
+      <button
+        className="mb-3 flex w-full cursor-pointer items-center justify-center border-none bg-transparent"
         onClick={() => setIsSettingsModalOpen(!isSettingsModalOpen)}
         type="button"
         aria-label="Open Settings"
       >
-        <MdSettings
-          color="gray"
-          size={18}
-          className="mb-3 size-6 text-generic-color"
-          title={getShortcutDescription('open-settings-modal') || 'Settings'}
-        />
+        <div className="hover:bg-item-hover p-1 rounded-sm size-full">
+          <MdSettings
+            size={18}
+            color="gray"
+            className="text-generic-color"
+            title={getShortcutDescription('open-settings-modal') || 'Settings'}
+          />
+        </div>
       </button>
     </div>
   )

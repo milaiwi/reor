@@ -85,7 +85,7 @@ const MainPageContent: React.FC = () => {
                   )}
                   {showChatbot && (
                     <ResizablePanel defaultSize={currentlyOpenFilePath && showEditor ? 35 : 100}>
-                      <div className="relative size-full bg-pink-200 border-y-0 border-r-0 border-l-[0.001px] border-solid border-neutral-700">
+                      <div className="relative size-full animate-slideInFromRight">
                         <WindowControls
                           onClose={() => setShowChatbot(false)}
                           onMaximize={() => setShowEditor(false)}
