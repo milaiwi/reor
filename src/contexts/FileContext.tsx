@@ -8,7 +8,7 @@ import { FileInfo, FileInfoTree } from 'electron/main/filesystem/types'
 import '@blocknote/core/fonts/inter.css'
 import '@blocknote/mantine/style.css'
 import { useCreateBlockNote } from '@blocknote/react'
-import { BlockNoteEditor } from '@blocknote/core'
+import { Block, BlockNoteEditor, BlockNoteSchema } from '@blocknote/core'
 import {
   findRelevantDirectoriesToBeExpanded,
   flattenFileInfoTree,
@@ -117,7 +117,6 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   const loadFileIntoEditor = async (filePath: string) => {
-    console.log(`Loading file into editor: ${filePath}`)
     setCurrentlyChangingFilePath(true)
     await writeEditorContentToDisk(editor, currentlyOpenFilePath)
     if (currentlyOpenFilePath && needToIndexEditorContent) {
@@ -126,7 +125,6 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
     const fileContent = (await window.fileSystem.readFile(filePath)) ?? ''
     // editor?.commands.setContent(fileContent)
-    console.log(`Parsing fileCOntent: ${fileContent}`)
     const blocks = await editor.tryParseMarkdownToBlocks(fileContent)
     editor.replaceBlocks(editor.document, blocks)
     setCurrentlyOpenFilePath(filePath)
@@ -136,7 +134,6 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   const openOrCreateFile = async (filePath: string, optionalContentToWriteOnCreate?: string): Promise<void> => {
-    console.log(`Inside openOrCreateFile: ${filePath}`)
     const absolutePath = await createFileIfNotExists(filePath, optionalContentToWriteOnCreate)
     await loadFileIntoEditor(absolutePath)
   }
@@ -191,25 +188,17 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // })
   const editor: BlockNoteEditor = useCreateBlockNote()
 
-  // useEffect(() => {
-  //   if (editor) {
-  //     editor.setOptions({
-  //       editorProps: {
-  //         attributes: {
-  //           spellcheck: spellCheckEnabled.toString(),
-  //         },
-  //       },
-  //     })
-  //   }
-  // }, [spellCheckEnabled, editor])
-
-  // const [debouncedEditor] = useDebounce(editor?.state.doc.content, 3000)
   const [debouncedEditor] = useDebounce(editor.document, 3000)
 
   useEffect(() => {
-    console.log(`File changed, writing to disk`)
+    if (editor.document && currentlyOpenFilePath) {
+      setNeedToWriteEditorContentToDisk(true)
+      setNeedToIndexEditorContent(true)
+    }
+  }, [editor.document])
+
+  useEffect(() => {
     if (debouncedEditor && !currentlyChangingFilePath) {
-      console.log(`Called write editor`)
       writeEditorContentToDisk(editor, currentlyOpenFilePath)
       if (editor && currentlyOpenFilePath) {
         handleNewFileRenaming(editor, currentlyOpenFilePath)
@@ -222,10 +211,23 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   const writeEditorContentToDisk = async (_editor: BlockNoteEditor | null, filePath: string | null) => {
-    console.log(`Inside writeEditor at filePath ${filePath}`)
     if (filePath !== null && needToWriteEditorContentToDisk && _editor) {
+      /**
+       * This is all a test
+       * 
+       */
+      const blocks: Block[] = _editor.document
+      blocks.map((block: Block) => {
+        // if (JSON.stringify(block.content).length) {
+        //   console.log("Content block is empty!")
+        // }
+        const contentObjects = JSON.stringify(block.content)
+        if (contentObjects.length) {
+          console.log(`Content block is empty!`)
+        }
+      })
+      /* END OF TEST */
       const markdownContent = await getMarkdown(_editor)
-      console.log(`Writing markdownContent: ${markdownContent}`)
       if (markdownContent !== null) {
         await window.fileSystem.writeFile({
           filePath,
@@ -246,7 +248,6 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // const editorText = _editor.getText()
       // const editorText = _editor.document[0].content?.toString()
       const editorText = _editor.document[0]?.content ? _editor.document[0]?.content[0]?.text : ''
-      console.log(`Found editorText: ${editorText}`)
       if (editorText) {
         const newProposedFileName = generateFileNameFromFileContent(editorText)
         if (newProposedFileName) {

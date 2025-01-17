@@ -23,7 +23,7 @@ const ResizableHandle = ({
   <ResizablePrimitive.PanelResizeHandle
     className={cn(
       'relative flex w-px items-center justify-center after:absolute \
-       after:inset-0 focus-visible:outline-none \
+       after:inset-y-[-50px] focus-visible:outline-none \
        focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1  \
        data-[panel-group-direction=vertical]:h-px data-[panel-group-direction=vertical]:w-full \
        data-[panel-group-direction=vertical]:after:left-0 data-[panel-group-direction=vertical]:after:h-1 \
