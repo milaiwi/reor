@@ -134,13 +134,11 @@ const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data })
               {isDirectory && (
                 <span className="mr-2 mt-1">
                   {isExpanded ? (
-                    // <FaChevronDown title="Collapse Directory" />
                     <ChevronDown
                       title="Collapse Directory"
                       size={14}
                       color="$gray10"/>
                   ) : (
-                    // <FaChevronRight title="Open Directory" />
                     <ChevronRight 
                       title="Open Directory" 
                       size={14} 
