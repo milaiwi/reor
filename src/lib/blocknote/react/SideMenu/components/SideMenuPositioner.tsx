@@ -1,34 +1,21 @@
-import { 
-  Block, 
-  BlockNoteEditor, 
-  BlockSchema, 
-  DefaultBlockSchema, 
-  SideMenuProsemirrorPlugin 
-} from '@/lib/blocknote'
+import Tippy from '@tippyjs/react'
+import { FC, useEffect, useMemo, useRef, useState } from 'react'
+import { Block, BlockNoteEditor, BlockSchema, DefaultBlockSchema, SideMenuProsemirrorPlugin } from '@/lib/blocknote'
 import { getGroupInfoFromPos } from '@/lib/blocknote/core/extensions/Blocks/helpers/getGroupInfoFromPos'
 // import {scrollEvents} from '@/editor/editor-on-scroll-stream'
-import Tippy from '@tippyjs/react'
-import {FC, useEffect, useMemo, useRef, useState} from 'react'
-import {DefaultSideMenu} from './DefaultSideMenu'
-import {DragHandleMenuProps} from './DragHandleMenu/DragHandleMenu'
+import { DefaultSideMenu } from './DefaultSideMenu'
+import { DragHandleMenuProps } from './DragHandleMenu/DragHandleMenu'
 
-export type SideMenuProps<BSchema extends BlockSchema = DefaultBlockSchema> =
-  Pick<
-    SideMenuProsemirrorPlugin<BSchema>,
-    | 'blockDragStart'
-    | 'blockDragEnd'
-    | 'addBlock'
-    | 'freezeMenu'
-    | 'unfreezeMenu'
-  > & {
-    block: Block<BSchema>
-    editor: BlockNoteEditor<BSchema>
-    dragHandleMenu?: FC<DragHandleMenuProps<BSchema>>
-  }
+export type SideMenuProps<BSchema extends BlockSchema = DefaultBlockSchema> = Pick<
+  SideMenuProsemirrorPlugin<BSchema>,
+  'blockDragStart' | 'blockDragEnd' | 'addBlock' | 'freezeMenu' | 'unfreezeMenu'
+> & {
+  block: Block<BSchema>
+  editor: BlockNoteEditor<BSchema>
+  dragHandleMenu?: FC<DragHandleMenuProps<BSchema>>
+}
 
-export const SideMenuPositioner = <
-  BSchema extends BlockSchema = DefaultBlockSchema,
->(props: {
+export const SideMenuPositioner = <BSchema extends BlockSchema = DefaultBlockSchema>(props: {
   editor: BlockNoteEditor<BSchema>
   sideMenu?: FC<SideMenuProps<BSchema>>
   placement?: 'left' | 'right'
@@ -90,9 +77,9 @@ export const SideMenuPositioner = <
     )
   }, [block, props.editor, props.sideMenu])
 
-  let topOffset = useMemo(() => {
+  const topOffset = useMemo(() => {
     if (block && referencePos.current) {
-      let lhValue = parseInt(lh, 10)
+      const lhValue = parseInt(lh, 10)
 
       switch (block.type) {
         case 'paragraph':
@@ -107,18 +94,17 @@ export const SideMenuPositioner = <
   }, [referencePos.current])
 
   // Add right offset if the node is inside a list or blockquote
-  let rightOffset = useMemo(() => {
+  const rightOffset = useMemo(() => {
     let offset = 8
     if (block && referencePos.current) {
-      const ttEditor = props.editor._tiptapEditor
-      const {view} = ttEditor
-      const {state} = view
+      const ttEditor = props.editor.tiptapEditor
+      const { view } = ttEditor
+      const { state } = view
       state.doc.descendants((node, pos) => {
         if (node.attrs.id === block.id) {
-          const {group} = getGroupInfoFromPos(pos, state)
+          const { group } = getGroupInfoFromPos(pos, state)
 
           offset = group.attrs.listType !== 'Group' ? 20 : 8
-          return
         }
       })
     }
@@ -130,9 +116,9 @@ export const SideMenuPositioner = <
       appendTo={props.editor.domElement.parentElement ?? document.body}
       content={sideMenuElement}
       getReferenceClientRect={getReferenceClientRect}
-      interactive={true}
+      interactive
       visible={show}
-      animation={'fade'}
+      animation="fade"
       offset={[topOffset, rightOffset]}
       placement={props.placement}
       popperOptions={popperOptions}

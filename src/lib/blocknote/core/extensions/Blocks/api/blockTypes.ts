@@ -1,16 +1,11 @@
-/** Define the main block types **/
-import {Node, NodeConfig} from '@tiptap/core'
-import {ParseRule} from '@tiptap/pm/model'
-import {BlockNoteEditor} from '../../../BlockNoteEditor'
-import {DefaultBlockSchema} from './defaultBlocks'
-import {InlineContent, PartialInlineContent} from './inlineContentTypes'
+/** Define the main block types * */
+import { Node, NodeConfig } from '@tiptap/core'
+import { ParseRule } from '@tiptap/pm/model'
+import { BlockNoteEditor } from '../../../BlockNoteEditor'
+import { DefaultBlockSchema } from './defaultBlocks'
+import { InlineContent, PartialInlineContent } from './inlineContentTypes'
 
-export type BlockNoteDOMElement =
-  | 'editor'
-  | 'blockContainer'
-  | 'blockGroup'
-  | 'blockContent'
-  | 'inlineContent'
+export type BlockNoteDOMElement = 'editor' | 'blockContainer' | 'blockGroup' | 'blockContent' | 'inlineContent'
 
 export type BlockNoteDOMAttributes = Partial<{
   [DOMElement in BlockNoteDOMElement]: Record<string, string>
@@ -32,8 +27,8 @@ export type TipTapNodeConfig<
   [K in keyof NodeConfig<Options, Storage>]: K extends 'name'
     ? Name
     : K extends 'group'
-    ? never
-    : NodeConfig<Options, Storage>[K]
+      ? never
+      : NodeConfig<Options, Storage>[K]
 }
 
 // A TipTap node with stricter type constraints on the "name" and "group"
@@ -97,16 +92,13 @@ export type BlockConfig<
     /**
      * The custom block to render
      */
-    block: SpecificBlock<
-      BSchema & {[k in Type]: BlockSpec<Type, PSchema>},
-      Type
-    >,
+    block: SpecificBlock<BSchema & { [k in Type]: BlockSpec<Type, PSchema> }, Type>,
     /**
      * The BlockNote editor instance
      * This is typed generically. If you want an editor with your custom schema, you need to
      * cast it manually, e.g.: `const e = editor as BlockNoteEditor<typeof mySchema>;`
      */
-    editor: BlockNoteEditor<BSchema & {[k in Type]: BlockSpec<Type, PSchema>}>,
+    editor: BlockNoteEditor<BSchema & { [k in Type]: BlockSpec<Type, PSchema> }>,
     // (note) if we want to fix the manual cast, we need to prevent circular references and separate block definition and render implementations
     // or allow manually passing <BSchema>, but that's not possible without passing the other generics because Typescript doesn't support partial inferred generics
   ) => ContainsInlineContent extends true
@@ -132,9 +124,7 @@ export type BlockSpec<Type extends string, PSchema extends PropSchema> = {
 
 // Utility type. For a given object block schema, ensures that the key of each
 // block spec matches the name of the TipTap node in it.
-export type TypesMatch<
-  Blocks extends Record<string, BlockSpec<string, PropSchema>>,
-> = Blocks extends {
+export type TypesMatch<Blocks extends Record<string, BlockSpec<string, PropSchema>>> = Blocks extends {
   [Type in keyof Blocks]: Type extends string
     ? Blocks[Type] extends BlockSpec<Type, PropSchema>
       ? Blocks[Type]
@@ -149,9 +139,7 @@ export type TypesMatch<
 // `blocks` option of the BlockNoteEditor. From a block schema, we can derive
 // both the blocks' internal implementation (as TipTap nodes) and the type
 // information for the external API.
-export type BlockSchema = TypesMatch<
-  Record<string, BlockSpec<string, PropSchema>>
->
+export type BlockSchema = TypesMatch<Record<string, BlockSpec<string, PropSchema>>>
 
 // Converts each block spec into a Block object without children. We later merge
 // them into a union type and add a children property to create the Block and
@@ -198,5 +186,5 @@ export type PartialBlock<BSchema extends BlockSchema = DefaultBlockSchema> =
       children: PartialBlock<BSchema>[]
     }>
 
-export type BlockIdentifier = {id: string} | string
+export type BlockIdentifier = { id: string } | string
 export type BlockChildrenType = 'group' | 'ol' | 'ul' | 'div' | 'blockquote'

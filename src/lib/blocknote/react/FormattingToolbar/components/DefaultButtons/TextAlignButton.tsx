@@ -1,20 +1,10 @@
-import {
-  BlockNoteEditor,
-  BlockSchema,
-  DefaultProps,
-  PartialBlock,
-} from '@/editor/blocknote/core'
-import {useCallback, useMemo, useState} from 'react'
-import {IconType} from 'react-icons'
-import {
-  RiAlignCenter,
-  RiAlignJustify,
-  RiAlignLeft,
-  RiAlignRight,
-} from 'react-icons/ri'
-import {ToolbarButton} from '../../../SharedComponents/Toolbar/components/ToolbarButton'
-import {useEditorContentChange} from '../../../hooks/useEditorContentChange'
-import {useEditorSelectionChange} from '../../../hooks/useEditorSelectionChange'
+import { useCallback, useMemo, useState } from 'react'
+import { IconType } from 'react-icons'
+import { RiAlignCenter, RiAlignJustify, RiAlignLeft, RiAlignRight } from 'react-icons/ri'
+import { BlockNoteEditor, BlockSchema, DefaultProps, PartialBlock } from '@/editor/blocknote/core'
+import { ToolbarButton } from '../../../SharedComponents/Toolbar/components/ToolbarButton'
+import { useEditorContentChange } from '../../../hooks/useEditorContentChange'
+import { useEditorSelectionChange } from '../../../hooks/useEditorSelectionChange'
 
 type TextAlignment = DefaultProps['textAlignment']['values'][number]
 
@@ -30,17 +20,15 @@ export const TextAlignButton = <BSchema extends BlockSchema>(props: {
   textAlignment: TextAlignment
 }) => {
   const [activeTextAlignment, setActiveTextAlignment] = useState(() => {
-    const block = props.editor.getTextCursorPosition().block
+    const { block } = props.editor.getTextCursorPosition()
 
     if ('textAlignment' in block.props) {
       return block.props.textAlignment as TextAlignment
     }
-
-    return
   })
 
   useEditorContentChange(props.editor, () => {
-    const block = props.editor.getTextCursorPosition().block
+    const { block } = props.editor.getTextCursorPosition()
 
     if ('textAlignment' in block.props) {
       setActiveTextAlignment(block.props.textAlignment as TextAlignment)
@@ -48,7 +36,7 @@ export const TextAlignButton = <BSchema extends BlockSchema>(props: {
   })
 
   useEditorSelectionChange(props.editor, () => {
-    const block = props.editor.getTextCursorPosition().block
+    const { block } = props.editor.getTextCursorPosition()
 
     if ('textAlignment' in block.props) {
       setActiveTextAlignment(block.props.textAlignment as TextAlignment)
@@ -65,7 +53,7 @@ export const TextAlignButton = <BSchema extends BlockSchema>(props: {
         }
       }
     } else {
-      const block = props.editor.getTextCursorPosition().block
+      const { block } = props.editor.getTextCursorPosition()
 
       if (!('textAlignment' in block.props)) {
         return false
@@ -84,14 +72,14 @@ export const TextAlignButton = <BSchema extends BlockSchema>(props: {
       if (selection) {
         for (const block of selection.blocks) {
           props.editor.updateBlock(block, {
-            props: {textAlignment: textAlignment},
+            props: { textAlignment },
           } as PartialBlock<BSchema>)
         }
       } else {
-        const block = props.editor.getTextCursorPosition().block
+        const { block } = props.editor.getTextCursorPosition()
 
         props.editor.updateBlock(block, {
-          props: {textAlignment: textAlignment},
+          props: { textAlignment },
         } as PartialBlock<BSchema>)
       }
     },
@@ -109,9 +97,7 @@ export const TextAlignButton = <BSchema extends BlockSchema>(props: {
       mainTooltip={
         props.textAlignment === 'justify'
           ? 'Justify Text'
-          : 'Align Text ' +
-            props.textAlignment.slice(0, 1).toUpperCase() +
-            props.textAlignment.slice(1)
+          : `Align Text ${props.textAlignment.slice(0, 1).toUpperCase()}${props.textAlignment.slice(1)}`
       }
       icon={icons[props.textAlignment]}
     />

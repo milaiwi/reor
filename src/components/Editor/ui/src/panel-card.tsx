@@ -1,8 +1,8 @@
 // @ts-nocheck
-import * as React from "react";
-import {SizableText, XStack, YStack} from "tamagui";
+import * as React from 'react'
+import { SizableText, XStack, YStack } from 'tamagui'
 
-export function PanelCard({
+export const PanelCard = ({
   title,
   content,
   author,
@@ -12,26 +12,26 @@ export function PanelCard({
   active = false,
   shorter = false,
 }: {
-  title?: string;
-  content?: string;
-  author?: any;
-  date?: any;
-  onPress?: () => void;
-  avatar?: React.ReactNode | null;
-  active?: boolean;
-  shorter?: boolean;
-}) {
+  title?: string
+  content?: string
+  author?: any
+  date?: any
+  onPress?: () => void
+  avatar?: React.ReactNode | null
+  active?: boolean
+  shorter?: boolean
+}) => {
   return (
     <YStack
       overflow="hidden"
       borderRadius="$2"
-      backgroundColor={active ? "$backgroundHover" : "$backgroundTransparent"}
+      backgroundColor={active ? '$backgroundHover' : '$backgroundTransparent'}
       hoverStyle={{
-        backgroundColor: "$backgroundHover",
+        backgroundColor: '$backgroundHover',
       }}
       margin="$4"
       padding="$4"
-      paddingVertical={shorter ? "$1" : "$4"}
+      paddingVertical={shorter ? '$1' : '$4'}
       gap="$2"
       onPress={onPress}
     >
@@ -49,9 +49,7 @@ export function PanelCard({
         // borderColor="$color5" borderWidth={1}
       >
         {avatar}
-        {author && (
-          <SizableText size="$2">{author.profile?.alias || "..."}</SizableText>
-        )}
+        {author && <SizableText size="$2">{author.profile?.alias || '...'}</SizableText>}
         <XStack flex={1} />
         {date && (
           <SizableText size="$2" color="$color9" paddingHorizontal="$1">
@@ -61,27 +59,16 @@ export function PanelCard({
       </XStack>
       <YStack gap="$2" flex={1}>
         {title && (
-          <SizableText
-            fontWeight={600}
-            textOverflow="ellipsis"
-            overflow="hidden"
-            whiteSpace="nowrap"
-          >
+          <SizableText fontWeight={600} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
             {title}
           </SizableText>
         )}
         {content && (
-          <SizableText
-            color="$color10"
-            overflow="hidden"
-            maxHeight={23 * 3}
-            size="$1"
-            lineHeight="$5"
-          >
+          <SizableText color="$color10" overflow="hidden" maxHeight={23 * 3} size="$1" lineHeight="$5">
             {content}
           </SizableText>
         )}
       </YStack>
     </YStack>
-  );
+  )
 }

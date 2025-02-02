@@ -1,12 +1,12 @@
-import {SearchResult} from "@shm/shared";
-import {XStack, YStack} from "@tamagui/stacks";
-import {SizableText} from "@tamagui/text";
-import {PropsWithChildren, useLayoutEffect, useRef} from "react";
-import {Button, Input, InputProps, ScrollView} from "tamagui";
-import {UIAvatar} from "./avatar";
-import {Search} from "./icons";
+import { SearchResult } from '@shm/shared'
+import { XStack, YStack } from '@tamagui/stacks'
+import { SizableText } from '@tamagui/text'
+import { PropsWithChildren, useLayoutEffect, useRef } from 'react'
+import { Button, Input, InputProps, ScrollView } from 'tamagui'
+import { UIAvatar } from './avatar'
+import { Search } from './icons'
 
-export function SearchInput({
+export const SearchInput = ({
   children,
   inputProps,
   onArrowDown,
@@ -14,18 +14,18 @@ export function SearchInput({
   onEscape,
   onEnter,
 }: PropsWithChildren<{
-  searchResults: Array<SearchResult>;
+  searchResults: Array<SearchResult>
   inputProps: {
-    value: InputProps["value"];
-    onChangeText: InputProps["onChangeText"];
-    disabled: boolean;
-  };
-  onEscape: () => void;
-  onArrowUp: () => void;
-  onArrowDown: () => void;
-  onEnter: () => void;
-  focusedIndex: number;
-}>) {
+    value: InputProps['value']
+    onChangeText: InputProps['onChangeText']
+    disabled: boolean
+  }
+  onEscape: () => void
+  onArrowUp: () => void
+  onArrowDown: () => void
+  onEnter: () => void
+  focusedIndex: number
+}>) => {
   return (
     <YStack gap="$2" w="100%">
       <XStack
@@ -50,24 +50,24 @@ export function SearchInput({
           paddingHorizontal="$1"
           {...inputProps}
           onKeyPress={(e: any) => {
-            if (e.nativeEvent.key === "Escape") {
-              e.preventDefault();
-              onEscape();
+            if (e.nativeEvent.key === 'Escape') {
+              e.preventDefault()
+              onEscape()
             }
 
-            if (e.nativeEvent.key === "Enter") {
-              e.preventDefault();
-              onEnter();
+            if (e.nativeEvent.key === 'Enter') {
+              e.preventDefault()
+              onEnter()
             }
 
-            if (e.nativeEvent.key === "ArrowUp") {
-              e.preventDefault();
-              onArrowUp();
+            if (e.nativeEvent.key === 'ArrowUp') {
+              e.preventDefault()
+              onArrowUp()
             }
 
-            if (e.nativeEvent.key === "ArrowDown") {
-              e.preventDefault();
-              onArrowDown();
+            if (e.nativeEvent.key === 'ArrowDown') {
+              e.preventDefault()
+              onArrowDown()
             }
           }}
         />
@@ -87,46 +87,38 @@ export function SearchInput({
         <ScrollView>{children}</ScrollView>
       </YStack>
     </YStack>
-  );
+  )
 }
 
-export function SearchResultItem({
-  item,
-  selected = false,
-}: {
-  item: SearchResult;
-  selected: boolean;
-}) {
-  const elm = useRef<HTMLDivElement>(null);
+export const SearchResultItem = ({ item, selected = false }: { item: SearchResult; selected: boolean }) => {
+  const elm = useRef<HTMLDivElement>(null)
 
   useLayoutEffect(() => {
     if (selected) {
-      elm.current?.scrollIntoView({block: "nearest"});
+      elm.current?.scrollIntoView({ block: 'nearest' })
     }
-  }, [selected]);
+  }, [selected])
 
   return (
     <Button
       ref={elm}
       key={item.key}
       onPress={() => {
-        item.onSelect();
+        item.onSelect()
       }}
-      backgroundColor={selected ? "$brand12" : "$backgroundTransparent"}
+      backgroundColor={selected ? '$brand12' : '$backgroundTransparent'}
       hoverStyle={{
-        backgroundColor: selected ? "$brand12" : undefined,
+        backgroundColor: selected ? '$brand12' : undefined,
       }}
       onFocus={item.onFocus}
       onMouseEnter={item.onMouseEnter}
       gap="$4"
     >
-      {item.icon ? (
-        <UIAvatar label={item.title} size={20} url={item.icon} />
-      ) : null}
+      {item.icon ? <UIAvatar label={item.title} size={20} url={item.icon} /> : null}
       <XStack f={1} justifyContent="space-between">
         <SizableText numberOfLines={1}>{item.title}</SizableText>
         <SizableText color="$color10">{item.subtitle}</SizableText>
       </XStack>
     </Button>
-  );
+  )
 }

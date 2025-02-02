@@ -1,6 +1,6 @@
-import {InputRule, mergeAttributes} from '@tiptap/core'
-import {mergeCSSClasses} from '../../../../../shared/utils'
-import {createTipTapBlock} from '../../../api/block'
+import { InputRule, mergeAttributes } from '@tiptap/core'
+import { mergeCSSClasses } from '../../../../../shared/utils'
+import { createTipTapBlock } from '../../../api/block'
 import styles from '../../Block.module.css'
 
 export const HeadingBlockContent = createTipTapBlock<'heading'>({
@@ -28,16 +28,16 @@ export const HeadingBlockContent = createTipTapBlock<'heading'>({
         // Creates a heading of appropriate level when starting with "#", "##", or "###".
         return new InputRule({
           find: new RegExp(`^(#{${parseInt(level)}})\\s$`),
-          handler: ({state, chain, range}) => {
+          handler: ({ state, chain, range }) => {
             chain()
               .BNUpdateBlock(state.selection.from, {
                 type: 'heading',
                 props: {
-                  level: level,
+                  level,
                 },
               })
               // Removes the "#" character(s) used to set the heading.
-              .deleteRange({from: range.from, to: range.to})
+              .deleteRange({ from: range.from, to: range.to })
           },
         })
       }),
@@ -48,54 +48,46 @@ export const HeadingBlockContent = createTipTapBlock<'heading'>({
     return [
       {
         tag: 'h1',
-        attrs: {level: '1'},
+        attrs: { level: '1' },
         node: 'heading',
       },
       {
         tag: 'h2',
-        attrs: {level: '2'},
+        attrs: { level: '2' },
         node: 'heading',
       },
       {
         tag: 'h3',
-        attrs: {level: '3'},
+        attrs: { level: '3' },
         node: 'heading',
       },
       {
         tag: 'h4',
-        attrs: {level: '3'},
+        attrs: { level: '3' },
         node: 'heading',
       },
       {
         tag: 'h5',
-        attrs: {level: '3'},
+        attrs: { level: '3' },
         node: 'heading',
       },
     ]
   },
 
-  renderHTML({node, HTMLAttributes}) {
-    const blockContentDOMAttributes =
-      this.options.domAttributes?.blockContent || {}
-    const inlineContentDOMAttributes =
-      this.options.domAttributes?.inlineContent || {}
+  renderHTML({ node, HTMLAttributes }) {
+    const blockContentDOMAttributes = this.options.domAttributes?.blockContent || {}
+    const inlineContentDOMAttributes = this.options.domAttributes?.inlineContent || {}
 
     return [
       'div',
       mergeAttributes(HTMLAttributes, {
-        class: mergeCSSClasses(
-          styles.blockContent,
-          blockContentDOMAttributes.class,
-        ),
+        class: mergeCSSClasses(styles.blockContent, blockContentDOMAttributes.class),
         'data-content-type': this.name,
       }),
       [
-        'h' + node.attrs.level,
+        `h${node.attrs.level}`,
         {
-          class: mergeCSSClasses(
-            styles.inlineContent,
-            inlineContentDOMAttributes.class,
-          ),
+          class: mergeCSSClasses(styles.inlineContent, inlineContentDOMAttributes.class),
         },
         0,
       ],

@@ -1,16 +1,10 @@
-import {ComponentProps} from "react";
-import {YStack} from "tamagui";
+import { ComponentProps } from 'react'
+import { YStack } from 'tamagui'
 
-export function Section({children, ...props}: ComponentProps<typeof YStack>) {
+export const Section = ({ children, ...props }: ComponentProps<typeof YStack>) => {
   return (
-    <YStack
-      borderBottomWidth={1}
-      borderBottomColor="black"
-      borderColor="$gray6"
-      paddingVertical="$4"
-      {...props}
-    >
+    <YStack borderBottomWidth={1} borderBottomColor="black" borderColor="$gray6" paddingVertical="$4" {...props}>
       {children}
     </YStack>
-  );
+  )
 }

@@ -1,7 +1,7 @@
-import {BlockNoteEditor} from '../../BlockNoteEditor'
-import {BlockSchema, PartialBlock} from '../Blocks/api/blockTypes'
-import {defaultBlockSchema} from '../Blocks/api/defaultBlocks'
-import {BaseSlashMenuItem} from './BaseSlashMenuItem'
+import { BlockNoteEditor } from '../../BlockNoteEditor'
+import { BlockSchema, PartialBlock } from '../Blocks/api/blockTypes'
+import { defaultBlockSchema } from '../Blocks/api/defaultBlocks'
+import { BaseSlashMenuItem } from './BaseSlashMenuItem'
 
 export function insertOrUpdateBlock<BSchema extends BlockSchema>(
   editor: BlockNoteEditor<BSchema>,
@@ -20,18 +20,10 @@ export function insertOrUpdateBlock<BSchema extends BlockSchema>(
     if (isNode) {
       const cursorPosition = editor.getTextCursorPosition()
       editor.focus()
-      if (cursorPosition.nextBlock)
-        editor.setTextCursorPosition(cursorPosition.nextBlock, 'start')
+      if (cursorPosition.nextBlock) editor.setTextCursorPosition(cursorPosition.nextBlock, 'start')
       else {
-        editor.insertBlocks(
-          [{type: 'paragraph', content: ''}],
-          currentBlock,
-          'after',
-        )
-        editor.setTextCursorPosition(
-          editor.getTextCursorPosition().nextBlock!,
-          'start',
-        )
+        editor.insertBlocks([{ type: 'paragraph', content: '' }], currentBlock, 'after')
+        editor.setTextCursorPosition(editor.getTextCursorPosition().nextBlock!, 'start')
       }
     }
   } else {
@@ -58,7 +50,7 @@ export const getDefaultSlashMenuItems = <BSchema extends BlockSchema>(
         execute: (editor) =>
           insertOrUpdateBlock(editor, {
             type: 'heading',
-            props: {level: '1'},
+            props: { level: '1' },
           } as PartialBlock<BSchema>),
       })
     }
@@ -71,7 +63,7 @@ export const getDefaultSlashMenuItems = <BSchema extends BlockSchema>(
         execute: (editor) =>
           insertOrUpdateBlock(editor, {
             type: 'heading',
-            props: {level: '2'},
+            props: { level: '2' },
           } as PartialBlock<BSchema>),
       })
     }
@@ -84,7 +76,7 @@ export const getDefaultSlashMenuItems = <BSchema extends BlockSchema>(
         execute: (editor) =>
           insertOrUpdateBlock(editor, {
             type: 'heading',
-            props: {level: '3'},
+            props: { level: '3' },
           } as PartialBlock<BSchema>),
       })
     }

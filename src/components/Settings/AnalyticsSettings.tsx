@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 
-import { Button } from '@material-tailwind/react'
 import Switch from '@mui/material/Switch'
 import posthog from 'posthog-js'
 import { YStack, XStack, SizableText } from 'tamagui'
@@ -32,46 +31,31 @@ const AnalyticsSettings: React.FC<AnalyticsSettingsProps> = () => {
   }
 
   return (
-    <YStack
-      px="$4"
-      backgroundColor="$gray1"
-      color="$gray13"
-      maxWidth="100%"
-      >
-        <h2 className="mb-0">Analytics</h2>
-        <YStack
-          maxWidth="100%"
-          width="100%"
-          overflow="hidden"
-          py="$4"
-        >
-          <XStack className="h-[2px] w-full bg-neutral-700" />
-          <XStack>
-            <XStack
-              justifyContent="space-between"
-              alignItems="center"
-              py="$3"
-              width="100%"
-            >
-              <SizableText size="$2">
-                Reor tracks anonymous usage data to help us understand how the app is used 
-                and which features are popular. You can disable this at any time:
-              </SizableText>
-              <Switch
-                checked={isAnalyticsEnabled}
-                onChange={() => {
-                  setUserHasMadeUpdate(true)
-                  setIsAnalyticsEnabled(!isAnalyticsEnabled)
-                  if (isAnalyticsEnabled) {
-                    posthog.capture('analytics_disabled')
-                  }
-                }}
-                inputProps={{ 'aria-label': 'controlled' }}
-              />            
-            </XStack>
+    <YStack px="$4" backgroundColor="$gray1" color="$gray13" maxWidth="100%">
+      <h2 className="mb-0">Analytics</h2>
+      <YStack maxWidth="100%" width="100%" overflow="hidden" py="$4">
+        <XStack className="h-[2px] w-full bg-neutral-700" />
+        <XStack>
+          <XStack justifyContent="space-between" alignItems="center" py="$3" width="100%">
+            <SizableText size="$2">
+              Reor tracks anonymous usage data to help us understand how the app is used and which features are popular.
+              You can disable this at any time:
+            </SizableText>
+            <Switch
+              checked={isAnalyticsEnabled}
+              onChange={() => {
+                setUserHasMadeUpdate(true)
+                setIsAnalyticsEnabled(!isAnalyticsEnabled)
+                if (isAnalyticsEnabled) {
+                  posthog.capture('analytics_disabled')
+                }
+              }}
+              inputProps={{ 'aria-label': 'controlled' }}
+            />
           </XStack>
-        </YStack>
+        </XStack>
       </YStack>
+    </YStack>
 
     // <div className="w-full rounded bg-dark-gray-c-three pb-7 ">
     //   <h2 className="mb-0 text-2xl font-semibold text-white">Analytics</h2>{' '}

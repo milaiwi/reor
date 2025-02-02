@@ -6,9 +6,9 @@ import {
   openAIDefaultAPIName,
   openAIDefaultLLMs,
 } from '@shared/defaultLLMs'
+import { Input } from 'tamagui'
 import { Button } from '@/components/ui/button'
 // import { Input } from '@/components/ui/input'
-import { Input } from 'tamagui'
 import {
   Dialog,
   DialogContent,
@@ -16,7 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogOverlay
+  DialogOverlay,
 } from '@/components/ui/dialog'
 
 export interface CloudLLMSetupModalProps {
@@ -66,7 +66,7 @@ const DefaultLLMAPISetupModal: React.FC<CloudLLMSetupModalProps> = ({ isOpen, on
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogOverlay>
-        <DialogContent className="sm:max-w-[425px] p-4">
+        <DialogContent className="p-4 sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>{LLMDisplayName} Setup</DialogTitle>
             <DialogDescription>Enter your {LLMDisplayName} API key below:</DialogDescription>
@@ -87,7 +87,9 @@ const DefaultLLMAPISetupModal: React.FC<CloudLLMSetupModalProps> = ({ isOpen, on
             </p>
           </div>
           <DialogFooter>
-            <Button variant="secondary" onClick={handleSave}>Save</Button>
+            <Button variant="secondary" onClick={handleSave}>
+              Save
+            </Button>
           </DialogFooter>
         </DialogContent>
       </DialogOverlay>

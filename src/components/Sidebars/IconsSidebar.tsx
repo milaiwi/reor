@@ -5,13 +5,12 @@ import { MdSettings } from 'react-icons/md'
 import { VscNewFolder } from 'react-icons/vsc'
 import { HiOutlinePencilAlt } from 'react-icons/hi'
 
+import { Files, MessageCircle, Search, Moon, SunMoon } from '@tamagui/lucide-icons'
+import { YStack } from 'tamagui'
 import { useModalOpeners } from '../../contexts/ModalContext'
 import { useChatContext } from '@/contexts/ChatContext'
 import { useContentContext } from '@/contexts/ContentContext'
 import { useThemeManager } from '@/contexts/ThemeContext'
-
-import { Files, MessageCircle, Search, Moon, SunMoon } from '@tamagui/lucide-icons'
-import { Button, YStack } from 'tamagui'
 
 export interface IconsSidebarProps {
   getShortcutDescription: (action: string) => string
@@ -29,7 +28,7 @@ const IconsSidebar: React.FC<IconsSidebarProps> = ({ getShortcutDescription }) =
   }
 
   return (
-    <YStack 
+    <YStack
       backgroundColor="$gray3"
       className="flex size-full w-[55px] flex-col items-center justify-between gap-1 bg-neutral-800 pt-2"
     >
@@ -37,8 +36,8 @@ const IconsSidebar: React.FC<IconsSidebarProps> = ({ getShortcutDescription }) =
         className=" flex h-8 w-full cursor-pointer items-center justify-center"
         onClick={() => setSidebarShowing('files')}
       >
-        <YStack 
-          alignItems="center" 
+        <YStack
+          alignItems="center"
           hoverStyle={{
             backgroundColor: '$gray7',
             backgroundFocus: '$gray8',
@@ -46,18 +45,14 @@ const IconsSidebar: React.FC<IconsSidebarProps> = ({ getShortcutDescription }) =
           backgroundColor={sidebarShowing === 'files' ? '$gray6' : ''}
           className="flex size-4/5 items-center justify-center rounded"
         >
-          <Files 
-            size={20} 
-            color={determineColor('files')}
-            title={getShortcutDescription('open-files') || 'Files'}
-          />
+          <Files size={20} color={determineColor('files')} title={getShortcutDescription('open-files') || 'Files'} />
         </YStack>
       </div>
       <div
         className=" flex h-8 w-full cursor-pointer items-center justify-center"
         onClick={() => setSidebarShowing('chats')}
       >
-        <YStack 
+        <YStack
           alignItems="center"
           hoverStyle={{
             backgroundColor: '$gray7',
@@ -66,9 +61,9 @@ const IconsSidebar: React.FC<IconsSidebarProps> = ({ getShortcutDescription }) =
           backgroundColor={sidebarShowing === 'chats' ? '$gray6' : ''}
           className="flex size-4/5 items-center justify-center rounded"
         >
-          <MessageCircle 
+          <MessageCircle
             size={20}
-            color={determineColor('chats')}  
+            color={determineColor('chats')}
             title={getShortcutDescription('open-chat-bot') || 'Open Chatbot'}
           />
         </YStack>
@@ -77,7 +72,7 @@ const IconsSidebar: React.FC<IconsSidebarProps> = ({ getShortcutDescription }) =
         className="flex h-8 w-full cursor-pointer items-center justify-center"
         onClick={() => setSidebarShowing('search')}
       >
-        <YStack 
+        <YStack
           alignItems="center"
           hoverStyle={{
             backgroundColor: '$gray7',
@@ -86,7 +81,7 @@ const IconsSidebar: React.FC<IconsSidebarProps> = ({ getShortcutDescription }) =
           backgroundColor={sidebarShowing === 'search' ? '$gray6' : ''}
           className="flex size-4/5 items-center justify-center rounded"
         >
-          <Search 
+          <Search
             size={20}
             color={determineColor('search')}
             title={getShortcutDescription('open-search') || 'Semantic Search'}
@@ -97,13 +92,14 @@ const IconsSidebar: React.FC<IconsSidebarProps> = ({ getShortcutDescription }) =
         className="flex h-8 w-full cursor-pointer items-center justify-center border-none bg-transparent "
         onClick={() => createUntitledNote()}
       >
-        <YStack 
+        <YStack
           alignItems="center"
           hoverStyle={{
             backgroundColor: '$gray7',
             backgroundFocus: '$gray8',
           }}
-          className="flex size-4/5 items-center justify-center rounded">
+          className="flex size-4/5 items-center justify-center rounded"
+        >
           <HiOutlinePencilAlt
             className="text-gray-200"
             color="gray"
@@ -116,13 +112,14 @@ const IconsSidebar: React.FC<IconsSidebarProps> = ({ getShortcutDescription }) =
         className="mt-[2px] flex h-8 w-full cursor-pointer items-center justify-center border-none bg-transparent "
         onClick={() => setIsNewDirectoryModalOpen(true)}
       >
-        <YStack 
+        <YStack
           alignItems="center"
           hoverStyle={{
             backgroundColor: '$gray7',
             backgroundFocus: '$gray8',
           }}
-          className="flex size-4/5 items-center justify-center rounded">
+          className="flex size-4/5 items-center justify-center rounded"
+        >
           <VscNewFolder
             className="text-gray-200"
             color="gray"
@@ -133,37 +130,28 @@ const IconsSidebar: React.FC<IconsSidebarProps> = ({ getShortcutDescription }) =
       </div>
 
       <div className="grow border-yellow-300" />
-      <div
-        className="flex h-8 w-full cursor-pointer items-center justify-center border-none bg-transparent"
-      >  
-        <YStack 
+      <div className="flex h-8 w-full cursor-pointer items-center justify-center border-none bg-transparent">
+        <YStack
           alignItems="center"
           onClick={() => actions.toggle()}
           hoverStyle={{
             backgroundColor: '$gray7',
             backgroundFocus: '$gray8',
           }}
-          className="flex size-4/5 items-center justify-center rounded">
-            {state === 'dark' ? (
-              <SunMoon 
-                size={20}
-                color="gray"
-                title={getShortcutDescription('toggle-theme') || 'Toggle Theme'}
-              />
-            ) : (
-              <Moon 
-                size={20}
-                color="gray"
-                title={getShortcutDescription('toggle-theme') || 'Toggle Theme'}
-              />
-            )}
+          className="flex size-4/5 items-center justify-center rounded"
+        >
+          {state === 'dark' ? (
+            <SunMoon size={20} color="gray" title={getShortcutDescription('toggle-theme') || 'Toggle Theme'} />
+          ) : (
+            <Moon size={20} color="gray" title={getShortcutDescription('toggle-theme') || 'Toggle Theme'} />
+          )}
         </YStack>
       </div>
       <div
         className="flex h-8 w-full cursor-pointer items-center justify-center border-none bg-transparent"
         onClick={() => window.electronUtils.openNewWindow()}
       >
-        <YStack 
+        <YStack
           alignItems="center"
           onClick={() => actions.toggle()}
           hoverStyle={{
@@ -175,12 +163,12 @@ const IconsSidebar: React.FC<IconsSidebarProps> = ({ getShortcutDescription }) =
           <GrNewWindow className="text-gray-100" color="gray" size={14} title="Open New Vault" />
         </YStack>
       </div>
-  
+
       <div
         className="mb-[8px] flex h-8 w-full cursor-pointer items-center justify-center border-none bg-transparent"
         onClick={() => setIsSettingsModalOpen(!isSettingsModalOpen)}
       >
-        <YStack 
+        <YStack
           alignItems="center"
           hoverStyle={{
             backgroundColor: '$gray7',
@@ -188,14 +176,9 @@ const IconsSidebar: React.FC<IconsSidebarProps> = ({ getShortcutDescription }) =
           }}
           className="flex size-4/5 items-center justify-center rounded"
         >
-          <MdSettings
-            color="gray"
-            size={18}
-            title={getShortcutDescription('open-settings-modal') || 'Settings'}
-          />
+          <MdSettings color="gray" size={18} title={getShortcutDescription('open-settings-modal') || 'Settings'} />
         </YStack>
       </div>
-
     </YStack>
   )
 }

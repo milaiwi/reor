@@ -1,9 +1,9 @@
-import {toast} from '@shm/ui'
-import {Extension} from '@tiptap/core'
-import {Plugin, PluginKey} from 'prosemirror-state'
+import { toast } from '@shm/ui'
+import { Extension } from '@tiptap/core'
+import { Plugin, PluginKey } from 'prosemirror-state'
 import { HMBlockSchema } from '@/components/Editor/schema'
-import {BlockNoteEditor} from '../../BlockNoteEditor'
-import {getBlockInfoFromPos} from '../Blocks/helpers/getBlockInfoFromPos'
+import { BlockNoteEditor } from '../../BlockNoteEditor'
+import { getBlockInfoFromPos } from '../Blocks/helpers/getBlockInfoFromPos'
 
 const PLUGIN_KEY = new PluginKey(`drop-plugin`)
 
@@ -75,13 +75,11 @@ export const DragExtension = Extension.create<DragOptions>({
                           return handleDragMedia(file).then((props) => {
                             if (!props) return false
 
-                            const {state} = view
+                            const { state } = view
                             let blockNode
                             const newId = generateBlockId()
 
-                            if (
-                              chromiumSupportedImageMimeTypes.has(file.type)
-                            ) {
+                            if (chromiumSupportedImageMimeTypes.has(file.type)) {
                               blockNode = {
                                 id: newId,
                                 type: 'image',
@@ -90,9 +88,7 @@ export const DragExtension = Extension.create<DragOptions>({
                                   name: props.name,
                                 },
                               }
-                            } else if (
-                              chromiumSupportedVideoMimeTypes.has(file.type)
-                            ) {
+                            } else if (chromiumSupportedVideoMimeTypes.has(file.type)) {
                               blockNode = {
                                 id: newId,
                                 type: 'video',
@@ -111,10 +107,7 @@ export const DragExtension = Extension.create<DragOptions>({
                               }
                             }
 
-                            const blockInfo = getBlockInfoFromPos(
-                              state.doc,
-                              pos.pos,
-                            )
+                            const blockInfo = getBlockInfoFromPos(state.doc, pos.pos)
 
                             if (index === 0) {
                               this.options.editor.insertBlocks(
@@ -123,11 +116,7 @@ export const DragExtension = Extension.create<DragOptions>({
                                 blockInfo.node.textContent ? 'after' : 'before',
                               )
                             } else {
-                              this.options.editor.insertBlocks(
-                                [blockNode],
-                                lastId,
-                                'after',
-                              )
+                              this.options.editor.insertBlocks([blockNode], lastId, 'after')
                             }
 
                             lastId = newId
@@ -191,8 +180,7 @@ async function handleDragMedia(file: File) {
 }
 
 function generateBlockId(length: number = 8): string {
-  const characters =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
   let result = ''
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * characters.length))

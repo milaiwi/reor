@@ -1,17 +1,17 @@
-import {XStack, XStackProps} from "@tamagui/stacks";
-import {SizableText} from "@tamagui/text";
-import {useMemo} from "react";
+import { XStack, XStackProps } from '@tamagui/stacks'
+import { SizableText } from '@tamagui/text'
+import { useMemo } from 'react'
 
 export type UIAvatarProps = XStackProps & {
-  url?: string;
-  size?: number;
-  color?: string;
-  label?: string;
-  id?: string;
-  onPress?: () => void;
-};
+  url?: string
+  size?: number
+  color?: string
+  label?: string
+  id?: string
+  onPress?: () => void
+}
 
-export function UIAvatar({
+export const UIAvatar = ({
   url,
   id,
   label,
@@ -19,13 +19,13 @@ export function UIAvatar({
   color,
   onPress,
   borderRadius = size,
-}: UIAvatarProps & {borderRadius?: XStackProps["borderRadius"]}) {
-  let avatarColor = useMemo(() => {
-    if (color) return color;
-    return id ? getRandomColor(id) : "transparent";
-  }, [id, color]);
+}: UIAvatarProps & { borderRadius?: XStackProps['borderRadius'] }) => {
+  const avatarColor = useMemo(() => {
+    if (color) return color
+    return id ? getRandomColor(id) : 'transparent'
+  }, [id, color])
 
-  let text = label ? label[0] : id ? id[0] : "?";
+  const text = label ? label[0] : id ? id[0] : '?'
 
   return (
     <XStack
@@ -34,23 +34,23 @@ export function UIAvatar({
       height={size}
       borderRadius={borderRadius}
       overflow="hidden"
-      backgroundColor={url ? "transparent" : avatarColor}
+      backgroundColor={url ? 'transparent' : avatarColor}
       alignItems="center"
       justifyContent="center"
       position="relative"
       onPress={onPress}
       hoverStyle={{
-        cursor: onPress ? "default" : undefined,
+        cursor: onPress ? 'default' : undefined,
       }}
     >
       {url ? (
         <img
           src={url}
           style={{
-            minWidth: "100%",
-            minHeight: "100%",
-            objectFit: "cover",
-            backgroundColor: "transparent",
+            minWidth: '100%',
+            minHeight: '100%',
+            objectFit: 'cover',
+            backgroundColor: 'transparent',
           }}
         />
       ) : (
@@ -68,15 +68,15 @@ export function UIAvatar({
         </SizableText>
       )}
     </XStack>
-  );
+  )
 }
 
 export function getRandomColor(id: string) {
-  let hash = 0;
+  let hash = 0
   for (let i = 0; i < id.length; i++) {
-    hash = id.charCodeAt(i) + ((hash << 6) - hash);
-    hash = hash & hash; // Convert to 32bit integer
+    hash = id.charCodeAt(i) + ((hash << 6) - hash)
+    hash &= hash // Convert to 32bit integer
   }
-  const shortened = hash % 360;
-  return `hsl(${shortened},60%,80%)`;
+  const shortened = hash % 360
+  return `hsl(${shortened},60%,80%)`
 }

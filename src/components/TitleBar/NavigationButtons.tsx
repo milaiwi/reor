@@ -92,29 +92,21 @@ const NavigationButtons: React.FC = () => {
     return (
       showMenu !== '' &&
       menuChild.length > 0 && (
-      <View
-        ref={ref}
-        tabIndex={0}
-        position="absolute"
-        left={offsetLeft}
-        top={offsetTop + offsetHeight}
-      >
-        <YStack>
-          {menuChild.map((pathOrChatID) => (
-            <XStack
-              key={pathOrChatID}
-              padding="$3"
-              cursor="pointer"
-              hoverStyle={{ backgroundColor: '$backgroundHover' }}
-              onPress={() => goSelected(pathOrChatID)}
-            >
-              <Text>
-                {removeFileExtension(pathOrChatID.replace(/\\/g, '/').split('/').pop() || '')}
-              </Text>
-            </XStack>
-          ))}
-        </YStack>
-      </View>
+        <View ref={ref} tabIndex={0} position="absolute" left={offsetLeft} top={offsetTop + offsetHeight}>
+          <YStack>
+            {menuChild.map((pathOrChatID) => (
+              <XStack
+                key={pathOrChatID}
+                padding="$3"
+                cursor="pointer"
+                hoverStyle={{ backgroundColor: '$backgroundHover' }}
+                onPress={() => goSelected(pathOrChatID)}
+              >
+                <Text>{removeFileExtension(pathOrChatID.replace(/\\/g, '/').split('/').pop() || '')}</Text>
+              </XStack>
+            ))}
+          </YStack>
+        </View>
       )
     )
   }

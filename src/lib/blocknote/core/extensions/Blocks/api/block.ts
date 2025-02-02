@@ -1,19 +1,12 @@
-import {Attribute, Node} from '@tiptap/core'
-import {TagParseRule} from '@tiptap/pm/model'
-import {BlockNoteDOMAttributes, BlockNoteEditor} from '../../..'
-import {mergeCSSClasses} from '../../../shared/utils'
+import { Attribute, Node } from '@tiptap/core'
+import { TagParseRule } from '@tiptap/pm/model'
+import { BlockNoteDOMAttributes, BlockNoteEditor } from '../../..'
+import { mergeCSSClasses } from '../../../shared/utils'
 import styles from '../nodes/Block.module.css'
-import {
-  BlockConfig,
-  BlockSchema,
-  BlockSpec,
-  PropSchema,
-  TipTapNode,
-  TipTapNodeConfig,
-} from './blockTypes'
+import { BlockConfig, BlockSchema, BlockSpec, PropSchema, TipTapNode, TipTapNodeConfig } from './blockTypes'
 
 export function camelToDataKebab(str: string): string {
-  return 'data-' + str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
+  return `data-${str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()}`
 }
 
 // Function that uses the 'propSchema' of a blockConfig to create a TipTap
@@ -24,12 +17,7 @@ export function propsToAttributes<
   ContainsInlineContent extends boolean,
   BSchema extends BlockSchema,
   BParseRules extends TagParseRule[],
->(
-  blockConfig: Omit<
-    BlockConfig<BType, PSchema, ContainsInlineContent, BSchema, BParseRules>,
-    'render'
-  >,
-) {
+>(blockConfig: Omit<BlockConfig<BType, PSchema, ContainsInlineContent, BSchema, BParseRules>, 'render'>) {
   const tiptapAttributes: Record<string, Attribute> = {}
 
   Object.entries(blockConfig.propSchema).forEach(([name, spec]) => {
@@ -61,12 +49,7 @@ export function parse<
   ContainsInlineContent extends boolean,
   BSchema extends BlockSchema,
   BParseRules extends TagParseRule[],
->(
-  blockConfig: Omit<
-    BlockConfig<BType, PSchema, ContainsInlineContent, BSchema, BParseRules>,
-    'render'
-  >,
-) {
+>(blockConfig: Omit<BlockConfig<BType, PSchema, ContainsInlineContent, BSchema, BParseRules>, 'render'>) {
   const rules: TagParseRule[] = []
   if (blockConfig.parseHTML && blockConfig.parseHTML.length > 0) {
     blockConfig.parseHTML.forEach((rule) => {
@@ -74,7 +57,7 @@ export function parse<
     })
   }
   rules.push({
-    tag: 'div[data-content-type=' + blockConfig.type + ']',
+    tag: `div[data-content-type=${blockConfig.type}]`,
     priority: 999,
   })
   return rules
@@ -90,10 +73,7 @@ export function render<
   BSchema extends BlockSchema,
   BParseRules extends TagParseRule[],
 >(
-  blockConfig: Omit<
-    BlockConfig<BType, PSchema, ContainsInlineContent, BSchema, BParseRules>,
-    'render'
-  >,
+  blockConfig: Omit<BlockConfig<BType, PSchema, ContainsInlineContent, BSchema, BParseRules>, 'render'>,
   HTMLAttributes: Record<string, any>,
 ) {
   // Create blockContent element
@@ -118,7 +98,7 @@ export function render<
   return contentDOM !== undefined
     ? {
         dom: blockContent,
-        contentDOM: contentDOM,
+        contentDOM,
       }
     : {
         dom: blockContent,
@@ -133,15 +113,7 @@ export function createBlockSpec<
   ContainsInlineContent extends boolean,
   BSchema extends BlockSchema,
   BParseRules extends TagParseRule[],
->(
-  blockConfig: BlockConfig<
-    BType,
-    PSchema,
-    ContainsInlineContent,
-    BSchema,
-    BParseRules
-  >,
-): BlockSpec<BType, PSchema> {
+>(blockConfig: BlockConfig<BType, PSchema, ContainsInlineContent, BSchema, BParseRules>): BlockSpec<BType, PSchema> {
   const node = createTipTapBlock<
     BType,
     {
@@ -161,29 +133,23 @@ export function createBlockSpec<
       return parse(blockConfig)
     },
 
-    renderHTML({HTMLAttributes}) {
+    renderHTML({ HTMLAttributes }) {
       return render(blockConfig, HTMLAttributes)
     },
 
     addNodeView() {
-      return ({HTMLAttributes, getPos}) => {
+      return ({ HTMLAttributes, getPos }) => {
         // Create blockContent element
         const blockContent = document.createElement('div')
         // Add custom HTML attributes
-        const blockContentDOMAttributes =
-          this.options.domAttributes?.blockContent || {}
-        for (const [attribute, value] of Object.entries(
-          blockContentDOMAttributes,
-        )) {
+        const blockContentDOMAttributes = this.options.domAttributes?.blockContent || {}
+        for (const [attribute, value] of Object.entries(blockContentDOMAttributes)) {
           if (attribute !== 'class') {
             blockContent.setAttribute(attribute, value)
           }
         }
         // Set blockContent & custom classes
-        blockContent.className = mergeCSSClasses(
-          styles.blockContent,
-          blockContentDOMAttributes.class,
-        )
+        blockContent.className = mergeCSSClasses(styles.blockContent, blockContentDOMAttributes.class)
         // Add blockContent HTML attribute
         blockContent.setAttribute('data-content-type', blockConfig.type)
         // Add props as HTML attributes in kebab-case with "data-" prefix
@@ -192,18 +158,14 @@ export function createBlockSpec<
         }
 
         // Gets BlockNote editor instance
-        const editor = this.options.editor! as BlockNoteEditor<
-          BSchema & {[k in BType]: BlockSpec<BType, PSchema>}
-        >
+        const editor = this.options.editor! as BlockNoteEditor<BSchema & { [k in BType]: BlockSpec<BType, PSchema> }>
         // Gets position of the node
         if (typeof getPos === 'boolean') {
-          throw new Error(
-            'Cannot find node position as getPos is a boolean, not a function.',
-          )
+          throw new Error('Cannot find node position as getPos is a boolean, not a function.')
         }
         const pos = getPos()
         // Gets TipTap editor instance
-        const tipTapEditor = editor._tiptapEditor
+        const tipTapEditor = editor.tiptapEditor
         // Gets parent blockContainer node
         const blockContainer = tipTapEditor.state.doc.resolve(pos!).node()
         // Gets block identifier
@@ -219,12 +181,9 @@ export function createBlockSpec<
         const rendered = blockConfig.render(block as any, editor)
         // Add HTML attributes to contentDOM
         if ('contentDOM' in rendered) {
-          const inlineContentDOMAttributes =
-            this.options.domAttributes?.inlineContent || {}
+          const inlineContentDOMAttributes = this.options.domAttributes?.inlineContent || {}
           // Add custom HTML attributes
-          for (const [attribute, value] of Object.entries(
-            inlineContentDOMAttributes,
-          )) {
+          for (const [attribute, value] of Object.entries(inlineContentDOMAttributes)) {
             if (attribute !== 'class') {
               rendered.contentDOM.setAttribute(attribute, value)
             }
@@ -265,9 +224,7 @@ export function createTipTapBlock<
     domAttributes?: BlockNoteDOMAttributes
   },
   Storage = any,
->(
-  config: TipTapNodeConfig<Type, Options, Storage>,
-): TipTapNode<Type, Options, Storage> {
+>(config: TipTapNodeConfig<Type, Options, Storage>): TipTapNode<Type, Options, Storage> {
   // Type cast is needed as Node.name is mutable, though there is basically no
   // reason to change it after creation. Alternative is to wrap Node in a new
   // class, which I don't think is worth it since we'd only be changing 1

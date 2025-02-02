@@ -1,8 +1,8 @@
-import {Editor, Extension} from '@tiptap/core'
-import {BlockSideMenuFactory} from './BlockSideMenuFactoryTypes'
-import {createDraggableBlocksPlugin} from './DraggableBlocksPlugin'
-import {BlockNoteEditor} from '../../BlockNoteEditor'
-import {BlockSchema} from '../Blocks/api/blockTypes'
+import { Editor, Extension } from '@tiptap/core'
+import { BlockSideMenuFactory } from './BlockSideMenuFactoryTypes'
+import { createDraggableBlocksPlugin } from './DraggableBlocksPlugin'
+import { BlockNoteEditor } from '../../BlockNoteEditor'
+import { BlockSchema } from '../Blocks/api/blockTypes'
 
 export type DraggableBlocksOptions<BSchema extends BlockSchema> = {
   tiptapEditor: Editor
@@ -22,9 +22,7 @@ export const createDraggableBlocksExtension = <BSchema extends BlockSchema>() =>
     priority: 1000, // Need to be high, in order to hide menu when typing slash
     addProseMirrorPlugins() {
       if (!this.options.blockSideMenuFactory) {
-        throw new Error(
-          'UI Element factory not defined for DraggableBlocksExtension',
-        )
+        throw new Error('UI Element factory not defined for DraggableBlocksExtension')
       }
       return [
         createDraggableBlocksPlugin({

@@ -1,9 +1,9 @@
 // THIS FILE IS FORKED FROM TAMAGUI
 // https://github.com/tamagui/tamagui/blob/master/code/ui/tooltip/src/Tooltip.tsx
 // Because if we use @tamagui/popper, it fails because Popper.tsx imports from RN (not RNW), and the rewrite is failing. So here we change the imports to RNW.
-///////////////////////
+/// ////////////////////
 
-import "@tamagui/polyfill-dev";
+import '@tamagui/polyfill-dev'
 
 import {
   FloatingDelayGroup,
@@ -15,113 +15,88 @@ import {
   useHover,
   useInteractions,
   useRole,
-} from "@floating-ui/react";
-import type {ScopedProps, SizeTokens} from "@tamagui/core";
-import {useEvent} from "@tamagui/core";
-import type {UseFloatingFn} from "@tamagui/floating";
-import {FloatingOverrideContext} from "@tamagui/floating";
-import {getSize} from "@tamagui/get-token";
-import {withStaticProperties} from "@tamagui/helpers";
-import {useControllableState} from "@tamagui/use-controllable-state";
-import * as React from "react";
-import type {
-  PopoverAnchorProps,
-  PopoverArrowProps,
-  PopoverContentProps,
-  PopoverTriggerProps,
-} from "./TamaguiPopover";
-import {
-  PopoverAnchor,
-  PopoverArrow,
-  PopoverContent,
-  PopoverContext,
-  PopoverTrigger,
-} from "./TamaguiPopover";
-import type {PopperProps} from "./TamaguiPopper";
-import {Popper, PopperContentFrame, usePopperContext} from "./TamaguiPopper";
+} from '@floating-ui/react'
+import type { ScopedProps, SizeTokens } from '@tamagui/core'
+import { useEvent } from '@tamagui/core'
+import type { UseFloatingFn } from '@tamagui/floating'
+import { FloatingOverrideContext } from '@tamagui/floating'
+import { getSize } from '@tamagui/get-token'
+import { withStaticProperties } from '@tamagui/helpers'
+import { useControllableState } from '@tamagui/use-controllable-state'
+import * as React from 'react'
+import type { PopoverAnchorProps, PopoverArrowProps, PopoverContentProps, PopoverTriggerProps } from './TamaguiPopover'
+import { PopoverAnchor, PopoverArrow, PopoverContent, PopoverContext, PopoverTrigger } from './TamaguiPopover'
+import type { PopperProps } from './TamaguiPopper'
+import { Popper, PopperContentFrame, usePopperContext } from './TamaguiPopper'
 
-const TOOLTIP_SCOPE = "tooltip";
-type ScopedTooltipProps<P> = ScopedProps<P, "Tooltip">;
+const TOOLTIP_SCOPE = 'tooltip'
+type ScopedTooltipProps<P> = ScopedProps<P, 'Tooltip'>
 
 const TooltipContent = PopperContentFrame.extractable(
-  React.forwardRef(
-    (
-      {__scopeTooltip, ...props}: ScopedTooltipProps<PopoverContentProps>,
-      ref: any
-    ) => {
-      const preventAnimation = React.useContext(PreventTooltipAnimationContext);
-      const popper = usePopperContext(__scopeTooltip || TOOLTIP_SCOPE);
-      const padding = !props.unstyled
-        ? props.padding ??
-          props.size ??
-          popper.size ??
-          getSize("$true", {
-            shift: -2,
-          })
-        : undefined;
+  React.forwardRef(({ __scopeTooltip, ...props }: ScopedTooltipProps<PopoverContentProps>, ref: any) => {
+    const preventAnimation = React.useContext(PreventTooltipAnimationContext)
+    const popper = usePopperContext(__scopeTooltip || TOOLTIP_SCOPE)
+    const padding = !props.unstyled
+      ? (props.padding ??
+        props.size ??
+        popper.size ??
+        getSize('$true', {
+          shift: -2,
+        }))
+      : undefined
 
-      return (
-        <PopoverContent
-          __scopePopover={__scopeTooltip || TOOLTIP_SCOPE}
-          componentName="Tooltip"
-          disableRemoveScroll
-          disableFocusScope
-          {...(!props.unstyled && {
-            padding,
-          })}
-          ref={ref}
-          {...props}
-          {...(preventAnimation && {
-            animation: null,
-          })}
-        />
-      );
-    }
-  )
-);
-
-const TooltipArrow = React.forwardRef(
-  (props: ScopedTooltipProps<PopoverArrowProps>, ref: any) => {
-    const {__scopeTooltip, ...rest} = props;
     return (
-      <PopoverArrow
-        __scopePopper={__scopeTooltip || TOOLTIP_SCOPE}
+      <PopoverContent
+        __scopePopover={__scopeTooltip || TOOLTIP_SCOPE}
         componentName="Tooltip"
+        disableRemoveScroll
+        disableFocusScope
+        {...(!props.unstyled && {
+          padding,
+        })}
         ref={ref}
-        {...rest}
+        {...props}
+        {...(preventAnimation && {
+          animation: null,
+        })}
       />
-    );
-  }
-);
+    )
+  }),
+)
+
+const TooltipArrow = React.forwardRef((props: ScopedTooltipProps<PopoverArrowProps>, ref: any) => {
+  const { __scopeTooltip, ...rest } = props
+  return <PopoverArrow __scopePopper={__scopeTooltip || TOOLTIP_SCOPE} componentName="Tooltip" ref={ref} {...rest} />
+})
 
 export type TooltipProps = PopperProps & {
-  open?: boolean;
-  unstyled?: boolean;
-  children?: React.ReactNode;
-  onOpenChange?: (open: boolean) => void;
+  open?: boolean
+  unstyled?: boolean
+  children?: React.ReactNode
+  onOpenChange?: (open: boolean) => void
   focus?: {
-    enabled?: boolean;
-    visibleOnly?: boolean;
-  };
-  groupId?: string;
-  restMs?: number;
+    enabled?: boolean
+    visibleOnly?: boolean
+  }
+  groupId?: string
+  restMs?: number
   delay?:
     | number
     | {
-        open?: number;
-        close?: number;
-      };
-  disableAutoCloseOnScroll?: boolean;
-};
+        open?: number
+        close?: number
+      }
+  disableAutoCloseOnScroll?: boolean
+}
 
 type Delay =
   | number
   | Partial<{
-      open: number;
-      close: number;
-    }>;
+      open: number
+      close: number
+    }>
 
-const PreventTooltipAnimationContext = React.createContext(false);
+const PreventTooltipAnimationContext = React.createContext(false)
 
 export const TooltipGroup = ({
   children,
@@ -129,74 +104,67 @@ export const TooltipGroup = ({
   preventAnimation = false,
   timeoutMs,
 }: {
-  children?: any;
-  delay: Delay;
-  preventAnimation?: boolean;
-  timeoutMs?: number;
+  children?: any
+  delay: Delay
+  preventAnimation?: boolean
+  timeoutMs?: number
 }) => {
   return (
     <PreventTooltipAnimationContext.Provider value={preventAnimation}>
-      <FloatingDelayGroup
-        timeoutMs={timeoutMs}
-        delay={React.useMemo(() => delay, [JSON.stringify(delay)])}
-      >
+      <FloatingDelayGroup timeoutMs={timeoutMs} delay={React.useMemo(() => delay, [JSON.stringify(delay)])}>
         {children}
       </FloatingDelayGroup>
     </PreventTooltipAnimationContext.Provider>
-  );
-};
+  )
+}
 
 const TooltipComponent = React.forwardRef(function Tooltip(
   props: ScopedTooltipProps<TooltipProps>,
   // no real ref here but React complaining need to see why see SandboxCustomStyledAnimatedTooltip.ts
-  ref
+  ref,
 ) {
   const {
     children,
     delay: delayProp,
-    restMs = typeof delayProp === "undefined"
-      ? 500
-      : typeof delayProp === "number"
-      ? delayProp
-      : 0,
+    restMs = typeof delayProp === 'undefined' ? 500 : typeof delayProp === 'number' ? delayProp : 0,
     onOpenChange: onOpenChangeProp,
     focus,
     open: openProp,
     disableAutoCloseOnScroll,
     __scopeTooltip,
     ...restProps
-  } = props;
-  const triggerRef = React.useRef<HTMLButtonElement>(null);
-  const [hasCustomAnchor, setHasCustomAnchor] = React.useState(false);
-  const {delay: delayGroup, setCurrentId} = useDelayGroupContext();
-  const delay = delayProp ?? delayGroup;
+  } = props
+  const triggerRef = React.useRef<HTMLButtonElement>(null)
+  const [hasCustomAnchor, setHasCustomAnchor] = React.useState(false)
+  const { delay: delayGroup, setCurrentId } = useDelayGroupContext()
+  const delay = delayProp ?? delayGroup
   const [open, setOpen] = useControllableState({
     prop: openProp,
     defaultProp: false,
     onChange: onOpenChangeProp,
-  });
-  const id = props.groupId;
+  })
+  const id = props.groupId
 
   const onOpenChange = useEvent((open) => {
     if (open) {
-      setCurrentId(id);
+      setCurrentId(id)
     }
-    setOpen(open);
-  });
+    setOpen(open)
+  })
 
   // Auto close when document scroll
   React.useEffect(() => {
-    if (!open) return;
-    if (disableAutoCloseOnScroll) return;
-    if (typeof document === "undefined") return;
+    if (!open) return
+    if (disableAutoCloseOnScroll) return
+    if (typeof document === 'undefined') return
     const openIt = () => {
-      setOpen(false);
-    };
-    document.documentElement.addEventListener("scroll", openIt);
+      setOpen(false)
+    }
+    document.documentElement.addEventListener('scroll', openIt)
     return () => {
-      document.documentElement.removeEventListener("scroll", openIt);
-    };
-  }, [open, disableAutoCloseOnScroll]);
+      document.documentElement.removeEventListener('scroll', openIt)
+    }
+  }, [open, disableAutoCloseOnScroll])
 
   const useFloatingFn: UseFloatingFn = (props) => {
     // @ts-ignore
@@ -204,21 +172,21 @@ const TooltipComponent = React.forwardRef(function Tooltip(
       ...props,
       open,
       onOpenChange,
-    });
-    const {delay: delayContext} = useDelayGroup(floating.context, {id});
-    const {getReferenceProps, getFloatingProps} = useInteractions([
-      useHover(floating.context, {delay: delay ?? delayContext, restMs}),
+    })
+    const { delay: delayContext } = useDelayGroup(floating.context, { id })
+    const { getReferenceProps, getFloatingProps } = useInteractions([
+      useHover(floating.context, { delay: delay ?? delayContext, restMs }),
       useFocus(floating.context, focus),
-      useRole(floating.context, {role: "tooltip"}),
+      useRole(floating.context, { role: 'tooltip' }),
       useDismiss(floating.context),
-    ]);
+    ])
     return {
       ...floating,
       open,
       getReferenceProps,
       getFloatingProps,
-    } as any;
-  };
+    } as any
+  }
 
   const useFloatingContext = React.useCallback(useFloatingFn, [
     id,
@@ -226,22 +194,16 @@ const TooltipComponent = React.forwardRef(function Tooltip(
     open,
     restMs,
     focus ? JSON.stringify(focus) : 0,
-  ]);
-  const onCustomAnchorAdd = React.useCallback(
-    () => setHasCustomAnchor(true),
-    []
-  );
-  const onCustomAnchorRemove = React.useCallback(
-    () => setHasCustomAnchor(false),
-    []
-  );
-  const contentId = React.useId();
+  ])
+  const onCustomAnchorAdd = React.useCallback(() => setHasCustomAnchor(true), [])
+  const onCustomAnchorRemove = React.useCallback(() => setHasCustomAnchor(false), [])
+  const contentId = React.useId()
   const smallerSize = props.unstyled
     ? null
-    : getSize("$true", {
+    : getSize('$true', {
         shift: -2,
         bounds: [0],
-      });
+      })
 
   return (
     // TODO: FloatingOverrideContext might also need to be scoped
@@ -270,42 +232,27 @@ const TooltipComponent = React.forwardRef(function Tooltip(
         </PopoverContext.Provider>
       </Popper>
     </FloatingOverrideContext.Provider>
-  );
-});
+  )
+})
 
 const TooltipTrigger = React.forwardRef(function TooltipTrigger(
   props: ScopedTooltipProps<PopoverTriggerProps>,
-  ref: any
+  ref: any,
 ) {
-  const {__scopeTooltip, ...rest} = props;
-  return (
-    <PopoverTrigger
-      {...rest}
-      __scopePopover={__scopeTooltip || TOOLTIP_SCOPE}
-      ref={ref}
-    />
-  );
-});
+  const { __scopeTooltip, ...rest } = props
+  return <PopoverTrigger {...rest} __scopePopover={__scopeTooltip || TOOLTIP_SCOPE} ref={ref} />
+})
 
-const TooltipAnchor = React.forwardRef(function TooltipAnchor(
-  props: ScopedTooltipProps<PopoverAnchorProps>,
-  ref: any
-) {
-  const {__scopeTooltip, ...rest} = props;
-  return (
-    <PopoverAnchor
-      {...rest}
-      __scopePopover={__scopeTooltip || TOOLTIP_SCOPE}
-      ref={ref}
-    />
-  );
-});
+const TooltipAnchor = React.forwardRef(function TooltipAnchor(props: ScopedTooltipProps<PopoverAnchorProps>, ref: any) {
+  const { __scopeTooltip, ...rest } = props
+  return <PopoverAnchor {...rest} __scopePopover={__scopeTooltip || TOOLTIP_SCOPE} ref={ref} />
+})
 
 export const Tooltip = withStaticProperties(TooltipComponent, {
   Anchor: TooltipAnchor,
   Arrow: TooltipArrow,
   Content: TooltipContent,
   Trigger: TooltipTrigger,
-});
+})
 
-const voidFn = () => {};
+const voidFn = () => {}

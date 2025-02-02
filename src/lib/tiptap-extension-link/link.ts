@@ -1,10 +1,10 @@
-import {isHypermediaScheme} from '../utils'
-import {Mark, mergeAttributes} from '@tiptap/core'
-import {Plugin} from '@tiptap/pm/state'
-import {registerCustomProtocol, reset} from 'linkifyjs'
+import { Mark, mergeAttributes } from '@tiptap/core'
+import { Plugin } from '@tiptap/pm/state'
+import { registerCustomProtocol, reset } from 'linkifyjs'
+import { isHypermediaScheme } from '../utils'
 
-import {autolink} from './helpers/autolink'
-import {clickHandler} from './helpers/clickHandler'
+import { autolink } from './helpers/autolink'
+import { clickHandler } from './helpers/clickHandler'
 // import {pasteHandler} from './helpers/pasteHandler'
 
 export interface LinkProtocolOptions {
@@ -49,17 +49,11 @@ declare module '@tiptap/core' {
       /**
        * Set a link mark
        */
-      setLink: (attributes: {
-        href: string
-        target?: string | null
-      }) => ReturnType
+      setLink: (attributes: { href: string; target?: string | null }) => ReturnType
       /**
        * Toggle a link mark
        */
-      toggleLink: (attributes: {
-        href: string
-        target?: string | null
-      }) => ReturnType
+      toggleLink: (attributes: { href: string; target?: string | null }) => ReturnType
       /**
        * Unset a link mark
        */
@@ -129,10 +123,10 @@ export const Link = Mark.create<LinkOptions>({
   },
 
   parseHTML() {
-    return [{tag: 'a[href]:not([href *= "javascript:" i])'}]
+    return [{ tag: 'a[href]:not([href *= "javascript:" i])' }]
   },
 
-  renderHTML({HTMLAttributes, mark}) {
+  renderHTML({ HTMLAttributes, mark }) {
     const attrs = mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)
     const isHM = isHypermediaScheme(HTMLAttributes.href)
     return [
@@ -149,29 +143,23 @@ export const Link = Mark.create<LinkOptions>({
     return {
       setLink:
         (attributes) =>
-        ({chain}) => {
-          return chain()
-            .setMark(this.name, attributes)
-            .setMeta('preventAutolink', true)
-            .run()
+        ({ chain }) => {
+          return chain().setMark(this.name, attributes).setMeta('preventAutolink', true).run()
         },
 
       toggleLink:
         (attributes) =>
-        ({chain}) => {
+        ({ chain }) => {
           return chain()
-            .toggleMark(this.name, attributes, {extendEmptyMarkRange: true})
+            .toggleMark(this.name, attributes, { extendEmptyMarkRange: true })
             .setMeta('preventAutolink', true)
             .run()
         },
 
       unsetLink:
         () =>
-        ({chain}) => {
-          return chain()
-            .unsetMark(this.name, {extendEmptyMarkRange: true})
-            .setMeta('preventAutolink', true)
-            .run()
+        ({ chain }) => {
+          return chain().unsetMark(this.name, { extendEmptyMarkRange: true }).setMeta('preventAutolink', true).run()
         },
     }
   },

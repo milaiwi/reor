@@ -1,5 +1,5 @@
-import {Node, ResolvedPos} from '@tiptap/pm/model'
-import {EditorState} from 'prosemirror-state'
+import { Node, ResolvedPos } from '@tiptap/pm/model'
+import { EditorState } from 'prosemirror-state'
 
 export type GroupInfo = {
   group: Node
@@ -9,10 +9,7 @@ export type GroupInfo = {
   $pos: ResolvedPos
 }
 
-export function getGroupInfoFromPos(
-  pos: number,
-  state: EditorState,
-): GroupInfo {
+export function getGroupInfoFromPos(pos: number, state: EditorState): GroupInfo {
   const $pos = state.doc.resolve(pos)
   const maxDepth = $pos.depth
   // Set group to first node found at position

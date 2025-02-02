@@ -1,14 +1,12 @@
-import {BlockNoteEditor, BlockSchema} from '@/editor/blocknote/core'
-import {useCallback, useState} from 'react'
-import {RiIndentDecrease, RiIndentIncrease} from 'react-icons/ri'
-import {ToolbarButton} from '../../../SharedComponents/Toolbar/components/ToolbarButton'
-import {useEditorContentChange} from '../../../hooks/useEditorContentChange'
-import {useEditorSelectionChange} from '../../../hooks/useEditorSelectionChange'
-import {formatKeyboardShortcut} from '../../../utils'
+import { useCallback, useState } from 'react'
+import { RiIndentDecrease, RiIndentIncrease } from 'react-icons/ri'
+import { BlockNoteEditor, BlockSchema } from '@/editor/blocknote/core'
+import { ToolbarButton } from '../../../SharedComponents/Toolbar/components/ToolbarButton'
+import { useEditorContentChange } from '../../../hooks/useEditorContentChange'
+import { useEditorSelectionChange } from '../../../hooks/useEditorSelectionChange'
+import { formatKeyboardShortcut } from '../../../utils'
 
-export const NestBlockButton = <BSchema extends BlockSchema>(props: {
-  editor: BlockNoteEditor<BSchema>
-}) => {
+export const NestBlockButton = <BSchema extends BlockSchema>(props: { editor: BlockNoteEditor<BSchema> }) => {
   const [canNestBlock, setCanNestBlock] = useState<boolean>()
 
   useEditorContentChange(props.editor, () => {
@@ -35,9 +33,7 @@ export const NestBlockButton = <BSchema extends BlockSchema>(props: {
   )
 }
 
-export const UnnestBlockButton = <BSchema extends BlockSchema>(props: {
-  editor: BlockNoteEditor<BSchema>
-}) => {
+export const UnnestBlockButton = <BSchema extends BlockSchema>(props: { editor: BlockNoteEditor<BSchema> }) => {
   const [canUnnestBlock, setCanUnnestBlock] = useState<boolean>()
 
   useEditorContentChange(props.editor, () => {

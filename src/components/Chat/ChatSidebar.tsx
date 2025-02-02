@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import { IoChatbubbles } from 'react-icons/io5'
 import { RiChatNewFill, RiArrowDownSLine } from 'react-icons/ri'
+import { YStack, XStack, SizableText } from 'tamagui'
 import { useChatContext } from '@/contexts/ChatContext'
 import { useContentContext } from '@/contexts/ContentContext'
 import { ChatMetadata } from '../../lib/llm/types'
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/ui/context-menu'
-import { YStack, XStack, SizableText } from 'tamagui'
 
 export interface ChatItemProps {
   chatMetadata: ChatMetadata
@@ -32,16 +32,20 @@ export const ChatItem: React.FC<ChatItemProps> = ({ chatMetadata }) => {
   return (
     <ContextMenu>
       <ContextMenuTrigger>
-        <XStack 
-          backgroundColor={isSelected ? "$gray7" : undefined}
+        <XStack
+          backgroundColor={isSelected ? '$gray7' : undefined}
           gap="$2"
           alignItems="center"
           hoverStyle={{
-            backgroundColor: "$gray7",
+            backgroundColor: '$gray7',
           }}
-          onClick={() => openContent(chatMetadata.id)} className={itemClasses}>
+          onClick={() => openContent(chatMetadata.id)}
+          className={itemClasses}
+        >
           <IoChatbubbles />
-          <SizableText fontSize={11} fontWeight={500} ellipse className="flex-1">{chatMetadata.displayName}</SizableText>
+          <SizableText fontSize={11} fontWeight={500} ellipse className="flex-1">
+            {chatMetadata.displayName}
+          </SizableText>
         </XStack>
       </ContextMenuTrigger>
       <ContextMenuContent>
@@ -60,9 +64,7 @@ export const ChatSidebar: React.FC = () => {
   const toggleRecents = () => setIsRecentsOpen((prev) => !prev)
 
   return (
-    <YStack 
-      backgroundColor="$gray3"
-      className="flex h-full flex-col overflow-y-auto px-2 pb-4 pt-2.5">
+    <YStack backgroundColor="$gray3" className="flex h-full flex-col overflow-y-auto px-2 pb-4 pt-2.5">
       <div className="flex h-full flex-col gap-2">
         <div className="flex min-h-0 flex-1 flex-col gap-4">
           <div className="mb-4 flex flex-col gap-6">
@@ -80,9 +82,11 @@ export const ChatSidebar: React.FC = () => {
           </div>
 
           <div className="flex-1">
-            <XStack 
+            <XStack
               color="$gray11"
-              className="flex cursor-pointer items-center justify-between" onClick={toggleRecents}>
+              className="flex cursor-pointer items-center justify-between"
+              onClick={toggleRecents}
+            >
               <h4 className="mb-0 mt-1 text-xs font-medium tracking-wider">Recents</h4>
               <RiArrowDownSLine
                 className={`mt-1 transition-transform duration-200 ${!isRecentsOpen ? 'rotate-0' : 'rotate-180'}`}

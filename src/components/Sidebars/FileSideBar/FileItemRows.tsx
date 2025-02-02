@@ -1,15 +1,14 @@
 import React, { useState, useCallback } from 'react'
 import { ListChildComponentProps } from 'react-window'
-import { FaChevronDown, FaChevronRight } from 'react-icons/fa'
 import posthog from 'posthog-js'
 import { isFileNodeDirectory } from '@shared/utils'
+import { YStack, XStack } from 'tamagui'
+import { ChevronRight, ChevronDown } from '@tamagui/lucide-icons'
 import { useFileContext } from '@/contexts/FileContext'
 import { removeFileExtension } from '@/lib/file'
 import { useContentContext } from '@/contexts/ContentContext'
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/ui/context-menu'
 import NewDirectoryComponent from '@/components/File/NewDirectory'
-import { YStack, XStack } from 'tamagui'
-import { ChevronRight, ChevronDown } from '@tamagui/lucide-icons'
 
 const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data }) => {
   const { file, indentation } = data.filesAndIndentations[index]
@@ -124,27 +123,23 @@ const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data })
             onDrop={handleDrop}
             onDragLeave={handleDragLeave}
           >
-            <XStack 
+            <XStack
               hoverStyle={{
                 backgroundColor: '$gray7',
                 backgroundFocus: '$gray8',
               }}
-              backgroundColor={(isSelected && !isDirectory) ? '$gray7' : ''}
-              onClick={clickOnFileOrDirectory} className={itemClasses}>
+              backgroundColor={isSelected && !isDirectory ? '$gray7' : ''}
+              onClick={clickOnFileOrDirectory}
+              className={itemClasses}
+            >
               {isDirectory && (
                 <span className="mr-2 mt-1">
                   {isExpanded ? (
                     // <FaChevronDown title="Collapse Directory" />
-                    <ChevronDown
-                      title="Collapse Directory"
-                      size={14}
-                      color="$gray10"/>
+                    <ChevronDown title="Collapse Directory" size={14} color="$gray10" />
                   ) : (
                     // <FaChevronRight title="Open Directory" />
-                    <ChevronRight 
-                      title="Open Directory" 
-                      size={14} 
-                      color="$gray10"/>
+                    <ChevronRight title="Open Directory" size={14} color="$gray10" />
                   )}
                 </span>
               )}

@@ -111,7 +111,7 @@ class WindowsManager {
     const browserWindow = BrowserWindow.fromWebContents(webContents)
     return browserWindow ? browserWindow.id : null
   }
-  
+
   getWindowInfoForContents(webContents: WebContents): WindowInfo | null {
     const windowID = this.getBrowserWindowId(webContents)
 

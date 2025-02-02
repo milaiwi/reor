@@ -1,10 +1,10 @@
-import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { styled, YStack, XStack, Text } from 'tamagui';
+import * as DialogPrimitive from '@radix-ui/react-dialog'
+import { styled, YStack, XStack, Text } from 'tamagui'
 
-const Dialog = DialogPrimitive.Root;
-const DialogTrigger = DialogPrimitive.Trigger;
-const DialogPortal = DialogPrimitive.Portal;
-const DialogClose = DialogPrimitive.Close;
+const Dialog = DialogPrimitive.Root
+const DialogTrigger = DialogPrimitive.Trigger
+const DialogPortal = DialogPrimitive.Portal
+const DialogClose = DialogPrimitive.Close
 
 const DialogOverlay = styled(DialogPrimitive.Overlay, {
   name: 'DialogOverlay',
@@ -22,7 +22,7 @@ const DialogOverlay = styled(DialogPrimitive.Overlay, {
       },
     },
   },
-});
+})
 
 const DialogContent = styled(DialogPrimitive.Content, {
   name: 'DialogContent',
@@ -50,32 +50,32 @@ const DialogContent = styled(DialogPrimitive.Content, {
       },
     },
   },
-});
+})
 
 const DialogHeader = styled(YStack, {
   name: 'DialogHeader',
   space: '$1.5',
   paddingBottom: '$2',
-});
+})
 
 const DialogFooter = styled(XStack, {
   name: 'DialogFooter',
   justifyContent: 'flex-end',
   space: '$2',
   paddingTop: '$2',
-});
+})
 
 const DialogTitle = styled(Text, {
   name: 'DialogTitle',
   fontSize: '$5',
   fontWeight: 'bold',
-});
+})
 
 const DialogDescription = styled(Text, {
   name: 'DialogDescription',
   fontSize: '$2',
   color: '$textSecondary',
-});
+})
 
 export {
   Dialog,
@@ -88,4 +88,4 @@ export {
   DialogFooter,
   DialogTitle,
   DialogDescription,
-};
+}

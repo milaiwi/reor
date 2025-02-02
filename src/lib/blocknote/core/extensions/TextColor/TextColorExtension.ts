@@ -1,5 +1,5 @@
-import {Extension} from '@tiptap/core'
-import {getBlockInfoFromPos} from '../Blocks/helpers/getBlockInfoFromPos'
+import { Extension } from '@tiptap/core'
+import { getBlockInfoFromPos } from '../Blocks/helpers/getBlockInfoFromPos'
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -20,9 +20,7 @@ export const TextColorExtension = Extension.create({
           textColor: {
             default: 'default',
             parseHTML: (element) =>
-              element.hasAttribute('data-text-color')
-                ? element.getAttribute('data-text-color')
-                : 'default',
+              element.hasAttribute('data-text-color') ? element.getAttribute('data-text-color') : 'default',
             renderHTML: (attributes) =>
               attributes.textColor !== 'default' && {
                 'data-text-color': attributes.textColor,
@@ -37,7 +35,7 @@ export const TextColorExtension = Extension.create({
     return {
       setBlockTextColor:
         (posInBlock, color) =>
-        ({state, view}) => {
+        ({ state, view }) => {
           const blockInfo = getBlockInfoFromPos(state.doc, posInBlock)
           if (blockInfo === undefined) {
             return false

@@ -1,25 +1,10 @@
-import {
-  ComponentProps,
-  PropsWithChildren,
-  ReactNode,
-  useMemo,
-  useState,
-} from "react";
-import {
-  Button,
-  ButtonProps,
-  ListItem,
-  ListItemProps,
-  SizableText,
-  XStack,
-  XStackProps,
-  YStack,
-} from "tamagui";
-import {Copy, ExternalLink} from "./icons";
-import {Tooltip} from "./tooltip";
+import { ComponentProps, PropsWithChildren, ReactNode, useMemo, useState } from 'react'
+import { Button, ButtonProps, ListItem, ListItemProps, SizableText, XStack, XStackProps, YStack } from 'tamagui'
+import { Copy, ExternalLink } from './icons'
+import { Tooltip } from './tooltip'
 
 function useHover() {
-  const [hover, setHover] = useState(false);
+  const [hover, setHover] = useState(false)
 
   return useMemo(
     () => ({
@@ -27,22 +12,19 @@ function useHover() {
       onHoverIn: () => setHover(true),
       onHoverOut: () => setHover(false),
     }),
-    [hover]
-  );
+    [hover],
+  )
 }
 
-TableList.Header = TableHeader;
-TableList.Item = TableItem;
+TableList.Header = TableHeader
+TableList.Item = TableItem
 
-export function TableList({
-  children,
-  ...props
-}: {children: ReactNode} & ComponentProps<typeof YStack>) {
+export const TableList = ({ children, ...props }: { children: ReactNode } & ComponentProps<typeof YStack>) => {
   return (
     <YStack
       userSelect="none"
       hoverStyle={{
-        cursor: "default",
+        cursor: 'default',
       }}
       borderWidth={1}
       borderColor="$borderColor"
@@ -53,21 +35,21 @@ export function TableList({
       ov="hidden"
       // mx="$-4"
       $sm={{
-        //@ts-ignore
+        // @ts-ignore
         mx: 0,
       }}
       {...props}
     >
       {children}
     </YStack>
-  );
+  )
 }
 
-function TableHeader({children, ...props}: PropsWithChildren<XStackProps>) {
+const TableHeader = ({ children, ...props }: PropsWithChildren<XStackProps>) => {
   return (
     <XStack
       alignItems="center"
-      //@ts-ignore
+      // @ts-ignore
       py="$2"
       px="$4"
       backgroundColor="$borderColor"
@@ -76,26 +58,20 @@ function TableHeader({children, ...props}: PropsWithChildren<XStackProps>) {
     >
       {children}
     </XStack>
-  );
+  )
 }
 
-function TableItem({children, ...props}: PropsWithChildren<ListItemProps>) {
+const TableItem = ({ children, ...props }: PropsWithChildren<ListItemProps>) => {
   return (
     <ListItem {...props}>
       <XStack alignItems="flex-start" width="100%">
         {children}
       </XStack>
     </ListItem>
-  );
+  )
 }
 
-export function InfoListHeader({
-  title,
-  right,
-}: {
-  title: string;
-  right?: ReactNode;
-}) {
+export const InfoListHeader = ({ title, right }: { title: string; right?: ReactNode }) => {
   return (
     <TableList.Header>
       <SizableText fontWeight="700">{title}</SizableText>
@@ -103,22 +79,22 @@ export function InfoListHeader({
         {right}
       </XStack>
     </TableList.Header>
-  );
+  )
 }
 
-export function InfoListItem({
+export const InfoListItem = ({
   label,
   value,
   onCopy,
   onOpen,
 }: {
-  label: string;
-  value?: string | string[];
-  onCopy?: ButtonProps["onPress"] | undefined;
-  onOpen?: ButtonProps["onPress"] | undefined;
-}) {
-  const values = Array.isArray(value) ? value : [value];
-  const {hover, ...hoverProps} = useHover();
+  label: string
+  value?: string | string[]
+  onCopy?: ButtonProps['onPress'] | undefined
+  onOpen?: ButtonProps['onPress'] | undefined
+}) => {
+  const values = Array.isArray(value) ? value : [value]
+  const { hover, ...hoverProps } = useHover()
   return (
     <TableList.Item {...hoverProps}>
       <SizableText size="$1" flex={0} minWidth={140} width={140}>
@@ -142,26 +118,14 @@ export function InfoListItem({
       </YStack>
       {!!value && onCopy ? (
         <Tooltip content={`Copy ${label}`}>
-          <Button
-            opacity={hover ? 1 : 0}
-            size="$2"
-            marginLeft="$2"
-            icon={Copy}
-            onPress={onCopy}
-          />
+          <Button opacity={hover ? 1 : 0} size="$2" marginLeft="$2" icon={Copy} onPress={onCopy} />
         </Tooltip>
       ) : null}
       {!!value && onOpen ? (
         <Tooltip content={`Open ${label}`}>
-          <Button
-            opacity={hover ? 1 : 0}
-            size="$2"
-            marginLeft="$2"
-            icon={ExternalLink}
-            onPress={onOpen}
-          />
+          <Button opacity={hover ? 1 : 0} size="$2" marginLeft="$2" icon={ExternalLink} onPress={onOpen} />
         </Tooltip>
       ) : null}
     </TableList.Item>
-  );
+  )
 }

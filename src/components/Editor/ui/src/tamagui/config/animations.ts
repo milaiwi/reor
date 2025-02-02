@@ -1,4 +1,4 @@
-import {createAnimations} from '@tamagui/animations-css'
+import { createAnimations } from '@tamagui/animations-css'
 
 export const animations = createAnimations({
   fast: 'ease-in-out 150ms',

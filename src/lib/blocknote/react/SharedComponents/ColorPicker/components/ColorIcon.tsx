@@ -1,4 +1,4 @@
-import {Box} from '@mantine/core'
+import { Box } from '@mantine/core'
 import { createStyles } from '@mantine/styles'
 
 export const ColorIcon = (
@@ -8,7 +8,7 @@ export const ColorIcon = (
     size: number | undefined
   }>,
 ) => {
-  const {classes} = createStyles({root: {}})(undefined, {
+  const { classes } = createStyles({ root: {} })(undefined, {
     name: 'ColorIcon',
   })
 
@@ -23,11 +23,11 @@ export const ColorIcon = (
         return {
           backgroundColor: theme.other.backgroundColors[backgroundColor],
           color: theme.other.textColors[textColor],
-          fontSize: (size * 0.75).toString() + 'px',
-          height: size.toString() + 'px',
-          lineHeight: size.toString() + 'px',
+          fontSize: `${(size * 0.75).toString()}px`,
+          height: `${size.toString()}px`,
+          lineHeight: `${size.toString()}px`,
           textAlign: 'center',
-          width: size.toString() + 'px',
+          width: `${size.toString()}px`,
         }
       }}
     >

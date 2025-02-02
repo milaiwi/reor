@@ -1,21 +1,11 @@
-import {
-  BlockNoteEditor,
-  BlockSchema,
-  ToggledStyle,
-} from '@/editor/blocknote/core'
-import {useState} from 'react'
-import {IconType} from 'react-icons'
-import {
-  RiBold,
-  RiCodeFill,
-  RiItalic,
-  RiStrikethrough,
-  RiUnderline,
-} from 'react-icons/ri'
-import {ToolbarButton} from '../../../SharedComponents/Toolbar/components/ToolbarButton'
-import {useEditorContentChange} from '../../../hooks/useEditorContentChange'
-import {useEditorSelectionChange} from '../../../hooks/useEditorSelectionChange'
-import {formatKeyboardShortcut} from '../../../utils'
+import { useState } from 'react'
+import { IconType } from 'react-icons'
+import { RiBold, RiCodeFill, RiItalic, RiStrikethrough, RiUnderline } from 'react-icons/ri'
+import { BlockNoteEditor, BlockSchema, ToggledStyle } from '@/editor/blocknote/core'
+import { ToolbarButton } from '../../../SharedComponents/Toolbar/components/ToolbarButton'
+import { useEditorContentChange } from '../../../hooks/useEditorContentChange'
+import { useEditorSelectionChange } from '../../../hooks/useEditorSelectionChange'
+import { formatKeyboardShortcut } from '../../../utils'
 
 const shortcuts: Record<ToggledStyle, string> = {
   bold: 'Mod+B',
@@ -39,9 +29,7 @@ export const ToggledStyleButton = <BSchema extends BlockSchema>(props: {
   editor: BlockNoteEditor<BSchema>
   toggledStyle: ToggledStyle
 }) => {
-  const [active, setActive] = useState<boolean>(
-    props.toggledStyle in props.editor.getActiveStyles(),
-  )
+  const [active, setActive] = useState<boolean>(props.toggledStyle in props.editor.getActiveStyles())
 
   useEditorContentChange(props.editor, () => {
     setActive(props.toggledStyle in props.editor.getActiveStyles())
@@ -53,17 +41,14 @@ export const ToggledStyleButton = <BSchema extends BlockSchema>(props: {
 
   const toggleStyle = (style: ToggledStyle) => {
     props.editor.focus()
-    props.editor.toggleStyles({[style]: true})
+    props.editor.toggleStyles({ [style]: true })
   }
 
   return (
     <ToolbarButton
       onClick={() => toggleStyle(props.toggledStyle)}
       isSelected={active}
-      mainTooltip={
-        props.toggledStyle.slice(0, 1).toUpperCase() +
-        props.toggledStyle.slice(1)
-      }
+      mainTooltip={props.toggledStyle.slice(0, 1).toUpperCase() + props.toggledStyle.slice(1)}
       secondaryTooltip={formatKeyboardShortcut(shortcuts[props.toggledStyle])}
       icon={icons[props.toggledStyle]}
     />

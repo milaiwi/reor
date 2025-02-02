@@ -1,5 +1,5 @@
-import {Editor} from '@tiptap/core'
-import {useEffect, useState} from 'react'
+import { Editor } from '@tiptap/core'
+import { useEffect, useState } from 'react'
 
 function useForceUpdate() {
   const [, setValue] = useState(0)

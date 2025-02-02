@@ -1,7 +1,4 @@
-import {getLinkMenuItems} from '@/editor/blocknote/core'
-import {linkMenuPluginKey} from '@/editor/blocknote/core/extensions/LinkMenu/LinkMenuPlugin'
-import {loadWebLinkMeta} from '@/models/web-links'
-import {toPlainMessage} from '@bufbuild/protobuf'
+import { toPlainMessage } from '@bufbuild/protobuf'
 import {
   GRPCClient,
   StateStream,
@@ -16,12 +13,15 @@ import {
   packHmId,
   unpackHmId,
 } from '@shm/shared'
-import {Editor} from '@tiptap/core'
-import {Mark, MarkType} from '@tiptap/pm/model'
-import {Plugin, PluginKey} from '@tiptap/pm/state'
-import {Decoration, DecorationSet} from '@tiptap/pm/view'
-import {find} from 'linkifyjs'
-import {nanoid} from 'nanoid'
+import { Editor } from '@tiptap/core'
+import { Mark, MarkType } from '@tiptap/pm/model'
+import { Plugin, PluginKey } from '@tiptap/pm/state'
+import { Decoration, DecorationSet } from '@tiptap/pm/view'
+import { find } from 'linkifyjs'
+import { nanoid } from 'nanoid'
+import { loadWebLinkMeta } from '@/models/web-links'
+import { linkMenuPluginKey } from '@/editor/blocknote/core/extensions/LinkMenu/LinkMenuPlugin'
+import { getLinkMenuItems } from '@/editor/blocknote/core'
 
 type PasteHandlerOptions = {
   grpcClient: GRPCClient
@@ -33,7 +33,7 @@ type PasteHandlerOptions = {
 }
 
 export function pasteHandler(options: PasteHandlerOptions): Plugin {
-  let pastePlugin = new Plugin({
+  const pastePlugin = new Plugin({
     key: new PluginKey('handlePasteLink'),
     state: {
       init() {
@@ -43,12 +43,12 @@ export function pasteHandler(options: PasteHandlerOptions): Plugin {
         // Adjust decoration positions to changes made by the transaction
         set = set.map(tr.mapping, tr.doc)
         // See if the transaction adds or removes any placeholders
-        let action = tr.getMeta('link-placeholder')
+        const action = tr.getMeta('link-placeholder')
         if (action && action.add) {
-          let widget = document.createElement('span')
+          const widget = document.createElement('span')
           widget.contentEditable = 'false'
           widget.classList.add('link-placeholder')
-          let deco = Decoration.widget(action.add.pos, widget, {
+          const deco = Decoration.widget(action.add.pos, widget, {
             link: action.add.link,
           })
           set = set.add(tr.doc, [deco])
@@ -70,8 +70,8 @@ export function pasteHandler(options: PasteHandlerOptions): Plugin {
         return this.getState(state)
       },
       handlePaste: (view, event, slice) => {
-        const {state} = view
-        const {selection} = state
+        const { state } = view
+        const { selection } = state
 
         // Do not proceed if in code block.
         if (state.doc.resolve(selection.from).parent.type.spec.code) {
@@ -98,12 +98,9 @@ export function pasteHandler(options: PasteHandlerOptions): Plugin {
         }
 
         const hasPastedLink = pastedLinkMarks.length > 0
-        const link = find(textContent).find(
-          (item) => item.isLink && item.value === textContent,
-        )
+        const link = find(textContent).find((item) => item.isLink && item.value === textContent)
         const unpackedHmId =
-          isHypermediaScheme(textContent) ||
-          isPublicGatewayLink(textContent, options.gwUrl)
+          isHypermediaScheme(textContent) || isPublicGatewayLink(textContent, options.gwUrl)
             ? unpackHmId(textContent)
             : null
 
@@ -111,8 +108,8 @@ export function pasteHandler(options: PasteHandlerOptions): Plugin {
           const pastedLink = unpackedHmId
             ? packHmId(unpackedHmId)
             : hasPastedLink
-            ? pastedLinkMarks[0].attrs.href
-            : link?.href || null
+              ? pastedLinkMarks[0].attrs.href
+              : link?.href || null
           if (pastedLink) {
             if (unpackedHmId) {
               options.editor
@@ -122,10 +119,10 @@ export function pasteHandler(options: PasteHandlerOptions): Plugin {
                 })
                 .run()
             } else {
-              let id = nanoid(8)
+              const id = nanoid(8)
               options.editor
                 .chain()
-                .command(({tr}) => {
+                .command(({ tr }) => {
                   tr.setMeta('hmPlugin:uncheckedLink', id)
                   return true
                 })
@@ -150,9 +147,9 @@ export function pasteHandler(options: PasteHandlerOptions): Plugin {
         }
 
         if (selection.empty && unpackedHmId?.uid && unpackedHmId.type) {
-          let tr = view.state.tr
+          const { tr } = view.state
 
-          let pos = tr.selection.from
+          const pos = tr.selection.from
           const normalizedHmUrl = packHmId(
             hmId(unpackedHmId.type, unpackedHmId.uid, {
               blockRef: unpackedHmId.blockRef,
@@ -164,7 +161,7 @@ export function pasteHandler(options: PasteHandlerOptions): Plugin {
           )
 
           fetchEntityTitle(unpackedHmId, options.grpcClient)
-            .then(({title}) => {
+            .then(({ title }) => {
               if (title) {
                 view.dispatch(
                   tr.insertText(title, pos).addMark(
@@ -243,12 +240,12 @@ export function pasteHandler(options: PasteHandlerOptions): Plugin {
         }
 
         if (link && selection.empty) {
-          let tr = view.state.tr
+          const { tr } = view.state
           if (!tr.selection.empty) tr.deleteSelection()
 
           const [mediaCase, fileName] = checkMediaUrl(link.href)
 
-          const pos = selection.$from.pos
+          const { pos } = selection.$from
 
           view.dispatch(
             tr.insertText(link.href, pos).addMark(
@@ -279,7 +276,7 @@ export function pasteHandler(options: PasteHandlerOptions): Plugin {
                   items: getLinkMenuItems({
                     isLoading: false,
                     media: 'image',
-                    fileName: fileName,
+                    fileName,
                     gwUrl: options.gwUrl,
                   }),
                 }),
@@ -292,7 +289,7 @@ export function pasteHandler(options: PasteHandlerOptions): Plugin {
                   items: getLinkMenuItems({
                     isLoading: false,
                     media: 'file',
-                    fileName: fileName,
+                    fileName,
                     gwUrl: options.gwUrl,
                   }),
                 }),
@@ -306,7 +303,7 @@ export function pasteHandler(options: PasteHandlerOptions): Plugin {
                     isLoading: false,
                     media: 'video',
                     sourceUrl: link.href,
-                    fileName: fileName,
+                    fileName,
                     gwUrl: options.gwUrl,
                   }),
                 }),
@@ -320,7 +317,7 @@ export function pasteHandler(options: PasteHandlerOptions): Plugin {
                     isLoading: false,
                     media: 'twitter',
                     sourceUrl: link.href,
-                    fileName: fileName,
+                    fileName,
                     gwUrl: options.gwUrl,
                   }),
                 }),
@@ -423,7 +420,7 @@ export function pasteHandler(options: PasteHandlerOptions): Plugin {
           return true
         }
 
-        const {tr} = state
+        const { tr } = state
         let deleteOnly = false
 
         if (!selection.empty) {
@@ -446,19 +443,14 @@ export function pasteHandler(options: PasteHandlerOptions): Plugin {
             fragmentLinks.forEach((fragmentLink) => {
               const linkStart = currentPos + fragmentLink.start
               const linkEnd = currentPos + fragmentLink.end
-              const hasMark = tr.doc.rangeHasMark(
-                linkStart,
-                linkEnd,
-                options.type,
-              )
+              const hasMark = tr.doc.rangeHasMark(linkStart, linkEnd, options.type)
 
               if (!hasMark) {
-                let id = nanoid(8)
-                tr.addMark(
-                  linkStart,
-                  linkEnd,
-                  options.type.create({href: fragmentLink.href, id}),
-                ).setMeta('hmPlugin:uncheckedLink', id)
+                const id = nanoid(8)
+                tr.addMark(linkStart, linkEnd, options.type.create({ href: fragmentLink.href, id })).setMeta(
+                  'hmPlugin:uncheckedLink',
+                  id,
+                )
               }
             })
           }
@@ -484,13 +476,9 @@ export function pasteHandler(options: PasteHandlerOptions): Plugin {
       const extensionArray = matchResult[0].split('.')
       const extension = extensionArray[extensionArray.length - 1]
       if (['png', 'jpg', 'jpeg'].includes(extension)) return [1, matchResult[0]]
-      else if (['pdf', 'xml', 'csv'].includes(extension))
-        return [2, matchResult[0]]
-      else if (['mp4', 'webm', 'ogg'].includes(extension))
-        return [3, matchResult[0]]
-    } else if (
-      ['youtu.be', 'youtube', 'vimeo'].some((value) => url.includes(value))
-    ) {
+      if (['pdf', 'xml', 'csv'].includes(extension)) return [2, matchResult[0]]
+      if (['mp4', 'webm', 'ogg'].includes(extension)) return [3, matchResult[0]]
+    } else if (['youtu.be', 'youtube', 'vimeo'].some((value) => url.includes(value))) {
       return [3, '']
     } else if (['twitter', 'x.com'].some((value) => url.includes(value))) {
       return [4, '']
@@ -501,10 +489,7 @@ export function pasteHandler(options: PasteHandlerOptions): Plugin {
   return pastePlugin
 }
 
-async function fetchEntityTitle(
-  hmId: UnpackedHypermediaId,
-  grpcClient: GRPCClient,
-) {
+async function fetchEntityTitle(hmId: UnpackedHypermediaId, grpcClient: GRPCClient) {
   if (hmId.type == 'd') {
     const document = await grpcClient.documents.getDocument({
       account: hmId.uid,
@@ -515,7 +500,8 @@ async function fetchEntityTitle(
     return {
       title,
     }
-  } else if (hmId.type == 'comment') {
+  }
+  if (hmId.type == 'comment') {
     try {
       const comment = await grpcClient.comments.getComment({
         id: hmId.id,
@@ -527,20 +513,16 @@ async function fetchEntityTitle(
         })
 
         return {
-          title: `Comment from ${
-            profile.metadata?.alias ||
-            `${profile.id.slice(0, 5)}...${profile.id.slice(-5)}`
-          }`,
+          title: `Comment from ${profile.metadata?.alias || `${profile.id.slice(0, 5)}...${profile.id.slice(-5)}`}`,
         }
-      } else {
-        return {
-          title: null,
-        }
+      }
+      return {
+        title: null,
       }
     } catch (error) {
       console.error(`fetchEntityTitle error: ${JSON.stringify(error)}`)
-      return {title: null}
+      return { title: null }
     }
   }
-  return {title: null}
+  return { title: null }
 }

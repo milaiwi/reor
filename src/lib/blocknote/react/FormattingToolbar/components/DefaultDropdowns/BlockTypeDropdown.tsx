@@ -1,12 +1,12 @@
-import { updateGroup } from '@/lib/utils'
+import { useMemo, useState } from 'react'
+import { IconType } from 'react-icons'
+import { RiH2, RiListOrdered, RiListUnordered, RiText } from 'react-icons/ri'
 import { BlockNoteEditor, BlockSchema } from '@/lib/blocknote/core'
-import {useMemo, useState} from 'react'
-import {IconType} from 'react-icons'
-import {RiH2, RiListOrdered, RiListUnordered, RiText} from 'react-icons/ri'
-import {ToolbarDropdown} from '../../../SharedComponents/Toolbar/components/ToolbarDropdown'
-import {ToolbarDropdownItemProps} from '../../../SharedComponents/Toolbar/components/ToolbarDropdownItem'
-import {useEditorContentChange} from '../../../hooks/useEditorContentChange'
-import {useEditorSelectionChange} from '../../../hooks/useEditorSelectionChange'
+import { updateGroup } from '@/lib/utils'
+import { ToolbarDropdown } from '../../../SharedComponents/Toolbar/components/ToolbarDropdown'
+import { ToolbarDropdownItemProps } from '../../../SharedComponents/Toolbar/components/ToolbarDropdownItem'
+import { useEditorContentChange } from '../../../hooks/useEditorContentChange'
+import { useEditorSelectionChange } from '../../../hooks/useEditorSelectionChange'
 
 export type BlockTypeDropdownItem = {
   name: string
@@ -24,7 +24,7 @@ export const defaultBlockTypeDropdownItems: BlockTypeDropdownItem[] = [
   {
     name: 'Heading',
     type: 'heading',
-    props: {level: '2'},
+    props: { level: '2' },
     icon: RiH2,
   },
   // {
@@ -66,7 +66,7 @@ export const BlockTypeDropdown = <BSchema extends BlockSchema>(props: {
 
       // Checks if props for the block type are valid
       for (const [prop, value] of Object.entries(item.props || {})) {
-        const propSchema = props.editor.schema[item.type].propSchema
+        const { propSchema } = props.editor.schema[item.type]
 
         // Checks if the prop exists for the block type
         if (!(prop in propSchema)) {
@@ -74,10 +74,7 @@ export const BlockTypeDropdown = <BSchema extends BlockSchema>(props: {
         }
 
         // Checks if the prop's value is valid
-        if (
-          propSchema[prop].values !== undefined &&
-          !propSchema[prop].values!.includes(value)
-        ) {
+        if (propSchema[prop].values !== undefined && !propSchema[prop].values!.includes(value)) {
           return false
         }
       }

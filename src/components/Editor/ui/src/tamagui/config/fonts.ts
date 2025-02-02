@@ -1,5 +1,5 @@
-import {createInterFont} from '@tamagui/font-inter'
-import {createGenericFont} from './create-generic-font'
+import { createInterFont } from '@tamagui/font-inter'
+import { createGenericFont } from './create-generic-font'
 
 export const headingFont = createInterFont(
   {
@@ -19,10 +19,10 @@ export const headingFont = createInterFont(
       4: '200',
     },
     face: {
-      700: {normal: 'InterBold'},
-      500: {normal: 'InterBold'},
-      400: {normal: 'InterBold'},
-      200: {normal: 'InterBold'},
+      700: { normal: 'InterBold' },
+      500: { normal: 'InterBold' },
+      400: { normal: 'InterBold' },
+      200: { normal: 'InterBold' },
     },
   },
   {
@@ -34,7 +34,7 @@ export const headingFont = createInterFont(
 export const bodyFont = createInterFont(
   {
     face: {
-      700: {normal: 'InterBold'},
+      700: { normal: 'InterBold' },
     },
   },
   {

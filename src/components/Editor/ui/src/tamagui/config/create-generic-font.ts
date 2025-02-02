@@ -1,4 +1,4 @@
-import {GenericFont, createFont} from '@tamagui/web'
+import { GenericFont, createFont } from '@tamagui/web'
 
 const genericFontSizes = {
   1: 10,
@@ -19,9 +19,7 @@ const genericFontSizes = {
   16: 124,
 } as const
 
-export function createGenericFont<
-  A extends GenericFont<keyof typeof genericFontSizes>,
->(
+export function createGenericFont<A extends GenericFont<keyof typeof genericFontSizes>>(
   family: string,
   font: Partial<A> = {},
   {
@@ -34,11 +32,9 @@ export function createGenericFont<
   return createFont({
     family,
     size,
-    lineHeight: Object.fromEntries(
-      Object.entries(size).map(([k, v]) => [k, sizeLineHeight(+v)]),
-    ) as typeof size,
-    weight: {0: '300'},
-    letterSpacing: {4: 0},
+    lineHeight: Object.fromEntries(Object.entries(size).map(([k, v]) => [k, sizeLineHeight(+v)])) as typeof size,
+    weight: { 0: '300' },
+    letterSpacing: { 4: 0 },
     ...(font as any),
   })
 }

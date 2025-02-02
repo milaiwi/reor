@@ -1,32 +1,22 @@
-import {objectFromEntries, objectKeys} from './helpers'
-import {colorTokens} from './token-colors'
+import { objectFromEntries, objectKeys } from './helpers'
+import { colorTokens } from './token-colors'
 
 export const palettes = (() => {
   const lightTransparent = 'rgba(255,255,255,0)'
   const darkTransparent = 'rgba(10,10,10,0)'
 
-  const transparent = (hsl: string, opacity = 0) =>
-    hsl.replace(`%)`, `%, ${opacity})`).replace(`hsl(`, `hsla(`)
+  const transparent = (hsl: string, opacity = 0) => hsl.replace(`%)`, `%, ${opacity})`).replace(`hsl(`, `hsla(`)
 
   const getColorPalette = (colors: object, color: string): string[] => {
     const colorPalette = Object.values(colors)
 
     // were re-ordering these
-    const [head, tail] = [
-      colorPalette.slice(0, 6),
-      colorPalette.slice(colorPalette.length - 5),
-    ]
+    const [head, tail] = [colorPalette.slice(0, 6), colorPalette.slice(colorPalette.length - 5)]
 
     // add our transparent colors first/last
     // and make sure the last (foreground) color is white/black rather than colorful
     // this is mostly for consistency with the older theme-base
-    return [
-      transparent(colorPalette[0]),
-      ...head,
-      ...tail,
-      color,
-      transparent(colorPalette[colorPalette.length - 1]),
-    ]
+    return [transparent(colorPalette[0]), ...head, ...tail, color, transparent(colorPalette[colorPalette.length - 1])]
   }
 
   const lightColor = 'hsl(0, 0%, 9.0%)'
@@ -67,21 +57,13 @@ export const palettes = (() => {
 
   const lightPalettes = objectFromEntries(
     objectKeys(colorTokens.light).map(
-      (key) =>
-        [
-          `light_${key}`,
-          getColorPalette(colorTokens.light[key], lightColor),
-        ] as const,
+      (key) => [`light_${key}`, getColorPalette(colorTokens.light[key], lightColor)] as const,
     ),
   )
 
   const darkPalettes = objectFromEntries(
     objectKeys(colorTokens.dark).map(
-      (key) =>
-        [
-          `dark_${key}`,
-          getColorPalette(colorTokens.dark[key], darkColor),
-        ] as const,
+      (key) => [`dark_${key}`, getColorPalette(colorTokens.dark[key], darkColor)] as const,
     ),
   )
 

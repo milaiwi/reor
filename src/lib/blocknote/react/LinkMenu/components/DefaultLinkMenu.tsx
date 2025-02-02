@@ -1,23 +1,17 @@
-import { Menu} from '@mantine/core'
+import { Menu } from '@mantine/core'
 import { createStyles } from '@mantine/styles'
-import {BlockSchema} from '@/editor/blocknote/core'
-import {LinkMenuItem} from './LinkMenuItem'
-import {LinkMenuProps} from './LinkMenuPositioner'
+import { BlockSchema } from '@/editor/blocknote/core'
+import { LinkMenuItem } from './LinkMenuItem'
+import { LinkMenuProps } from './LinkMenuPositioner'
 
-export function DefaultLinkMenu<BSchema extends BlockSchema>(
-  props: LinkMenuProps<BSchema>,
-) {
-  const {classes} = createStyles({root: {}})(undefined, {
+export const DefaultLinkMenu = <BSchema extends BlockSchema>(props: LinkMenuProps<BSchema>) => {
+  const { classes } = createStyles({ root: {} })(undefined, {
     name: 'LinkMenu',
   })
   const renderedItems: any[] = []
 
   if (props.items.length > 1) {
-    renderedItems.push(
-      <Menu.Label style={{fontWeight: 'bold', fontSize: 14}}>
-        Insert as:
-      </Menu.Label>,
-    )
+    renderedItems.push(<Menu.Label style={{ fontWeight: 'bold', fontSize: 14 }}>Insert as:</Menu.Label>)
   }
   let index = 0
 
@@ -44,8 +38,8 @@ export function DefaultLinkMenu<BSchema extends BlockSchema>(
        * practically indefinitely, as normally hovering off it would cause it to
        * close due to trigger="hover".
        */
-      defaultOpened={true}
-      trigger={'hover'}
+      defaultOpened
+      trigger="hover"
       closeDelay={10000000}
     >
       <Menu.Dropdown
@@ -53,11 +47,7 @@ export function DefaultLinkMenu<BSchema extends BlockSchema>(
         onMouseDown={(event) => event.preventDefault()}
         className={classes.root}
       >
-        {renderedItems.length > 0 ? (
-          renderedItems
-        ) : (
-          <Menu.Item>No match found</Menu.Item>
-        )}
+        {renderedItems.length > 0 ? renderedItems : <Menu.Item>No match found</Menu.Item>}
       </Menu.Dropdown>
     </Menu>
   )

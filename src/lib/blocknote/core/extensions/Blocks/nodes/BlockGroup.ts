@@ -1,6 +1,6 @@
-import {InputRule, mergeAttributes, Node} from '@tiptap/core'
-import {mergeCSSClasses} from '../../../shared/utils'
-import {BlockNoteDOMAttributes} from '../api/blockTypes'
+import { InputRule, mergeAttributes, Node } from '@tiptap/core'
+import { mergeCSSClasses } from '../../../shared/utils'
+import { BlockNoteDOMAttributes } from '../api/blockTypes'
 import styles from './Block.module.css'
 
 export const BlockGroup = Node.create<{
@@ -50,26 +50,21 @@ export const BlockGroup = Node.create<{
       // Creates an unordered list when starting with "-", "+", or "*".
       new InputRule({
         find: new RegExp(`^[-+*]\\s$`),
-        handler: ({state, chain, range}) => {
+        handler: ({ state, chain, range }) => {
           chain()
             .UpdateGroup(state.selection.from, 'ul', false)
             // Removes the "-", "+", or "*" character used to set the list.
-            .deleteRange({from: range.from, to: range.to})
+            .deleteRange({ from: range.from, to: range.to })
         },
       }),
       new InputRule({
         // ^\d+\.\s
         find: new RegExp(/^\d+\.\s/),
-        handler: ({state, chain, range}) => {
+        handler: ({ state, chain, range }) => {
           chain()
-            .UpdateGroup(
-              state.selection.from,
-              'ol',
-              false,
-              this.editor.state.doc.textBetween(range.from, range.to - 1),
-            )
+            .UpdateGroup(state.selection.from, 'ol', false, this.editor.state.doc.textBetween(range.from, range.to - 1))
             // Removes the "1." characters used to set the list.
-            .deleteRange({from: range.from, to: range.to})
+            .deleteRange({ from: range.from, to: range.to })
         },
       }),
     ]
@@ -83,7 +78,7 @@ export const BlockGroup = Node.create<{
           if (typeof element === 'string') {
             return false
           }
-          return {listType: 'ul'}
+          return { listType: 'ul' }
         },
         priority: 200,
       },
@@ -94,7 +89,7 @@ export const BlockGroup = Node.create<{
           if (typeof element === 'string') {
             return false
           }
-          return {listType: 'ol', start: element.getAttribute('start')}
+          return { listType: 'ol', start: element.getAttribute('start') }
         },
         priority: 200,
       },
@@ -117,7 +112,7 @@ export const BlockGroup = Node.create<{
     ]
   },
 
-  renderHTML({node, HTMLAttributes}) {
+  renderHTML({ node, HTMLAttributes }) {
     const blockGroupDOMAttributes = this.options.domAttributes?.blockGroup || {}
 
     return [
@@ -125,10 +120,7 @@ export const BlockGroup = Node.create<{
       mergeAttributes(
         {
           ...blockGroupDOMAttributes,
-          class: mergeCSSClasses(
-            styles.blockGroup,
-            blockGroupDOMAttributes.class,
-          ),
+          class: mergeCSSClasses(styles.blockGroup, blockGroupDOMAttributes.class),
           'data-node-type': 'blockGroup',
         },
         HTMLAttributes,

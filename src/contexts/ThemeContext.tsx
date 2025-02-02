@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, PropsWithChildren, FC, useLayoutEffect } from 'react'
+import { createContext, useContext, useEffect, useState, PropsWithChildren, FC } from 'react'
 import type { TamaguiThemeTypes } from 'electron/main/electron-store/storeConfig'
 import { TamaguiProvider } from 'tamagui'
 import tamaguiConfig from '../../tamagui.config'
@@ -19,6 +19,7 @@ const ThemeContext = createContext<ThemeContextValue | null>(null)
 
 export class ThemeManager {
   private state: TamaguiThemeTypes
+
   private setState: (theme: TamaguiThemeTypes) => void
 
   constructor(initialTheme: TamaguiThemeTypes, setState: (theme: TamaguiThemeTypes) => void) {
@@ -46,8 +47,8 @@ export class ThemeManager {
         syncWithSystem: () => {
           const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
           this.updateTheme(prefersDark ? 'dark' : 'light')
-        }
-      }
+        },
+      },
     }
   }
 }
@@ -83,7 +84,6 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
 // Custom hook for components to use
 export const useThemeManager = () => {
   const context = useContext(ThemeContext)
-  if (!context)
-    throw new Error('useThemeManager must be used within ThemeProvider')
+  if (!context) throw new Error('useThemeManager must be used within ThemeProvider')
   return context
 }

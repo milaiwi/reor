@@ -1,9 +1,7 @@
 import type { StateStream } from '@shm/shared/src/utils/stream'
 import { useEffect, useState, useSyncExternalStore } from 'react'
 
-export function useStream<StreamValue>(
-  stream?: StateStream<StreamValue> | undefined,
-): StreamValue | undefined {
+export function useStream<StreamValue>(stream?: StateStream<StreamValue> | undefined): StreamValue | undefined {
   return useSyncExternalStore(
     (onStoreChange) => {
       return stream ? stream.subscribe(onStoreChange) : () => {}

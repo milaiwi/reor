@@ -1,7 +1,7 @@
-import { bnBlockStyles } from '../core'
-import {MantineThemeOverride} from '@mantine/core'
+import { MantineThemeOverride } from '@mantine/core'
 import { CSSObject } from '@mantine/styles'
 import _ from 'lodash'
+import { bnBlockStyles } from '../core'
 
 export type CombinedColor = {
   text: string
@@ -101,7 +101,7 @@ export const blockNoteToMantineTheme = (theme: Theme): MantineThemeOverride => {
           dropdown: _.merge<CSSObject, CSSObject>(
             {
               backgroundColor: theme.colors.menu.background,
-              border: border,
+              border,
               borderRadius: outerBorderRadius,
               boxShadow: shadow,
               color: theme.colors.menu.text,
@@ -130,7 +130,7 @@ export const blockNoteToMantineTheme = (theme: Theme): MantineThemeOverride => {
         styles: () => ({
           root: _.merge<CSSObject, CSSObject>(
             {
-              border: border,
+              border,
               borderRadius: innerBorderRadius,
             },
             theme.componentStyles?.(theme).ColorIcon || {},
@@ -155,7 +155,7 @@ export const blockNoteToMantineTheme = (theme: Theme): MantineThemeOverride => {
           root: _.merge<CSSObject, CSSObject>(
             {
               backgroundColor: theme.colors.menu.background,
-              border: border,
+              border,
               borderRadius: outerBorderRadius,
               boxShadow: shadow,
               color: theme.colors.menu.text,
@@ -210,16 +210,13 @@ export const blockNoteToMantineTheme = (theme: Theme): MantineThemeOverride => {
                 },
               // Highlight text colors
               ...(Object.fromEntries(
-                Object.entries(textColors).map(([key, value]) => [
-                  `[data-text-color="${key}"]`,
-                  {color: value},
-                ]),
+                Object.entries(textColors).map(([key, value]) => [`[data-text-color="${key}"]`, { color: value }]),
               ) as CSSObject),
               // Highlight background colors
               ...(Object.fromEntries(
                 Object.entries(backgroundColors).map(([key, value]) => [
                   `[data-background-color="${key}"]`,
-                  {backgroundColor: value},
+                  { backgroundColor: value },
                 ]),
               ) as CSSObject),
             },
@@ -233,7 +230,7 @@ export const blockNoteToMantineTheme = (theme: Theme): MantineThemeOverride => {
             {
               backgroundColor: theme.colors.menu.background,
               boxShadow: shadow,
-              border: border,
+              border,
               borderRadius: outerBorderRadius,
               flexWrap: 'nowrap',
               gap: '2px',
@@ -288,7 +285,7 @@ export const blockNoteToMantineTheme = (theme: Theme): MantineThemeOverride => {
           root: _.merge<CSSObject, CSSObject>(
             {
               backgroundColor: theme.colors.tooltip.background,
-              border: border,
+              border,
               borderRadius: outerBorderRadius,
               boxShadow: shadow,
               color: theme.colors.tooltip.text,
@@ -357,8 +354,8 @@ export const blockNoteToMantineTheme = (theme: Theme): MantineThemeOverride => {
     },
     fontFamily: theme.fontFamily,
     other: {
-      textColors: textColors,
-      backgroundColors: backgroundColors,
+      textColors,
+      backgroundColors,
     },
   }
 }

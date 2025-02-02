@@ -1,5 +1,5 @@
 // import {HMBlockSchema} from '@/editor/schema'
-import {BlockNoteEditor} from '../../BlockNoteEditor'
+import { BlockNoteEditor } from '../../BlockNoteEditor'
 // import {BlockSchema} from '../Blocks/api/blockTypes'
 import { BlockSchema } from '../Blocks/api/blockTypes'
 import { DefaultBlockSchema } from '../Blocks/api/defaultBlocks'

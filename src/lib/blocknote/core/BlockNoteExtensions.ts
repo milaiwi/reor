@@ -1,35 +1,34 @@
-import {Extensions, extensions} from '@tiptap/core'
+import { Extensions, extensions } from '@tiptap/core'
 // import {HMBlockSchema} from '../../schema'
-
-import {BlockNoteEditor} from './BlockNoteEditor'
 
 // import {LocalMediaPastePlugin} from '@/editor/handle-local-media-paste-plugin'
 // import {debugPlugin} from '@/editor/prosemirror-debugger'
-import {Bold} from '@tiptap/extension-bold'
-import {Code} from '@tiptap/extension-code'
+import { Bold } from '@tiptap/extension-bold'
+import { Code } from '@tiptap/extension-code'
 import Collaboration from '@tiptap/extension-collaboration'
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
-import {Dropcursor} from '@tiptap/extension-dropcursor'
-import {Gapcursor} from '@tiptap/extension-gapcursor'
-import {HardBreak} from '@tiptap/extension-hard-break'
-import {History} from '@tiptap/extension-history'
-import {Italic} from '@tiptap/extension-italic'
-import {Strike} from '@tiptap/extension-strike'
-import {Text} from '@tiptap/extension-text'
-import {Underline} from '@tiptap/extension-underline'
+import { Dropcursor } from '@tiptap/extension-dropcursor'
+import { Gapcursor } from '@tiptap/extension-gapcursor'
+import { HardBreak } from '@tiptap/extension-hard-break'
+import { History } from '@tiptap/extension-history'
+import { Italic } from '@tiptap/extension-italic'
+import { Strike } from '@tiptap/extension-strike'
+import { Text } from '@tiptap/extension-text'
+import { Underline } from '@tiptap/extension-underline'
 import * as Y from 'yjs'
+import { BlockNoteEditor } from './BlockNoteEditor'
 // import {createInlineEmbedNode} from '../../mentions-plugin'
 import Link from '../../tiptap-extension-link'
 import styles from './editor.module.css'
-import {BlockManipulationExtension} from './extensions/BlockManipulation/BlockManipulationExtension'
-import {BlockContainer, BlockGroup, Doc} from './extensions/Blocks'
-import {BlockNoteDOMAttributes} from './extensions/Blocks/api/blockTypes'
-import {CustomBlockSerializerExtension} from './extensions/Blocks/api/serialization'
+import { BlockManipulationExtension } from './extensions/BlockManipulation/BlockManipulationExtension'
+import { BlockContainer, BlockGroup, Doc } from './extensions/Blocks'
+import { BlockNoteDOMAttributes } from './extensions/Blocks/api/blockTypes'
+import { CustomBlockSerializerExtension } from './extensions/Blocks/api/serialization'
 import blockStyles from './extensions/Blocks/nodes/Block.module.css'
-import {createMarkdownExtension} from './extensions/Markdown/MarkdownExtension'
-import {Placeholder} from './extensions/Placeholder/PlaceholderExtension'
-import {TrailingNode} from './extensions/TrailingNode/TrailingNodeExtension'
-import {UniqueID} from './extensions/UniqueID/UniqueID'
+import { createMarkdownExtension } from './extensions/Markdown/MarkdownExtension'
+import { Placeholder } from './extensions/Placeholder/PlaceholderExtension'
+import { TrailingNode } from './extensions/TrailingNode/TrailingNodeExtension'
+import { UniqueID } from './extensions/UniqueID/UniqueID'
 import { HMBlockSchema } from '@/components/Editor/schema'
 import { DiffExtension } from './extensions/Diff/diffExtension'
 import SearchAndReplace from '@/components/Editor/Search/SearchAndReplaceExtension'
@@ -115,7 +114,7 @@ export const getBlockNoteExtensions = <BSchema extends HMBlockSchema>(opts: {
     }),
     CustomBlockSerializerExtension,
 
-    Dropcursor.configure({width: 5, color: '#ddeeff'}),
+    Dropcursor.configure({ width: 5, color: '#ddeeff' }),
     HardBreak,
     // This needs to be at the bottom of this list, because Key events (such as enter, when selecting a /command),
     // should be handled before Enter handlers in other components like splitListItem
@@ -134,7 +133,7 @@ export const getBlockNoteExtensions = <BSchema extends HMBlockSchema>(opts: {
       }),
     )
     if (opts.collaboration.provider?.awareness) {
-      const defaultRender = (user: {color: string; name: string}) => {
+      const defaultRender = (user: { color: string; name: string }) => {
         const cursor = document.createElement('span')
 
         cursor.classList.add(styles['collaboration-cursor__caret'])

@@ -29,14 +29,18 @@ const InitialSetupSinglePage: React.FC<OldInitialSettingsProps> = ({ readyForInd
     <ReorModal isOpen onClose={() => {}} hideCloseButton>
       <YStack className="ml-2 mr-4 w-[620px] py-3">
         <YStack className="ml-2 mt-0 h-[450px]  ">
-          <H3 color="$gray13" fontWeight="semi-bold" className="mb-0 text-center text-2xl">Welcome to the Reor Project</H3>
+          <H3 color="$gray13" fontWeight="semi-bold" className="mb-0 text-center text-2xl">
+            Welcome to the Reor Project
+          </H3>
           <SizableText color="$gray11" fontWeight={400} marginTop="$4" textAlign="center">
             Reor is a private AI personal knowledge management tool. Each note will be saved as a markdown file to a
             vault directory on your machine.
           </SizableText>
           <XStack className="mt-5 flex items-center justify-between border-0 border-b-2 border-solid border-neutral-700 pb-4">
             <YStack className="w-80 flex-col">
-              <SizableText color="$gray13" fontWeight={600} fontSize={16}>Vault Directory</SizableText>
+              <SizableText color="$gray13" fontWeight={600} fontSize={16}>
+                Vault Directory
+              </SizableText>
               <SizableText color="$black" fontSize={14} fontWeight={300} className="m-0 pt-1">
                 Your vault directory doesn&apos;t need to be empty. Only markdown files will be indexed.
               </SizableText>

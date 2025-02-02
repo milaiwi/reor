@@ -1,6 +1,6 @@
-import {mergeAttributes} from '@tiptap/core'
-import {mergeCSSClasses} from '../../../../../shared/utils'
-import {createTipTapBlock} from '../../../api/block'
+import { mergeAttributes } from '@tiptap/core'
+import { mergeCSSClasses } from '../../../../../shared/utils'
+import { createTipTapBlock } from '../../../api/block'
 import styles from '../../Block.module.css'
 
 export const ParagraphBlockContent = createTipTapBlock({
@@ -25,21 +25,16 @@ export const ParagraphBlockContent = createTipTapBlock({
     ]
   },
 
-  renderHTML({HTMLAttributes}) {
-    const blockContentDOMAttributes =
-      this.options.domAttributes?.blockContent || {}
-    const inlineContentDOMAttributes =
-      this.options.domAttributes?.inlineContent || {}
+  renderHTML({ HTMLAttributes }) {
+    const blockContentDOMAttributes = this.options.domAttributes?.blockContent || {}
+    const inlineContentDOMAttributes = this.options.domAttributes?.inlineContent || {}
 
     return [
       'div',
       mergeAttributes(
         {
           ...blockContentDOMAttributes,
-          class: mergeCSSClasses(
-            styles.blockContent,
-            blockContentDOMAttributes.class,
-          ),
+          class: mergeCSSClasses(styles.blockContent, blockContentDOMAttributes.class),
           'data-content-type': this.name,
         },
         HTMLAttributes,
@@ -48,10 +43,7 @@ export const ParagraphBlockContent = createTipTapBlock({
         'p',
         {
           ...inlineContentDOMAttributes,
-          class: mergeCSSClasses(
-            styles.inlineContent,
-            inlineContentDOMAttributes.class,
-          ),
+          class: mergeCSSClasses(styles.inlineContent, inlineContentDOMAttributes.class),
         },
         0,
       ],

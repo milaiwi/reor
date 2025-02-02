@@ -1,6 +1,6 @@
-import {getAttributes} from '@tiptap/core'
-import {MarkType} from '@tiptap/pm/model'
-import {Plugin, PluginKey} from '@tiptap/pm/state'
+import { getAttributes } from '@tiptap/core'
+import { MarkType } from '@tiptap/pm/model'
+import { Plugin, PluginKey } from '@tiptap/pm/state'
 
 type ClickHandlerOptions = {
   type: MarkType
@@ -22,7 +22,7 @@ export function clickHandler(options: ClickHandlerOptions): Plugin {
         const href = link?.href ?? attrs.href
 
         if (link && href) {
-          let newWindow = false // todo, check for meta key
+          const newWindow = false // todo, check for meta key
           options.openUrl(href, newWindow)
           return true
         }

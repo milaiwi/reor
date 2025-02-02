@@ -1,43 +1,32 @@
-
-import { 
-    YStack, 
-    XStack, 
-    Button, 
-    Popover,
-    Separator,
-    Input,
-    Theme,
-    SizableText,
-    Text
-} from "tamagui"
-import React from "react"
-import { IconType } from "react-icons"
-import { MediaType } from "../../types"
-import { useState } from 'react'
+import { YStack, XStack, Button, Popover, Separator, Input, Theme, SizableText, Text } from 'tamagui'
+import React, { useState } from 'react'
+import { IconType } from 'react-icons'
+import { MediaType } from 'reor-project/src/components/Editor/types/types'
 
 interface EmbedRenderProps {
-    props: {
-      mediaType: string,
-      icon?: IconType,
-      hint?: string,
-      uploadOptionHint?: string,
-      embedPlaceholder?: string,
-      embedOptionHint?: string
-    },
-    submit?: (assignMedia: (props: MediaType) => void, queryType: string, url?: string, setFileName?: any) => Promise<void>;
-    assign: (props: MediaType) => void;
+  props: {
+    mediaType: string
+    icon?: IconType
+    hint?: string
+    uploadOptionHint?: string
+    embedPlaceholder?: string
+    embedOptionHint?: string
+  }
+  submit?: (
+    assignMedia: (props: MediaType) => void,
+    queryType: string,
+    url?: string,
+    setFileName?: any,
+  ) => Promise<void>
+  assign: (props: MediaType) => void
 }
 
-export const EmbedComponent: React.FC<EmbedRenderProps>= ({ 
-  props,
-  submit,
-  assign
-}) => {
-  const {mediaType, icon, hint, uploadOptionHint, embedPlaceholder, embedOptionHint} = props
+export const EmbedComponent: React.FC<EmbedRenderProps> = ({ props, submit, assign }) => {
+  const { mediaType, icon, hint, uploadOptionHint, embedPlaceholder, embedOptionHint } = props
   const [url, setURL] = useState('')
   const [isClicked, setIsClicked] = useState(false)
-  const [selectedOption, setSelectedOption] = useState("upload")
-  const [errorRaised, setErrorRaised] = useState("")
+  const [selectedOption, setSelectedOption] = useState('upload')
+  const [errorRaised, setErrorRaised] = useState('')
 
   const handleClick = () => setIsClicked(!isClicked)
 
@@ -46,7 +35,7 @@ export const EmbedComponent: React.FC<EmbedRenderProps>= ({
       <Popover.Trigger asChild>
         <YStack
           position="relative"
-          borderColor={'$color8'}
+          borderColor="$color8"
           borderWidth={0}
           backgroundColor="$purple3"
           borderRadius="$4"
@@ -55,34 +44,30 @@ export const EmbedComponent: React.FC<EmbedRenderProps>= ({
           onClick={handleClick}
           height={50}
           hoverStyle={{
-            backgroundColor:"$purple4",
-            cursor: 'pointer',      
+            backgroundColor: '$purple4',
+            cursor: 'pointer',
           }}
-          >
+        >
           <XStack
-              alignItems="center"
-              justifyContent="flex-start"
-              borderRadius="$2"
-              height="100%"
-              paddingLeft={10}
-              gap={8}
-              opacity={0.4}
+            alignItems="center"
+            justifyContent="flex-start"
+            borderRadius="$2"
+            height="100%"
+            paddingLeft={10}
+            gap={8}
+            opacity={0.4}
           >
-              {icon && React.createElement(icon)}
-              <Text
-              size={14}
-              color="$color8"
-              fontFamily="$mono"
-              >
-                {hint}
-              </Text>
+            {icon && React.createElement(icon)}
+            <Text size={14} color="$color8" fontFamily="$mono">
+              {hint}
+            </Text>
           </XStack>
         </YStack>
       </Popover.Trigger>
 
       <Popover.Content
         borderWidth={1}
-        borderColor={'$color8'}
+        borderColor="$color8"
         borderRadius={10}
         enterStyle={{ y: -10, opacity: 0 }}
         exitStyle={{ y: -10, opacity: 0 }}
@@ -97,18 +82,14 @@ export const EmbedComponent: React.FC<EmbedRenderProps>= ({
         ]}
         paddingTop={3}
         paddingHorizontal={12}
-
       >
-        <Popover.Arrow borderWidth={1} borderColor={'$color8'} />
-        <YStack 
-          gap="$2" 
-          width={300}
-        >
+        <Popover.Arrow borderWidth={1} borderColor="$color8" />
+        <YStack gap="$2" width={300}>
           <XStack gap="$1">
             <Button
               size="$2"
               onPress={() => {
-                setSelectedOption("upload")
+                setSelectedOption('upload')
                 setIsClicked(false)
                 setErrorRaised('')
               }}
@@ -116,7 +97,7 @@ export const EmbedComponent: React.FC<EmbedRenderProps>= ({
               hoverStyle={{
                 borderRadius: 8,
               }}
-              fontWeight={selectedOption === "upload" ? "bold" : "normal"}
+              fontWeight={selectedOption === 'upload' ? 'bold' : 'normal'}
             >
               Upload
             </Button>
@@ -124,7 +105,7 @@ export const EmbedComponent: React.FC<EmbedRenderProps>= ({
               <Button
                 size="$2"
                 onPress={() => {
-                  setSelectedOption("embed")
+                  setSelectedOption('embed')
                   setIsClicked(false)
                   setErrorRaised('')
                 }}
@@ -132,7 +113,7 @@ export const EmbedComponent: React.FC<EmbedRenderProps>= ({
                 hoverStyle={{
                   borderRadius: 8,
                 }}
-                fontWeight={selectedOption === "embed" ? "bold" : "normal"}
+                fontWeight={selectedOption === 'embed' ? 'bold' : 'normal'}
               >
                 Embed
               </Button>
@@ -141,40 +122,39 @@ export const EmbedComponent: React.FC<EmbedRenderProps>= ({
 
           <Separator />
 
-
-          {selectedOption === "upload" ? (
+          {selectedOption === 'upload' ? (
             <YStack gap="$3" paddingTop={3}>
-              <Button 
-                size={14} 
-                color="$color8" 
+              <Button
+                size={14}
+                color="$color8"
                 fontFamily="$mono"
                 padding={16}
                 backgroundColor="hsl(0, 0%, 96.0%)"
                 borderRadius="$4"
                 hoverStyle={{
-                  backgroundColor:"hsl(0, 0%, 92.0%)",
-                  cursor: 'pointer',      
+                  backgroundColor: 'hsl(0, 0%, 92.0%)',
+                  cursor: 'pointer',
                 }}
                 onPress={() => {
-                  submit && submit(assign, "upload", undefined, setErrorRaised)
+                  submit && submit(assign, 'upload', undefined, setErrorRaised)
                   setErrorRaised('')
                 }}
               >
                 {uploadOptionHint}
               </Button>
-            </YStack> 
+            </YStack>
           ) : (
             mediaType === 'image' && (
               <YStack gap="$2">
-                <Input  
+                <Input
                   autoFocus
-                  color="black" 
+                  color="black"
                   height={32}
                   fontFamily="$mono"
                   backgroundColor={errorRaised ? '$color5' : 'color7'}
                   borderRadius="$4"
                   hoverStyle={{
-                    backgroundColor:"hsl(0, 0%, 92.0%)",
+                    backgroundColor: 'hsl(0, 0%, 92.0%)',
                   }}
                   focusStyle={{
                     outlineColor: '$blue7',
@@ -186,41 +166,38 @@ export const EmbedComponent: React.FC<EmbedRenderProps>= ({
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setURL(e.target.value)}
                 />
                 {errorRaised && (
-                  <SizableText size="$2" color='red' fontWeight='semiBold'>
+                  <SizableText size="$2" color="red" fontWeight="semiBold">
                     {errorRaised}
                   </SizableText>
                 )}
                 <XStack justifyContent="center">
                   <Theme name="blue">
-                    <Button 
+                    <Button
                       width="50%"
-                      size={14} 
-                      color="white" 
+                      size={14}
+                      color="white"
                       fontFamily="$mono"
                       padding={16}
                       backgroundColor="$blue9"
                       borderRadius="$4"
                       hoverStyle={{
-                        backgroundColor:"$blue8",
-                        cursor: 'pointer',      
+                        backgroundColor: '$blue8',
+                        cursor: 'pointer',
                       }}
                       onPress={() => {
-                        submit && submit(assign, "embed", url, setErrorRaised)
+                        submit && submit(assign, 'embed', url, setErrorRaised)
                         setURL('')
                       }}
                     >
                       {embedOptionHint}
-                    </Button>            
+                    </Button>
                   </Theme>
                 </XStack>
               </YStack>
- 
             )
-         )}
+          )}
         </YStack>
-
       </Popover.Content>
-        
     </Popover>
   )
 }

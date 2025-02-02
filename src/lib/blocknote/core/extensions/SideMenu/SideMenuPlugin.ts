@@ -1,16 +1,16 @@
-import {PluginView} from '@tiptap/pm/state'
-import {Node} from 'prosemirror-model'
-import {NodeSelection, Plugin, PluginKey, Selection} from 'prosemirror-state'
+import { PluginView } from '@tiptap/pm/state'
+import { Node } from 'prosemirror-model'
+import { NodeSelection, Plugin, PluginKey, Selection } from 'prosemirror-state'
 import * as pv from 'prosemirror-view'
-import {EditorView} from 'prosemirror-view'
-import {BlockNoteEditor} from '../../BlockNoteEditor'
+import { EditorView } from 'prosemirror-view'
+import { BlockNoteEditor } from '../../BlockNoteEditor'
 import styles from '../../editor.module.css'
-import {BaseUiElementState} from '../../shared/BaseUiElementTypes'
-import {EventEmitter} from '../../shared/EventEmitter'
-import {Block, BlockSchema} from '../Blocks/api/blockTypes'
-import {getBlockInfoFromPos} from '../Blocks/helpers/getBlockInfoFromPos'
-import {slashMenuPluginKey} from '../SlashMenu/SlashMenuPlugin'
-import {MultipleNodeSelection} from './MultipleNodeSelection'
+import { BaseUiElementState } from '../../shared/BaseUiElementTypes'
+import { EventEmitter } from '../../shared/EventEmitter'
+import { Block, BlockSchema } from '../Blocks/api/blockTypes'
+import { getBlockInfoFromPos } from '../Blocks/helpers/getBlockInfoFromPos'
+import { slashMenuPluginKey } from '../SlashMenu/SlashMenuPlugin'
+import { MultipleNodeSelection } from './MultipleNodeSelection'
 
 const serializeForClipboard = (pv as any).__serializeForClipboard
 // code based on https://github.com/ueberdosis/tiptap/issues/323#issuecomment-506637799
@@ -23,10 +23,7 @@ export type SideMenuState<BSchema extends BlockSchema> = BaseUiElementState & {
   lineHeight: string
 }
 
-function getDraggableBlockFromCoords(
-  coords: {left: number; top: number},
-  view: EditorView,
-) {
+function getDraggableBlockFromCoords(coords: { left: number; top: number }, view: EditorView) {
   if (!view.dom.isConnected) {
     // view is not connected to the DOM, this can cause posAtCoords to fail
     // (Cannot read properties of null (reading 'nearestDesc'), https://github.com/TypeCellOS/BlockNote/issues/123)
@@ -39,8 +36,7 @@ function getDraggableBlockFromCoords(
     return undefined
   }
 
-  let node =
-    view.nodeDOM(pos.inside) || (view.domAtPos(pos.pos).node as HTMLElement)
+  let node = view.nodeDOM(pos.inside) || (view.domAtPos(pos.pos).node as HTMLElement)
   // let atomNode = view.nodeDOM(pos.inside) as HTMLElement
 
   if (node === view.dom) {
@@ -48,30 +44,22 @@ function getDraggableBlockFromCoords(
     return undefined
   }
 
-  while (
-    node &&
-    node.parentNode &&
-    node.parentNode !== view.dom &&
-    !node.hasAttribute?.('data-id')
-  ) {
+  while (node && node.parentNode && node.parentNode !== view.dom && !node.hasAttribute?.('data-id')) {
     node = node.parentNode as HTMLElement
   }
   if (!node) {
     return undefined
   }
 
-  return {node, id: node.getAttribute('data-id')!}
+  return { node, id: node.getAttribute('data-id')! }
 }
 
-function blockPositionFromCoords(
-  coords: {left: number; top: number},
-  view: EditorView,
-) {
+function blockPositionFromCoords(coords: { left: number; top: number }, view: EditorView) {
   const block = getDraggableBlockFromCoords(coords, view)
 
   if (block && block.node.nodeType === 1) {
     // TODO: this uses undocumented PM APIs? do we need this / let's add docs?
-    const docView = (view as any).docView
+    const { docView } = view as any
     const desc = docView.nearestDesc(block.node, true)
     if (!desc || desc === docView) {
       return null
@@ -93,10 +81,8 @@ function blockPositionsFromSelection(selection: Selection, doc: Node) {
   // the same blocks again. If this happens, the anchor & head move out of the block content node they were originally
   // in. If the anchor should update but the head shouldn't and vice versa, it means the user selection is outside a
   // block content node, which should never happen.
-  const selectionStartInBlockContent =
-    doc.resolve(selection.from).node().type.spec.group === 'blockContent'
-  const selectionEndInBlockContent =
-    doc.resolve(selection.to).node().type.spec.group === 'blockContent'
+  const selectionStartInBlockContent = doc.resolve(selection.from).node().type.spec.group === 'blockContent'
+  const selectionEndInBlockContent = doc.resolve(selection.to).node().type.spec.group === 'blockContent'
 
   // Ensures that entire outermost nodes are selected if the selection spans multiple nesting levels.
   const minDepth = Math.min(selection.$anchor.depth, selection.$head.depth)
@@ -116,7 +102,7 @@ function blockPositionsFromSelection(selection: Selection, doc: Node) {
     afterLastBlockPos = selection.to
   }
 
-  return {from: beforeFirstBlockPos, to: afterLastBlockPos}
+  return { from: beforeFirstBlockPos, to: afterLastBlockPos }
 }
 
 function setDragImage(view: EditorView, from: number, to = from) {
@@ -158,19 +144,11 @@ function setDragImage(view: EditorView, from: number, to = from) {
   const classes = view.dom.className.split(' ')
   const inheritedClasses = classes
     .filter(
-      (className) =>
-        !className.includes('bn') &&
-        !className.includes('ProseMirror') &&
-        !className.includes('editor'),
+      (className) => !className.includes('bn') && !className.includes('ProseMirror') && !className.includes('editor'),
     )
     .join(' ')
 
-  dragImageElement.className =
-    dragImageElement.className +
-    ' ' +
-    styles.dragPreview +
-    ' ' +
-    inheritedClasses
+  dragImageElement.className = `${dragImageElement.className} ${styles.dragPreview} ${inheritedClasses}`
 
   document.body.appendChild(dragImageElement)
 }
@@ -182,10 +160,7 @@ function unsetDragImage() {
   }
 }
 
-function dragStart(
-  e: {dataTransfer: DataTransfer | null; clientY: number},
-  view: EditorView,
-) {
+function dragStart(e: { dataTransfer: DataTransfer | null; clientY: number }, view: EditorView) {
   if (!e.dataTransfer) {
     return
   }
@@ -199,37 +174,32 @@ function dragStart(
 
   const pos = blockPositionFromCoords(coords, view)
   if (pos != null) {
-    const selection = view.state.selection
-    const doc = view.state.doc
+    const { selection } = view.state
+    const { doc } = view.state
 
-    const {from, to} = blockPositionsFromSelection(selection, doc)
+    const { from, to } = blockPositionsFromSelection(selection, doc)
 
     const draggedBlockInSelection = from <= pos && pos < to
     const multipleBlocksSelected =
-      selection.$anchor.node() !== selection.$head.node() ||
-      selection instanceof MultipleNodeSelection
+      selection.$anchor.node() !== selection.$head.node() || selection instanceof MultipleNodeSelection
 
     if (draggedBlockInSelection && multipleBlocksSelected) {
-      view.dispatch(
-        view.state.tr.setSelection(MultipleNodeSelection.create(doc, from, to)),
-      )
+      view.dispatch(view.state.tr.setSelection(MultipleNodeSelection.create(doc, from, to)))
       setDragImage(view, from, to)
     } else {
-      view.dispatch(
-        view.state.tr.setSelection(NodeSelection.create(view.state.doc, pos)),
-      )
+      view.dispatch(view.state.tr.setSelection(NodeSelection.create(view.state.doc, pos)))
       setDragImage(view, pos)
     }
 
     const slice = view.state.selection.content()
-    const {dom, text} = serializeForClipboard(view, slice)
+    const { dom, text } = serializeForClipboard(view, slice)
 
     e.dataTransfer.clearData()
     e.dataTransfer.setData('text/html', dom.innerHTML)
     e.dataTransfer.setData('text/plain', text)
     e.dataTransfer.effectAllowed = 'move'
     e.dataTransfer.setDragImage(dragImageElement!, 0, 0)
-    view.dragging = {slice, move: true}
+    view.dragging = { slice, move: true }
   }
 }
 
@@ -240,6 +210,7 @@ export class SideMenuView<BSchema extends BlockSchema> implements PluginView {
   // When false, the drag handle with be just to the left of the element
   // TODO: Is there any case where we want this to be false?
   private horizontalPosAnchoredAtRoot: boolean
+
   private horizontalPosAnchor: number
 
   private hoveredBlock: HTMLElement | undefined
@@ -252,14 +223,10 @@ export class SideMenuView<BSchema extends BlockSchema> implements PluginView {
   constructor(
     private readonly editor: BlockNoteEditor<BSchema>,
     private readonly pmView: EditorView,
-    private readonly updateSideMenu: (
-      sideMenuState: SideMenuState<BSchema>,
-    ) => void,
+    private readonly updateSideMenu: (sideMenuState: SideMenuState<BSchema>) => void,
   ) {
     this.horizontalPosAnchoredAtRoot = true
-    this.horizontalPosAnchor = (
-      this.pmView.dom.firstChild! as HTMLElement
-    ).getBoundingClientRect().x
+    this.horizontalPosAnchor = (this.pmView.dom.firstChild! as HTMLElement).getBoundingClientRect().x
 
     document.body.addEventListener('drop', this.onDrop, true)
     document.body.addEventListener('dragover', this.onDragOver)
@@ -288,13 +255,11 @@ export class SideMenuView<BSchema extends BlockSchema> implements PluginView {
    * when dragging / dropping to the side of the editor
    */
   onDrop = (event: DragEvent) => {
-    this.editor._tiptapEditor.commands.blur()
+    this.editor.tiptapEditor.commands.blur()
 
     if (
       (event as any).synthetic ||
-      (!this.isDragging &&
-        (!event.dataTransfer?.types ||
-          event.dataTransfer?.types[0] !== 'Files'))
+      (!this.isDragging && (!event.dataTransfer?.types || event.dataTransfer?.types[0] !== 'Files'))
     ) {
       return
     }
@@ -308,9 +273,7 @@ export class SideMenuView<BSchema extends BlockSchema> implements PluginView {
 
     if (!pos || pos.inside === -1) {
       const evt = new Event('drop', event) as any
-      const editorBoundingBox = (
-        this.pmView.dom.firstChild! as HTMLElement
-      ).getBoundingClientRect()
+      const editorBoundingBox = (this.pmView.dom.firstChild! as HTMLElement).getBoundingClientRect()
       evt.clientX = editorBoundingBox.left + editorBoundingBox.width / 2
       evt.clientY = event.clientY
       evt.dataTransfer = event.dataTransfer
@@ -329,9 +292,7 @@ export class SideMenuView<BSchema extends BlockSchema> implements PluginView {
   onDragOver = (event: DragEvent) => {
     if (
       (event as any).synthetic ||
-      (!this.isDragging &&
-        (!event.dataTransfer?.types ||
-          event.dataTransfer?.types[0] !== 'Files'))
+      (!this.isDragging && (!event.dataTransfer?.types || event.dataTransfer?.types[0] !== 'Files'))
     ) {
       return
     }
@@ -342,9 +303,7 @@ export class SideMenuView<BSchema extends BlockSchema> implements PluginView {
 
     if (!pos || pos.inside === -1) {
       const evt = new Event('dragover', event) as any
-      const editorBoundingBox = (
-        this.pmView.dom.firstChild! as HTMLElement
-      ).getBoundingClientRect()
+      const editorBoundingBox = (this.pmView.dom.firstChild! as HTMLElement).getBoundingClientRect()
       evt.clientX = editorBoundingBox.left + editorBoundingBox.width / 2
       evt.clientY = event.clientY
       evt.dataTransfer = event.dataTransfer
@@ -372,9 +331,7 @@ export class SideMenuView<BSchema extends BlockSchema> implements PluginView {
     // size/position, so we get the boundingRect of the first child (i.e. the
     // blockGroup that wraps all blocks in the editor) for more accurate side
     // menu placement.
-    const editorBoundingBox = (
-      this.pmView.dom.firstChild! as HTMLElement
-    ).getBoundingClientRect()
+    const editorBoundingBox = (this.pmView.dom.firstChild! as HTMLElement).getBoundingClientRect()
     // We want the full area of the editor to check if the cursor is hovering
     // above it though.
     const editorOuterBoundingBox = this.pmView.dom.getBoundingClientRect()
@@ -395,10 +352,7 @@ export class SideMenuView<BSchema extends BlockSchema> implements PluginView {
       event &&
       event.target &&
       // Element is outside the editor
-      !(
-        editorWrapper === event.target ||
-        editorWrapper?.contains(event.target as HTMLElement)
-      )
+      !(editorWrapper === event.target || editorWrapper?.contains(event.target as HTMLElement))
     ) {
       if (this.sideMenuState?.show) {
         this.sideMenuState.show = false
@@ -466,9 +420,7 @@ export class SideMenuView<BSchema extends BlockSchema> implements PluginView {
           blockContentBoundingBox.width,
           blockContentBoundingBox.height,
         ),
-        block: this.editor.getBlock(
-          this.hoveredBlock!.getAttribute('data-id')!,
-        )!,
+        block: this.editor.getBlock(this.hoveredBlock!.getAttribute('data-id')!)!,
         lineHeight: window.getComputedStyle(blockContent).lineHeight,
       }
 
@@ -523,29 +475,26 @@ export class SideMenuView<BSchema extends BlockSchema> implements PluginView {
       return
     }
 
-    const blockInfo = getBlockInfoFromPos(
-      this.editor._tiptapEditor.state.doc,
-      pos.pos,
-    )
+    const blockInfo = getBlockInfoFromPos(this.editor.tiptapEditor.state.doc, pos.pos)
     if (blockInfo === undefined) {
       return
     }
 
-    const {contentNode, endPos} = blockInfo
+    const { contentNode, endPos } = blockInfo
 
     // Creates a new block if current one is not empty for the suggestion menu to open in.
     if (contentNode.textContent.length !== 0) {
       const newBlockInsertionPos = endPos + 1
       const newBlockContentPos = newBlockInsertionPos + 2
 
-      this.editor._tiptapEditor
+      this.editor.tiptapEditor
         .chain()
         .BNCreateBlock(newBlockInsertionPos)
-        .BNUpdateBlock(newBlockContentPos, {type: 'paragraph', props: {}})
+        .BNUpdateBlock(newBlockContentPos, { type: 'paragraph', props: {} })
         .setTextSelection(newBlockContentPos)
         .run()
     } else {
-      this.editor._tiptapEditor.commands.setTextSelection(endPos)
+      this.editor.tiptapEditor.commands.setTextSelection(endPos)
     }
 
     // Focuses and activates the suggestion menu.
@@ -562,10 +511,9 @@ export class SideMenuView<BSchema extends BlockSchema> implements PluginView {
 
 export const sideMenuPluginKey = new PluginKey('SideMenuPlugin')
 
-export class SideMenuProsemirrorPlugin<
-  BSchema extends BlockSchema,
-> extends EventEmitter<any> {
+export class SideMenuProsemirrorPlugin<BSchema extends BlockSchema> extends EventEmitter<any> {
   private sideMenuView: SideMenuView<BSchema> | undefined
+
   public readonly plugin: Plugin
 
   constructor(private readonly editor: BlockNoteEditor<BSchema>) {
@@ -573,13 +521,9 @@ export class SideMenuProsemirrorPlugin<
     this.plugin = new Plugin({
       key: sideMenuPluginKey,
       view: (editorView) => {
-        this.sideMenuView = new SideMenuView(
-          editor,
-          editorView,
-          (sideMenuState) => {
-            this.emit('update', sideMenuState)
-          },
-        )
+        this.sideMenuView = new SideMenuView(editor, editorView, (sideMenuState) => {
+          this.emit('update', sideMenuState)
+        })
         return this.sideMenuView
       },
     })
@@ -598,10 +542,7 @@ export class SideMenuProsemirrorPlugin<
   /**
    * Handles drag & drop events for blocks.
    */
-  blockDragStart = (event: {
-    dataTransfer: DataTransfer | null
-    clientY: number
-  }) => {
+  blockDragStart = (event: { dataTransfer: DataTransfer | null; clientY: number }) => {
     this.sideMenuView!.isDragging = true
     dragStart(event, this.editor.prosemirrorView)
   }
@@ -610,12 +551,14 @@ export class SideMenuProsemirrorPlugin<
    * Handles drag & drop events for blocks.
    */
   blockDragEnd = () => unsetDragImage()
+
   /**
    * Freezes the side menu. When frozen, the side menu will stay
    * attached to the same block regardless of which block is hovered by the
    * mouse cursor.
    */
   freezeMenu = () => (this.sideMenuView!.menuFrozen = true)
+
   /**
    * Unfreezes the side menu. When frozen, the side menu will stay
    * attached to the same block regardless of which block is hovered by the

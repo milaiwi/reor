@@ -1,5 +1,5 @@
 // @ts-nocheck
-import {styled, XStack} from 'tamagui'
+import { styled, XStack } from 'tamagui'
 
 export const FooterWrapper = styled(XStack, {
   marginHorizontal: -1,

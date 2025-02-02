@@ -1,12 +1,10 @@
-import {Extension} from '@tiptap/core'
-import {getBlockInfoFromPos} from '../Blocks/helpers/getBlockInfoFromPos'
+import { Extension } from '@tiptap/core'
+import { getBlockInfoFromPos } from '../Blocks/helpers/getBlockInfoFromPos'
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     diff: {
-      setDiff: (
-        diff: 'added' | 'deleted' | 'updated' | 'undefined',
-      ) => ReturnType
+      setDiff: (diff: 'added' | 'deleted' | 'updated' | 'undefined') => ReturnType
     }
   }
 }
@@ -38,7 +36,7 @@ export const DiffExtension = Extension.create({
     return {
       setDiff:
         (diff) =>
-        ({state}) => {
+        ({ state }) => {
           const positionsBeforeSelectedContent = []
 
           const blockInfo = getBlockInfoFromPos(state.doc, state.selection.from)
@@ -49,9 +47,7 @@ export const DiffExtension = Extension.create({
           // Finds all blockContent nodes that the current selection is in.
           let pos = blockInfo.startPos
           while (pos < state.selection.to) {
-            if (
-              state.doc.resolve(pos).node().type.spec.group === 'blockContent'
-            ) {
+            if (state.doc.resolve(pos).node().type.spec.group === 'blockContent') {
               positionsBeforeSelectedContent.push(pos - 1)
 
               pos += state.doc.resolve(pos).node().nodeSize - 1

@@ -48,7 +48,7 @@
 //         disabled: false,
 //         icon: <Link size={18} />,
 //         execute: (editor: BlockNoteEditor<HMBlockSchema>, ref: string) => {
-//           const {state, schema, view} = editor._tiptapEditor
+//           const {state, schema, view} = editor.tiptapEditor
 //           const {selection} = state
 //           const pos = selection.from - docTitle!.length
 //           view.dispatch(
@@ -70,7 +70,7 @@
 //         disabled: false,
 //         icon: <CircleDot size={18} />,
 //         execute: (editor: BlockNoteEditor<HMBlockSchema>, ref: string) => {
-//           const {state, schema} = editor._tiptapEditor
+//           const {state, schema} = editor.tiptapEditor
 //           const {selection} = state
 //           if (!selection.empty) return
 //           const node = schema.nodes.button.create({
@@ -110,7 +110,7 @@
 //       //       disabled: false,
 //       //       icon: <SquareAsterisk size={18} />,
 //       //       execute: (editor: BlockNoteEditor<HMBlockSchema>, ref: string) => {
-//       //         const {state, schema} = editor._tiptapEditor
+//       //         const {state, schema} = editor.tiptapEditor
 //       //         const {selection} = state
 //       //         if (!selection.empty) return
 //       //         const node = schema.nodes.embed.create(
@@ -140,7 +140,7 @@
 //             disabled: false,
 //             icon: <PanelBottom size={18} />,
 //             execute: (editor: BlockNoteEditor<HMBlockSchema>, ref: string) => {
-//               const {state, schema} = editor._tiptapEditor
+//               const {state, schema} = editor.tiptapEditor
 //               const {selection} = state
 //               if (!selection.empty) return
 //               const hmRef = createHMUrl(hmId)
@@ -184,7 +184,7 @@
 //                 if (!hmId) return
 //                 link = hmId
 //               }
-//               const {state, schema} = editor._tiptapEditor
+//               const {state, schema} = editor.tiptapEditor
 //               const {selection} = state
 //               if (!selection.empty) return
 //               const node = schema.nodes['inline-embed'].create(
@@ -202,7 +202,7 @@
 //             disabled: false,
 //             icon: <CircleDot size={18} />,
 //             execute: (editor: BlockNoteEditor<HMBlockSchema>, ref: string) => {
-//               const {state, schema} = editor._tiptapEditor
+//               const {state, schema} = editor.tiptapEditor
 //               const {selection} = state
 //               if (!selection.empty) return
 //               const node = schema.nodes.button.create({
@@ -240,7 +240,7 @@
 //         disabled: false,
 //         icon: mediaIcon,
 //         execute: (editor: BlockNoteEditor<HMBlockSchema>, link: string) => {
-//           const {state, schema} = editor._tiptapEditor
+//           const {state, schema} = editor.tiptapEditor
 //           const {selection} = state
 //           if (!selection.empty) return
 //           let embedUrl = ''
@@ -289,7 +289,7 @@
 //   ref: string,
 //   node: Node,
 // ) {
-//   const {state, schema, view} = editor._tiptapEditor
+//   const {state, schema, view} = editor.tiptapEditor
 //   const {doc, selection} = state
 //   const {$from} = selection
 //   const block = getBlockInfoFromPos(doc, selection.$anchor.pos)
@@ -339,7 +339,7 @@
 //   title: string,
 //   node: Node,
 // ) {
-//   const {state, view} = editor._tiptapEditor
+//   const {state, view} = editor.tiptapEditor
 //   const {selection} = state
 //   const {$from} = selection
 //   let tr = state.tr

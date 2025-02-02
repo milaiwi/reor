@@ -1,18 +1,13 @@
-import React, { useEffect, useState, useRef, useLayoutEffect } from 'react'
-import { EditorContent } from '@tiptap/react'
+import React, { useEffect, useState } from 'react'
+import { YStack } from 'tamagui'
 import InEditorBacklinkSuggestionsDisplay from './BacklinkSuggestionsDisplay'
-import EditorContextMenu from './EditorContextMenu'
-import SearchBar from './Search/SearchBar'
 import { useFileContext } from '@/contexts/FileContext'
-import { useContentContext } from '@/contexts/ContentContext'
 import { BlockNoteView, FormattingToolbarPositioner, SlashMenuPositioner } from '@/lib/blocknote'
-import { XStack, YStack } from 'tamagui'
 
 const EditorManager: React.FC = () => {
-  const [showSearchBar, setShowSearchBar] = useState(false)
+  // const [showSearchBar, setShowSearchBar] = useState(false)
 
   const [editorFlex, setEditorFlex] = useState(true)
-  const [width, setWidth] = useState(0)
 
   const { editor, suggestionsState, vaultFilesFlattened } = useFileContext()
   const [showDocumentStats, setShowDocumentStats] = useState(false)
@@ -47,10 +42,7 @@ const EditorManager: React.FC = () => {
   }, [])
 
   return (
-    <YStack
-      className="relative size-full cursor-text overflow-hidden py-4 "
-      onClick={() => editor?.focus()}
-    >
+    <YStack className="relative size-full cursor-text overflow-hidden py-4 " onClick={() => editor?.focus()}>
       {/* <SearchBar editor={editor} showSearch={showSearchBar} setShowSearch={setShowSearchBar} /> */}
       {/* {contextMenuVisible && (
         <EditorContextMenu
@@ -62,7 +54,7 @@ const EditorManager: React.FC = () => {
       )} */}
 
       <YStack
-        className={`py-4 relative h-full overflow-y-auto ${editorFlex && width >= 200 ? 'flex justify-center px-24' : 'px-12'} ${showDocumentStats ? 'pb-3' : ''}`}
+        className={`relative h-full overflow-y-auto py-4 ${editorFlex ? 'flex justify-center px-24' : 'px-12'} ${showDocumentStats ? 'pb-3' : ''}`}
       >
         <YStack className="relative size-full overflow-x-hidden">
           {editor && (

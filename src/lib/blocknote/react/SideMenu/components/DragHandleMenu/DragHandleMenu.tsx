@@ -1,15 +1,15 @@
-import {Block, BlockNoteEditor, BlockSchema} from '@/editor/blocknote/core'
-import {Menu} from '@mantine/core'
+import { Menu } from '@mantine/core'
 import { createStyles } from '@mantine/styles'
-import {ReactNode} from 'react'
+import { ReactNode } from 'react'
+import { Block, BlockNoteEditor, BlockSchema } from '@/editor/blocknote/core'
 
 export type DragHandleMenuProps<BSchema extends BlockSchema> = {
   editor: BlockNoteEditor<BSchema>
   block: Block<BSchema>
 }
 
-export const DragHandleMenu = (props: {children: ReactNode}) => {
-  const {classes} = createStyles({
+export const DragHandleMenu = (props: { children: ReactNode }) => {
+  const { classes } = createStyles({
     root: {
       minWidth: 180,
     },
@@ -17,7 +17,5 @@ export const DragHandleMenu = (props: {children: ReactNode}) => {
     name: 'DragHandleMenu',
   })
 
-  return (
-    <Menu.Dropdown className={classes.root}>{props.children}</Menu.Dropdown>
-  )
+  return <Menu.Dropdown className={classes.root}>{props.children}</Menu.Dropdown>
 }

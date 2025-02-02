@@ -3,6 +3,7 @@ import { HiOutlinePencilAlt } from 'react-icons/hi'
 import { toast } from 'react-toastify'
 import { ToolCallPart } from 'ai'
 import { FaRegCopy } from 'react-icons/fa'
+import { YStack } from 'tamagui'
 import { Chat, ReorChatMessage } from '../../../lib/llm/types'
 import { extractMessagePartsFromAssistantMessage, findToolResultMatchingToolCall } from '../../../lib/llm/chat'
 import { ToolCallComponent } from './ToolCalls'
@@ -10,7 +11,6 @@ import { useContentContext } from '@/contexts/ContentContext'
 import { useChatContext } from '@/contexts/ChatContext'
 import MarkdownRenderer from '@/components/Common/MarkdownRenderer'
 import { makeAndAddToolResultToMessages } from '../../../lib/llm/tools/utils'
-import { YStack } from 'tamagui'
 
 interface AssistantMessageProps {
   message: ReorChatMessage
@@ -90,7 +90,7 @@ const AssistantMessage: React.FC<AssistantMessageProps> = ({ message, setCurrent
                 className="cursor-pointer items-center justify-center rounded px-1 hover:bg-neutral-700"
                 onClick={createNewNoteFromMessage}
               >
-                <HiOutlinePencilAlt color="gray" size={18} className="text-gray-200" title="New Note"  />
+                <HiOutlinePencilAlt color="gray" size={18} className="text-gray-200" title="New Note" />
               </YStack>
             </div>
           </div>

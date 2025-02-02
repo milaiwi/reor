@@ -1,9 +1,8 @@
-import {Block, BlockNoteEditor} from '@lib/blocknote'
-import { updateGroup } from '@/lib/utils'
-import {Box, Menu} from '@mantine/core'
-import {Forward, RefreshCcw, XStack} from '@shm/ui'
+import { Block, BlockNoteEditor } from '@lib/blocknote'
+import { Box, Menu } from '@mantine/core'
+import { Forward, RefreshCcw, XStack } from '@shm/ui'
 import * as _ from 'lodash'
-import {useCallback, useRef, useState} from 'react'
+import { useCallback, useRef, useState } from 'react'
 import {
   RiChatQuoteLine,
   RiCodeBoxLine,
@@ -13,21 +12,20 @@ import {
   RiMenuLine,
   RiText,
 } from 'react-icons/ri'
-import {RemoveBlockButton} from './DefaultButtons/RemoveBlockButton'
-import {DragHandleMenu, DragHandleMenuProps} from './DragHandleMenu'
-import {DragHandleMenuItem} from './DragHandleMenuItem'
+import { updateGroup } from '@/lib/utils'
+import { RemoveBlockButton } from './DefaultButtons/RemoveBlockButton'
+import { DragHandleMenu, DragHandleMenuProps } from './DragHandleMenu'
+import { DragHandleMenuItem } from './DragHandleMenuItem'
 import { HMBlockSchema } from '@/components/Editor/schema'
 
-export const DefaultDragHandleMenu = <BSchema extends HMBlockSchema>(
-  props: DragHandleMenuProps<BSchema>,
-) => (
+export const DefaultDragHandleMenu = <BSchema extends HMBlockSchema>(props: DragHandleMenuProps<BSchema>) => (
   <DragHandleMenu>
     <RemoveBlockButton {...props}>Delete</RemoveBlockButton>
     <TurnIntoMenu {...props} />
   </DragHandleMenu>
 )
 
-function TurnIntoMenu(props: DragHandleMenuProps<HMBlockSchema>) {
+const TurnIntoMenu = (props: DragHandleMenuProps<HMBlockSchema>) => {
   const [opened, setOpened] = useState(false)
 
   const menuCloseTimer = useRef<NodeJS.Timeout | null>(null)
@@ -53,11 +51,7 @@ function TurnIntoMenu(props: DragHandleMenuProps<HMBlockSchema>) {
   let index = 0
 
   _.forEach(groups, (groupedItems) => {
-    renderedItems.push(
-      <Menu.Label key={groupedItems[0].group}>
-        {groupedItems[0].group}
-      </Menu.Label>,
-    )
+    renderedItems.push(<Menu.Label key={groupedItems[0].group}>{groupedItems[0].group}</Menu.Label>)
 
     for (const item of groupedItems) {
       renderedItems.push(
@@ -81,16 +75,13 @@ function TurnIntoMenu(props: DragHandleMenuProps<HMBlockSchema>) {
   }
 
   return (
-    <DragHandleMenuItem
-      onMouseOver={stopMenuCloseTimer}
-      onMouseLeave={startMenuCloseTimer}
-    >
+    <DragHandleMenuItem onMouseOver={stopMenuCloseTimer} onMouseLeave={startMenuCloseTimer}>
       <Menu opened={opened} position="right">
         <Menu.Target>
           <XStack gap="$2">
             <RefreshCcw size={14} />
-            <div style={{flex: 1}}>Turn into</div>
-            <Box style={{display: 'flex', alignItems: 'center'}}>
+            <div style={{ flex: 1 }}>Turn into</div>
+            <Box style={{ display: 'flex', alignItems: 'center' }}>
               <Forward size={12} />
             </Box>
           </XStack>
@@ -98,7 +89,7 @@ function TurnIntoMenu(props: DragHandleMenuProps<HMBlockSchema>) {
         <Menu.Dropdown
           onMouseLeave={startMenuCloseTimer}
           onMouseOver={stopMenuCloseTimer}
-          style={{marginLeft: '5px'}}
+          style={{ marginLeft: '5px' }}
         >
           {renderedItems}
         </Menu.Dropdown>
@@ -112,13 +103,7 @@ var turnIntoItems = [
     label: 'Paragraph',
     group: 'Block operations',
     Icon: RiText,
-    onClick: ({
-      block,
-      editor,
-    }: {
-      block: Block<HMBlockSchema>
-      editor: BlockNoteEditor<HMBlockSchema>
-    }) => {
+    onClick: ({ block, editor }: { block: Block<HMBlockSchema>; editor: BlockNoteEditor<HMBlockSchema> }) => {
       editor.focus()
       editor.updateBlock(block, {
         type: 'paragraph',
@@ -130,13 +115,7 @@ var turnIntoItems = [
     label: 'Heading',
     group: 'Block operations',
     Icon: RiHeading,
-    onClick: ({
-      block,
-      editor,
-    }: {
-      block: Block<HMBlockSchema>
-      editor: BlockNoteEditor<HMBlockSchema>
-    }) => {
+    onClick: ({ block, editor }: { block: Block<HMBlockSchema>; editor: BlockNoteEditor<HMBlockSchema> }) => {
       editor.focus()
       editor.updateBlock(block, {
         type: 'heading',
@@ -148,13 +127,7 @@ var turnIntoItems = [
     label: 'Code',
     group: 'Block operations',
     Icon: RiCodeBoxLine,
-    onClick: ({
-      block,
-      editor,
-    }: {
-      block: Block<HMBlockSchema>
-      editor: BlockNoteEditor<HMBlockSchema>
-    }) => {
+    onClick: ({ block, editor }: { block: Block<HMBlockSchema>; editor: BlockNoteEditor<HMBlockSchema> }) => {
       editor.focus()
       editor.updateBlock(block, {
         type: 'code-block',
@@ -181,13 +154,7 @@ var turnIntoItems = [
     label: 'Bullet item',
     group: 'Group operations',
     Icon: RiListUnordered,
-    onClick: ({
-      block,
-      editor,
-    }: {
-      block: Block<HMBlockSchema>
-      editor: BlockNoteEditor<HMBlockSchema>
-    }) => {
+    onClick: ({ block, editor }: { block: Block<HMBlockSchema>; editor: BlockNoteEditor<HMBlockSchema> }) => {
       editor.focus()
       updateGroup(editor, block, 'ul')
     },
@@ -196,13 +163,7 @@ var turnIntoItems = [
     label: 'Numbered item',
     group: 'Group operations',
     Icon: RiListOrdered,
-    onClick: ({
-      block,
-      editor,
-    }: {
-      block: Block<HMBlockSchema>
-      editor: BlockNoteEditor<HMBlockSchema>
-    }) => {
+    onClick: ({ block, editor }: { block: Block<HMBlockSchema>; editor: BlockNoteEditor<HMBlockSchema> }) => {
       editor.focus()
       updateGroup(editor, block, 'ul')
     },
@@ -211,13 +172,7 @@ var turnIntoItems = [
     label: 'Group item',
     group: 'Group operations',
     Icon: RiMenuLine,
-    onClick: ({
-      block,
-      editor,
-    }: {
-      block: Block<HMBlockSchema>
-      editor: BlockNoteEditor<HMBlockSchema>
-    }) => {
+    onClick: ({ block, editor }: { block: Block<HMBlockSchema>; editor: BlockNoteEditor<HMBlockSchema> }) => {
       editor.focus()
       updateGroup(editor, block, 'group')
     },
@@ -227,13 +182,7 @@ var turnIntoItems = [
     label: 'Blockquote item',
     group: 'Group operations',
     Icon: RiChatQuoteLine,
-    onClick: ({
-      block,
-      editor,
-    }: {
-      block: Block<HMBlockSchema>
-      editor: BlockNoteEditor<HMBlockSchema>
-    }) => {
+    onClick: ({ block, editor }: { block: Block<HMBlockSchema>; editor: BlockNoteEditor<HMBlockSchema> }) => {
       editor.focus()
       updateGroup(editor, block, 'blockquote')
     },

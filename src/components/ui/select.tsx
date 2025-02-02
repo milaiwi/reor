@@ -4,7 +4,6 @@ import * as React from 'react'
 import { CaretSortIcon, CheckIcon, ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons'
 import * as SelectPrimitive from '@radix-ui/react-select'
 import { useThemeManager } from '@/contexts/ThemeContext'
- 
 
 import { cn } from '@/lib/ui'
 
@@ -13,7 +12,6 @@ const Select = SelectPrimitive.Root
 const SelectGroup = SelectPrimitive.Group
 
 const SelectValue = SelectPrimitive.Value
-
 
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
@@ -34,7 +32,7 @@ const SelectTrigger = React.forwardRef<
       <SelectPrimitive.Icon asChild>
         <CaretSortIcon className="size-4 opacity-50" />
       </SelectPrimitive.Icon>
-    </SelectPrimitive.Trigger> 
+    </SelectPrimitive.Trigger>
   )
 })
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName

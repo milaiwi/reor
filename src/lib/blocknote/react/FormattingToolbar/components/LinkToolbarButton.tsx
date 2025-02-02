@@ -1,9 +1,6 @@
 import Tippy from '@tippyjs/react'
-import {useCallback, useEffect, useRef, useState} from 'react'
-import {
-  ToolbarButton,
-  ToolbarButtonProps,
-} from '../../SharedComponents/Toolbar/components/ToolbarButton'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { ToolbarButton, ToolbarButtonProps } from '../../SharedComponents/Toolbar/components/ToolbarButton'
 
 type HyperlinkButtonProps = ToolbarButtonProps & {
   hyperlinkIsActive: boolean
@@ -44,12 +41,7 @@ export const LinkToolbarButton = (props: HyperlinkButtonProps) => {
   }, [handleClick])
 
   return (
-    <Tippy
-      content={creationMenu}
-      interactive={true}
-      maxWidth={500}
-      visible={creationMenuOpen}
-    >
+    <Tippy content={creationMenu} interactive maxWidth={500} visible={creationMenuOpen}>
       <ToolbarButton
         isSelected={props.isSelected}
         mainTooltip={props.mainTooltip}

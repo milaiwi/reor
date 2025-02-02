@@ -1,4 +1,4 @@
-import {Theme} from './index'
+import { Theme } from './index'
 
 export const defaultColorScheme = [
   '#FFFFFF',

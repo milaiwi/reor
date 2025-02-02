@@ -223,7 +223,7 @@ export const registerStoreHandlers = (store: Store<StoreSchema>, windowsManager:
   })
 
   ipcMain.handle('get-tamagui-theme', () => {
-    return store.get(StoreKeys.TamaguiTheme, 'dark') // Default to dark 
+    return store.get(StoreKeys.TamaguiTheme, 'dark') // Default to dark
   })
 }
 

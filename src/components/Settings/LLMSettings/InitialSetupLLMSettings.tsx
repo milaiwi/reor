@@ -1,10 +1,10 @@
 import React from 'react'
 import { CheckCircleIcon, CogIcon } from '@heroicons/react/24/solid'
 import { Button } from '@material-tailwind/react'
+import { SizableText, XStack, ScrollView } from 'tamagui'
 import useLLMConfigs from '../../../lib/hooks/use-llm-configs'
 import LLMSettingsContent from './LLMSettingsContent'
 import { Dialog, DialogContent, DialogTrigger, DialogOverlay } from '@/components/ui/dialog'
-import { SizableText, XStack, ScrollView } from 'tamagui'
 
 interface InitialSetupLLMSettingsProps {}
 
@@ -22,13 +22,10 @@ const InitialSetupLLMSettings: React.FC<InitialSetupLLMSettingsProps> = () => {
   }
 
   return (
-    <XStack 
-      width="100%" 
-      justifyContent="space-between" 
-      alignItems="center"  
-      paddingTop="$2"
-    >
-      <SizableText color="$gray13" fontWeight={600}>LLM</SizableText>
+    <XStack width="100%" justifyContent="space-between" alignItems="center" paddingTop="$2">
+      <SizableText color="$gray13" fontWeight={600}>
+        LLM
+      </SizableText>
       <Dialog open={isSetupModalOpen} onOpenChange={handleOpenChange}>
         <DialogTrigger asChild>
           <Button

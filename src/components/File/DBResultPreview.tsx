@@ -1,8 +1,8 @@
 import React from 'react'
 import { formatDistanceToNow } from 'date-fns'
 import { DBQueryResult } from 'electron/main/vector-database/schema'
-import MarkdownRenderer from '../Common/MarkdownRenderer'
 import { Card, Text, YStack } from 'tamagui'
+import MarkdownRenderer from '../Common/MarkdownRenderer'
 
 const cosineDistanceToPercentage = (similarity: number) => ((1 - similarity) * 100).toFixed(2)
 
@@ -82,7 +82,7 @@ export const DBSearchPreview: React.FC<DBSearchPreviewProps> = ({ dbResult: entr
       shadowColor="$gray7"
       shadowRadius="$2"
       hoverStyle={{
-        shadowRadius: "$4",
+        shadowRadius: '$4',
       }}
       onPress={() => onSelect(entry.notepath)}
     >
@@ -91,9 +91,17 @@ export const DBSearchPreview: React.FC<DBSearchPreviewProps> = ({ dbResult: entr
           <MarkdownRenderer content={entry.content} />
         </Text>
         <Text marginTop="$2" fontSize="$1" color="$colorMuted">
-          {fileName && <Text fontSize="$1" color="$colorMuted">{fileName} </Text>} | Similarity:{' '}
-          {cosineDistanceToPercentage(entry._distance)}% |{' '}
-          {modified && <Text fontSize="$1" color="$colorMuted">Modified {modified}</Text>}
+          {fileName && (
+            <Text fontSize="$1" color="$colorMuted">
+              {fileName}{' '}
+            </Text>
+          )}{' '}
+          | Similarity: {cosineDistanceToPercentage(entry._distance)}% |{' '}
+          {modified && (
+            <Text fontSize="$1" color="$colorMuted">
+              Modified {modified}
+            </Text>
+          )}
         </Text>
       </YStack>
     </Card>

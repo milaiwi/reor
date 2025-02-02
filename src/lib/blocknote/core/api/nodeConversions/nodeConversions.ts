@@ -1,12 +1,8 @@
-import {Mark} from '@tiptap/pm/model'
-import {Node, Schema} from 'prosemirror-model'
-import {
-  Block,
-  BlockSchema,
-  PartialBlock,
-} from '../../extensions/Blocks/api/blockTypes'
+import { Mark } from '@tiptap/pm/model'
+import { Node, Schema } from 'prosemirror-model'
+import { Block, BlockSchema, PartialBlock } from '../../extensions/Blocks/api/blockTypes'
 
-import {defaultProps} from '../../extensions/Blocks/api/defaultBlocks'
+import { defaultProps } from '../../extensions/Blocks/api/defaultBlocks'
 import {
   ColorStyle,
   InlineContent,
@@ -16,17 +12,11 @@ import {
   Styles,
   ToggledStyle,
 } from '../../extensions/Blocks/api/inlineContentTypes'
-import {getBlockInfo} from '../../extensions/Blocks/helpers/getBlockInfoFromPos'
-import {UniqueID} from '../../extensions/UniqueID/UniqueID'
-import {UnreachableCaseError} from '../../shared/utils'
+import { getBlockInfo } from '../../extensions/Blocks/helpers/getBlockInfoFromPos'
+import { UniqueID } from '../../extensions/UniqueID/UniqueID'
+import { UnreachableCaseError } from '../../shared/utils'
 
-const toggleStyles = new Set<ToggledStyle>([
-  'bold',
-  'italic',
-  'underline',
-  'strike',
-  'code',
-])
+const toggleStyles = new Set<ToggledStyle>(['bold', 'italic', 'underline', 'strike', 'code'])
 const colorStyles = new Set<ColorStyle>(['textColor', 'backgroundColor'])
 
 /**
@@ -40,7 +30,7 @@ function styledTextToNodes(styledText: StyledText, schema: Schema): Node[] {
     if (toggleStyles.has(style as ToggledStyle)) {
       marks.push(schema.mark(style))
     } else if (colorStyles.has(style as ColorStyle)) {
-      marks.push(schema.mark(style, {color: value}))
+      marks.push(schema.mark(style, { color: value }))
     }
   }
 
@@ -54,10 +44,9 @@ function styledTextToNodes(styledText: StyledText, schema: Schema): Node[] {
       // Converts text & line breaks to nodes.
       .map((text) => {
         if (text === '\n') {
-          return schema.nodes['hardBreak'].create()
-        } else {
-          return schema.text(text, marks)
+          return schema.nodes.hardBreak.create()
         }
+        return schema.text(text, marks)
       })
   )
 }
@@ -87,16 +76,11 @@ function linkToNodes(link: PartialLink, schema: Schema): Node[] {
  * Converts an array of StyledText inline content elements to
  * prosemirror text nodes with the appropriate marks
  */
-function styledTextArrayToNodes(
-  content: string | StyledText[],
-  schema: Schema,
-): Node[] {
+function styledTextArrayToNodes(content: string | StyledText[], schema: Schema): Node[] {
   const nodes: Node[] = []
 
   if (typeof content === 'string') {
-    nodes.push(
-      ...styledTextToNodes({type: 'text', text: content, styles: {}}, schema),
-    )
+    nodes.push(...styledTextToNodes({ type: 'text', text: content, styles: {} }, schema))
     return nodes
   }
 
@@ -109,10 +93,7 @@ function styledTextArrayToNodes(
 /**
  * converts an array of inline content elements to prosemirror nodes
  */
-export function inlineContentToNodes(
-  blockContent: PartialInlineContent[] | InlineContent[],
-  schema: Schema,
-): Node[] {
+export function inlineContentToNodes(blockContent: PartialInlineContent[] | InlineContent[], schema: Schema): Node[] {
   const nodes: Node[] = []
 
   for (const content of blockContent) {
@@ -140,13 +121,13 @@ export function blockToNode<BSchema extends BlockSchema>(
   block: PartialBlock<BSchema> | Block<BSchema>,
   schema: Schema,
 ) {
-  let id = block.id
+  let { id } = block
 
   if (id === undefined) {
     id = UniqueID.options.generateID()
   }
 
-  let type = block.type
+  let { type } = block
 
   if (type === undefined) {
     type = 'paragraph'
@@ -157,10 +138,7 @@ export function blockToNode<BSchema extends BlockSchema>(
   if (!block.content) {
     contentNode = schema.nodes[type].create(block.props)
   } else if (typeof block.content === 'string') {
-    contentNode = schema.nodes[type].create(
-      block.props,
-      schema.text(block.content),
-    )
+    contentNode = schema.nodes[type].create(block.props, schema.text(block.content))
   } else {
     let nodes: Node[] = []
     // Don't want hard breaks inserted as nodes in codeblock
@@ -180,11 +158,11 @@ export function blockToNode<BSchema extends BlockSchema>(
     }
   }
 
-  const groupNode = schema.nodes['blockGroup'].create({}, children)
+  const groupNode = schema.nodes.blockGroup.create({}, children)
 
-  return schema.nodes['blockContainer'].create(
+  return schema.nodes.blockContainer.create(
     {
-      id: id,
+      id,
       ...block.props,
     },
     children.length > 0 ? [contentNode, groupNode] : contentNode,
@@ -196,7 +174,7 @@ export function blockToNode<BSchema extends BlockSchema>(
  */
 function contentNodeToInlineContent(contentNode: Node) {
   const content: InlineContent[] = []
-  let currentContent: InlineContent | undefined = undefined
+  let currentContent: InlineContent | undefined
 
   // Most of the logic below is for handling links because in ProseMirror links are marks
   // while in BlockNote links are a type of inline content
@@ -249,7 +227,7 @@ function contentNodeToInlineContent(contentNode: Node) {
       } else if (colorStyles.has(mark.type.name as ColorStyle)) {
         styles[mark.type.name as ColorStyle] = mark.attrs.color
       } else {
-        throw Error('Mark is of an unrecognized type: ' + mark.type.name)
+        throw Error(`Mark is of an unrecognized type: ${mark.type.name}`)
       }
     }
 
@@ -260,9 +238,7 @@ function contentNodeToInlineContent(contentNode: Node) {
       if (currentContent.type === 'text') {
         if (!linkMark) {
           // Node is text (same type as current content).
-          if (
-            JSON.stringify(currentContent.styles) === JSON.stringify(styles)
-          ) {
+          if (JSON.stringify(currentContent.styles) === JSON.stringify(styles)) {
             // Styles are the same.
             currentContent.text += node.textContent
           } else {
@@ -297,13 +273,10 @@ function contentNodeToInlineContent(contentNode: Node) {
           if (currentContent.href === linkMark.attrs.href) {
             // Styles are the same.
             if (
-              JSON.stringify(
-                currentContent.content[currentContent.content.length - 1]
-                  .styles,
-              ) === JSON.stringify(styles)
+              JSON.stringify(currentContent.content[currentContent.content.length - 1].styles) ===
+              JSON.stringify(styles)
             ) {
-              currentContent.content[currentContent.content.length - 1].text +=
-                node.textContent
+              currentContent.content[currentContent.content.length - 1].text += node.textContent
             } else {
               // Styles are different.
               currentContent.content.push({
@@ -379,13 +352,9 @@ export function nodeToBlock<BSchema extends BlockSchema>(
   node: Node,
   blockSchema: BSchema,
   blockCache?: WeakMap<Node, Block<BSchema>>,
-): Block<BSchema> {  
+): Block<BSchema> {
   if (node.type.name !== 'blockContainer') {
-    throw Error(
-      'Node must be of type blockContainer, but is of type' +
-        node.type.name +
-        '.',
-    )
+    throw Error(`Node must be of type blockContainer, but is of type${node.type.name}.`)
   }
 
   const cachedBlock = blockCache?.get(node)
@@ -395,7 +364,7 @@ export function nodeToBlock<BSchema extends BlockSchema>(
   }
 
   const blockInfo = getBlockInfo(node)
-  let id = blockInfo.id
+  let { id } = blockInfo
 
   // Only used for blocks converted from other formats.
   if (id === null) {
@@ -409,18 +378,12 @@ export function nodeToBlock<BSchema extends BlockSchema>(
   })) {
     const blockSpec = blockSchema[blockInfo.contentType.name]
     if (!blockSpec) {
-      if (
-        blockInfo.contentType.name === 'code-block' ||
-        blockInfo.contentType.name === 'inline-embed'
-      ) {
+      if (blockInfo.contentType.name === 'code-block' || blockInfo.contentType.name === 'inline-embed') {
         break
-      } else
-        throw Error(
-          'Block is of an unrecognized type: ' + blockInfo.contentType.name,
-        )
+      } else throw Error(`Block is of an unrecognized type: ${blockInfo.contentType.name}`)
     }
 
-    const propSchema = blockSpec.propSchema
+    const { propSchema } = blockSpec
 
     if (attr in propSchema) {
       props[attr] = value
@@ -440,19 +403,17 @@ export function nodeToBlock<BSchema extends BlockSchema>(
   }
 
   if (node.lastChild!.attrs.listType) {
-    const {listType, listLevel, start} = node.lastChild!.attrs
-    props['childrenType'] = listType
-    props['listLevel'] = listLevel
-    props['start'] = start
+    const { listType, listLevel, start } = node.lastChild!.attrs
+    props.childrenType = listType
+    props.listLevel = listLevel
+    props.start = start
   }
 
   const content = contentNodeToInlineContent(blockInfo.contentNode)
 
   const children: Block<BSchema>[] = []
   for (let i = 0; i < blockInfo.numChildBlocks; i++) {
-    children.push(
-      nodeToBlock(node.lastChild!.child(i), blockSchema, blockCache),
-    )
+    children.push(nodeToBlock(node.lastChild!.child(i), blockSchema, blockCache))
   }
 
   const block: Block<BSchema> = {

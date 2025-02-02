@@ -28,13 +28,13 @@ const registerFileHandlers = (store: Store<StoreSchema>, _windowsManager: Window
 
   ipcMain.handle('read-file', async (event, filePath, encoding = 'utf-8') => {
     try {
-      const data = fs.promises.readFile(filePath, encoding);
-      return data;
+      const data = fs.promises.readFile(filePath, encoding)
+      return data
     } catch (error) {
-      console.error('Failed to read file:', error);
-      throw error;
+      console.error('Failed to read file:', error)
+      throw error
     }
-  });
+  })
 
   ipcMain.handle('check-file-exists', async (event, filePath) => {
     try {
@@ -90,12 +90,12 @@ const registerFileHandlers = (store: Store<StoreSchema>, _windowsManager: Window
 
   ipcMain.handle('store-image', async (event, imageData: string, originalName: string, blockID: string) => {
     try {
-      const localURL = await imageStorage.storeMedia(imageData, originalName, blockID);
+      const localURL = await imageStorage.storeMedia(imageData, originalName, blockID)
       return localURL
     } catch (error) {
       console.error(`Failed to store image:`, error)
       throw new Error(`Failed to store image`)
-    } 
+    }
   })
 
   ipcMain.handle('get-image', async (event, fileName) => {
@@ -110,7 +110,7 @@ const registerFileHandlers = (store: Store<StoreSchema>, _windowsManager: Window
 
   ipcMain.handle('store-video', async (event, videoData, originalName, blockId) => {
     try {
-      const localURL = await videoStorage.storeMedia(videoData, originalName, blockId);
+      const localURL = await videoStorage.storeMedia(videoData, originalName, blockId)
       return localURL
     } catch (error) {
       console.error(`Failed to store video:`, error)
@@ -120,8 +120,8 @@ const registerFileHandlers = (store: Store<StoreSchema>, _windowsManager: Window
 
   ipcMain.handle('get-video', async (event, fileName) => {
     try {
-      const videoData = await videoStorage.getMedia(fileName);
-      return videoData;
+      const videoData = await videoStorage.getMedia(fileName)
+      return videoData
     } catch (error) {
       console.error(`Failed to get video:`, error)
       throw new Error(`Failed to get video`)
@@ -208,7 +208,7 @@ const registerFileHandlers = (store: Store<StoreSchema>, _windowsManager: Window
     const result = await dialog.showOpenDialog({
       properties: ['openFile'],
       filters: [{ name: 'Images', extensions: ['jpg', 'png', 'gif'] }],
-    });
+    })
     return result.filePaths
   })
 
@@ -217,8 +217,8 @@ const registerFileHandlers = (store: Store<StoreSchema>, _windowsManager: Window
     const result = await dialog.showOpenDialog({
       properties: ['openFile'],
       filters: [{ name: 'Videos', extensions: ['mp4', 'mkv'] }],
-    });
-    return result.filePaths;
+    })
+    return result.filePaths
   })
 }
 

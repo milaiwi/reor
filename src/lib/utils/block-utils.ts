@@ -1,37 +1,34 @@
-import {Node, NodeType} from 'prosemirror-model'
-import {EditorView} from '@tiptap/pm/view'
-import {Editor} from '@tiptap/core'
-import {Node as TipTapNode} from '@tiptap/pm/model'
-import {Block, BlockSchema} from '../blocknote'
-import { BlockNoteEditor } from '../blocknote'
-import { BlockChildrenType } from '../blocknote'
+import { Node, NodeType } from 'prosemirror-model'
+import { EditorView } from '@tiptap/pm/view'
+import { Editor } from '@tiptap/core'
+import { Node as TipTapNode } from '@tiptap/pm/model'
+import { Block, BlockSchema, BlockNoteEditor, BlockChildrenType } from '../blocknote'
 import { getNodeById } from './node-utils'
 
 export type BlockInfoWithoutPositions = {
-    id: string
-    node: Node
-    contentNode: Node
-    contentType: NodeType
-    numChildBlocks: number
-  }
-  
+  id: string
+  node: Node
+  contentNode: Node
+  contentType: NodeType
+  numChildBlocks: number
+}
+
 export type BlockInfo = BlockInfoWithoutPositions & {
   startPos: number
   endPos: number
   depth: number
 }
-  
+
 /**
  * Helper function for `getBlockInfoFromPos`, returns information regarding
  * provided blockContainer node.
  * @param blockContainer The blockContainer node to retrieve info for.
  */
 export function getBlockInfo(blockContainer: Node): BlockInfoWithoutPositions {
-  const id = blockContainer.attrs['id']
+  const { id } = blockContainer.attrs
   const contentNode = blockContainer.firstChild!
   const contentType = contentNode.type
-  const numChildBlocks =
-    blockContainer.childCount === 2 ? blockContainer.lastChild!.childCount : 0
+  const numChildBlocks = blockContainer.childCount === 2 ? blockContainer.lastChild!.childCount : 0
 
   return {
     id,
@@ -41,7 +38,7 @@ export function getBlockInfo(blockContainer: Node): BlockInfoWithoutPositions {
     numChildBlocks,
   }
 }
-  
+
 /**
  * Retrieves information regarding the nearest blockContainer node in a
  * ProseMirror doc, relative to a position.
@@ -58,19 +55,13 @@ export function getBlockInfoFromPos(doc: Node, pos: number): BlockInfo {
   if (pos <= outerBlockGroupStartPos) {
     pos = outerBlockGroupStartPos + 1
 
-    while (
-      doc.resolve(pos).parent.type.name !== 'blockContainer' &&
-      pos < outerBlockGroupEndPos
-    ) {
+    while (doc.resolve(pos).parent.type.name !== 'blockContainer' && pos < outerBlockGroupEndPos) {
       pos++
     }
   } else if (pos >= outerBlockGroupEndPos) {
     pos = outerBlockGroupEndPos - 1
 
-    while (
-      doc.resolve(pos).parent.type.name !== 'blockContainer' &&
-      pos > outerBlockGroupStartPos
-    ) {
+    while (doc.resolve(pos).parent.type.name !== 'blockContainer' && pos > outerBlockGroupStartPos) {
       pos--
     }
   }
@@ -103,7 +94,7 @@ export function getBlockInfoFromPos(doc: Node, pos: number): BlockInfo {
     node = $pos.node(depth)
   }
 
-  const {id, contentNode, contentType, numChildBlocks} = getBlockInfo(node)
+  const { id, contentNode, contentType, numChildBlocks } = getBlockInfo(node)
 
   const startPos = $pos.start(depth)
   const endPos = $pos.end(depth)
@@ -120,44 +111,33 @@ export function getBlockInfoFromPos(doc: Node, pos: number): BlockInfo {
   }
 }
 
-export function updateGroup(
-  editor: BlockNoteEditor,
-  block: any,
-  listType: BlockChildrenType,
-) {
-  let {posBeforeNode} = getNodeById(block.id, editor._tiptapEditor.state.doc)
+export function updateGroup(editor: BlockNoteEditor, block: any, listType: BlockChildrenType) {
+  const { posBeforeNode } = getNodeById(block.id, editor.tiptapEditor.state.doc)
 
-  const posData = getBlockInfoFromPos(
-    editor._tiptapEditor.state.doc,
-    posBeforeNode + 1,
-  )
+  const posData = getBlockInfoFromPos(editor.tiptapEditor.state.doc, posBeforeNode + 1)
 
   if (!posData) return
 
-  const {startPos} = posData
+  const { startPos } = posData
   editor.focus()
-  editor._tiptapEditor.commands.UpdateGroup(startPos, listType, false)
+  editor.tiptapEditor.commands.UpdateGroup(startPos, listType, false)
 }
 
 // Find the next block from provided position or from selection
 export function findNextBlock(view: EditorView, pos?: number) {
-  const {state} = view
-  const currentPos = pos ? pos : state.selection.from
+  const { state } = view
+  const currentPos = pos || state.selection.from
   const blockInfo = getBlockInfoFromPos(state.doc, currentPos)!
   let nextBlock: Node | undefined
   let nextBlockPos: number | undefined
   // Find first child
   if (blockInfo.node.lastChild?.type.name === 'blockGroup') {
-    state.doc.nodesBetween(
-      blockInfo.startPos,
-      blockInfo.endPos,
-      (node, pos) => {
-        if (node.attrs.id === blockInfo.node.lastChild?.firstChild?.attrs.id) {
-          nextBlock = node
-          nextBlockPos = pos
-        }
-      },
-    )
+    state.doc.nodesBetween(blockInfo.startPos, blockInfo.endPos, (node, pos) => {
+      if (node.attrs.id === blockInfo.node.lastChild?.firstChild?.attrs.id) {
+        nextBlock = node
+        nextBlockPos = pos
+      }
+    })
   }
   const maybePos = pos ? state.doc.resolve(pos) : state.selection.$to
   const nextBlockInfo = getBlockInfoFromPos(state.doc, maybePos.end() + 3)
@@ -178,8 +158,8 @@ export function findNextBlock(view: EditorView, pos?: number) {
 
 // Find the previous block from provided position or from selection
 export function findPreviousBlock(view: EditorView, pos?: number) {
-  const {state} = view
-  const currentPos = pos ? pos : state.selection.from
+  const { state } = view
+  const currentPos = pos || state.selection.from
   const $currentPos = state.doc.resolve(currentPos)
   if ($currentPos.start() <= 3) return undefined
   const blockInfo = getBlockInfoFromPos(state.doc, currentPos)!
@@ -194,35 +174,24 @@ export function findPreviousBlock(view: EditorView, pos?: number) {
   let prevBlockPos: number | undefined
   // Find last child of prev block and return it
   if (prevBlockInfo.node.lastChild?.type.name === 'blockGroup') {
-    state.doc.nodesBetween(
-      prevBlockInfo.startPos + 3,
-      blockInfo.startPos - 2,
-      (node, pos) => {
-        if (node.type.name === 'blockContainer') {
-          prevBlock = node
-          prevBlockPos = pos
-        }
-      },
-    )
+    state.doc.nodesBetween(prevBlockInfo.startPos + 3, blockInfo.startPos - 2, (node, pos) => {
+      if (node.type.name === 'blockContainer') {
+        prevBlock = node
+        prevBlockPos = pos
+      }
+    })
   }
-  if (prevBlock && prevBlockPos) return {prevBlock, prevBlockPos}
+  if (prevBlock && prevBlockPos) return { prevBlock, prevBlockPos }
 }
 
-export function setGroupTypes(
-  tiptap: Editor,
-  blocks: Array<Partial<Block<BlockSchema>>>,
-) {
+export function setGroupTypes(tiptap: Editor, blocks: Array<Partial<Block<BlockSchema>>>) {
   blocks.forEach((block: Partial<Block<BlockSchema>>) => {
     tiptap.state.doc.descendants((node: TipTapNode, pos: number) => {
-      if (
-        node.attrs.id === block.id &&
-        block.props &&
-        block.props.childrenType
-      ) {
+      if (node.attrs.id === block.id && block.props && block.props.childrenType) {
         node.descendants((child: TipTapNode, childPos: number) => {
           if (child.type.name === 'blockGroup') {
             setTimeout(() => {
-              let tr = tiptap.state.tr
+              let { tr } = tiptap.state
               tr = block.props?.start
                 ? tr.setNodeMarkup(pos + childPos + 1, null, {
                     listType: block.props?.childrenType,

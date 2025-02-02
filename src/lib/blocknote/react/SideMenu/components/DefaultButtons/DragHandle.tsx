@@ -1,31 +1,19 @@
-import {BlockSchema} from '@/editor/blocknote/core'
-import {Menu} from '@mantine/core'
-import {MdDragIndicator} from 'react-icons/md'
-import {DefaultDragHandleMenu} from '../DragHandleMenu/DefaultDragHandleMenu'
-import {SideMenuButton} from '../SideMenuButton'
-import {SideMenuProps} from '../SideMenuPositioner'
+import { Menu } from '@mantine/core'
+import { MdDragIndicator } from 'react-icons/md'
+import { BlockSchema } from '@/editor/blocknote/core'
+import { DefaultDragHandleMenu } from '../DragHandleMenu/DefaultDragHandleMenu'
+import { SideMenuButton } from '../SideMenuButton'
+import { SideMenuProps } from '../SideMenuPositioner'
 
-export const DragHandle = <BSchema extends BlockSchema>(
-  props: SideMenuProps<BSchema>,
-) => {
+export const DragHandle = <BSchema extends BlockSchema>(props: SideMenuProps<BSchema>) => {
   const DragHandleMenu = props.dragHandleMenu || DefaultDragHandleMenu
 
   return (
-    <Menu
-      trigger={'click'}
-      onOpen={props.freezeMenu}
-      onClose={props.unfreezeMenu}
-      width={100}
-      position={'left'}
-    >
+    <Menu trigger="click" onOpen={props.freezeMenu} onClose={props.unfreezeMenu} width={100} position="left">
       <Menu.Target>
-        <div
-          draggable="true"
-          onDragStart={props.blockDragStart}
-          onDragEnd={props.blockDragEnd}
-        >
+        <div draggable="true" onDragStart={props.blockDragStart} onDragEnd={props.blockDragEnd}>
           <SideMenuButton>
-            <MdDragIndicator size={24} data-test={'dragHandle'} />
+            <MdDragIndicator size={24} data-test="dragHandle" />
           </SideMenuButton>
         </div>
       </Menu.Target>

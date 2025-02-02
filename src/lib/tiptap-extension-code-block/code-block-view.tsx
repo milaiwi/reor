@@ -1,30 +1,30 @@
-import {Check, ChevronDown, ChevronUp, Select, XStack, YStack} from '@shm/ui'
-import {NodeViewProps} from '@tiptap/core'
-import {NodeViewContent} from '@tiptap/react'
-import {useState} from 'react'
+import React, { useState } from 'react'
+import { Check, ChevronDown, ChevronUp, Select, XStack, YStack } from '@shm/ui'
+import { NodeViewProps } from '@tiptap/core'
+import { NodeViewContent } from '@tiptap/react'
 
-export const CodeBlockView = ({
+interface CodeBlockViewProps {
+  props: NodeViewProps
+  languages: string[]
+}
+
+const CodeBlockView: React.FC<CodeBlockViewProps> = ({
   props,
   languages,
 }: {
   props: NodeViewProps
   languages: string[]
 }) => {
-  const {node, updateAttributes} = props
+  const { node, updateAttributes } = props
   const [hovered, setHovered] = useState(false)
-  const [language, setLanguage] = useState(
-    node.attrs.language ? node.attrs.language : 'plaintext',
-  )
+  const [language, setLanguage] = useState(node.attrs.language ? node.attrs.language : 'plaintext')
   const handleChange = (newLanguage: string) => {
-    updateAttributes({language: newLanguage})
+    updateAttributes({ language: newLanguage })
     setLanguage(newLanguage)
   }
 
   return (
-    <YStack
-      onHoverIn={() => setHovered(true)}
-      onHoverOut={() => setHovered(false)}
-    >
+    <YStack onHoverIn={() => setHovered(true)} onHoverOut={() => setHovered(false)}>
       {hovered && (
         <XStack
           position="absolute"
@@ -57,7 +57,7 @@ export const CodeBlockView = ({
                 </YStack>
               </Select.ScrollUpButton>
               <Select.Viewport minWidth={200}>
-                <Select.Group maxHeight={'60vh'}>
+                <Select.Group maxHeight="60vh">
                   {languages.map((item, i) => {
                     return (
                       <Select.Item index={i} key={item} value={item}>
@@ -93,3 +93,5 @@ export const CodeBlockView = ({
     </YStack>
   )
 }
+
+export default CodeBlockView

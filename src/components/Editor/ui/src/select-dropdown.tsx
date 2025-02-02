@@ -1,45 +1,33 @@
-import {Check, ChevronDown, ChevronUp} from "@tamagui/lucide-icons";
-import {ReactNode} from "react";
-import {
-  Select,
-  SizableText,
-  SizeTokens,
-  XStack,
-  XStackProps,
-  YStack,
-} from "tamagui";
+import { Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
+import { ReactNode } from 'react'
+import { Select, SizableText, SizeTokens, XStack, XStackProps, YStack } from 'tamagui'
 
 export type SelectOptions = Array<{
-  label: string;
-  value: string;
-  icon?: ReactNode;
-}>;
+  label: string
+  value: string
+  icon?: ReactNode
+}>
 
 export type SelectDropdownProps<Options extends SelectOptions> = {
-  options: Options;
-  value: Options[number]["value"];
-  onValue: (value: Options[number]["value"]) => void;
-  size?: SizeTokens;
-  placeholder?: string;
-  width?: XStackProps["width"];
-};
+  options: Options
+  value: Options[number]['value']
+  onValue: (value: Options[number]['value']) => void
+  size?: SizeTokens
+  placeholder?: string
+  width?: XStackProps['width']
+}
 
-export function SelectDropdown<Options extends SelectOptions>({
+export const SelectDropdown = <Options extends SelectOptions>({
   options,
   value,
   onValue,
   size,
-  placeholder = "Select...",
+  placeholder = 'Select...',
   width = 140,
-}: SelectDropdownProps<Options>) {
-  const selectedOption = options.find((option) => option.value === value);
+}: SelectDropdownProps<Options>) => {
+  const selectedOption = options.find((option) => option.value === value)
   return (
-    <Select
-      value={value}
-      size={size}
-      onValueChange={onValue}
-      disablePreventBodyScroll
-    >
+    <Select value={value} size={size} onValueChange={onValue} disablePreventBodyScroll>
       <Select.Trigger
         size={size}
         width={width}
@@ -52,21 +40,13 @@ export function SelectDropdown<Options extends SelectOptions>({
             <>
               {selectedOption.icon}
               <XStack f={1}>
-                <SizableText
-                  textOverflow="ellipsis"
-                  whiteSpace="nowrap"
-                  overflow="hidden"
-                >
+                <SizableText textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
                   {selectedOption.label}
                 </SizableText>
               </XStack>
             </>
           ) : (
-            <SizableText
-              textOverflow="ellipsis"
-              whiteSpace="nowrap"
-              overflow="hidden"
-            >
+            <SizableText textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
               {placeholder}
             </SizableText>
           )}
@@ -74,13 +54,7 @@ export function SelectDropdown<Options extends SelectOptions>({
       </Select.Trigger>
 
       <Select.Content zIndex={999}>
-        <Select.ScrollUpButton
-          alignItems="center"
-          justifyContent="center"
-          position="relative"
-          width="100%"
-          height="$3"
-        >
+        <Select.ScrollUpButton alignItems="center" justifyContent="center" position="relative" width="100%" height="$3">
           <YStack zIndex="$zIndex.1">
             <ChevronUp size={20} />
           </YStack>
@@ -106,7 +80,7 @@ export function SelectDropdown<Options extends SelectOptions>({
                   <Check size={16} />
                 </Select.ItemIndicator>
               </Select.Item>
-            );
+            )
           })}
         </Select.Viewport>
 
@@ -123,5 +97,5 @@ export function SelectDropdown<Options extends SelectOptions>({
         </Select.ScrollDownButton>
       </Select.Content>
     </Select>
-  );
+  )
 }

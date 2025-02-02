@@ -2,9 +2,9 @@
 import React, { useState } from 'react'
 import { LLMAPIConfig } from 'electron/main/electron-store/storeConfig'
 import posthog from 'posthog-js'
+import { Input, XStack, YStack } from 'tamagui'
 import { Button } from '@/components/ui/button'
 // import { Input } from '@/components/ui/input'
-import { Input, XStack, YStack } from 'tamagui'
 import {
   Dialog,
   DialogContent,
@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogOverlay
+  DialogOverlay,
 } from '@/components/ui/dialog'
 import ExternalLink from '../../../Common/ExternalLink'
 import errorToStringRendererProcess from '@/lib/error'
@@ -40,10 +40,7 @@ const ModelNameInput: React.FC<ModelNameInputProps> = ({ modelNames, setModelNam
   return (
     <YStack className="">
       <h4 className="mb-1 font-medium">Model Names</h4>
-      <XStack
-        flex={1}
-        gap="$2"
-      >
+      <XStack flex={1} gap="$2">
         <Input
           type="text"
           className="mt-0 w-full"
@@ -117,7 +114,7 @@ const CustomLLMAPISetupModal: React.FC<RemoteLLMModalProps> = ({ isOpen, onClose
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogOverlay>
-        <DialogContent className="max-h-[60vh] overflow-y-auto sm:max-w-[525px] p-4">
+        <DialogContent className="max-h-[60vh] overflow-y-auto p-4 sm:max-w-[525px]">
           <DialogHeader>
             <DialogTitle>Remote LLM Setup</DialogTitle>
             <DialogDescription>
@@ -180,7 +177,9 @@ const CustomLLMAPISetupModal: React.FC<RemoteLLMModalProps> = ({ isOpen, onClose
             {currentError && <p className="text-xs text-destructive">{currentError}</p>}
           </div>
           <DialogFooter>
-            <Button variant="secondary" onClick={handleSave}>Save</Button>
+            <Button variant="secondary" onClick={handleSave}>
+              Save
+            </Button>
           </DialogFooter>
         </DialogContent>
       </DialogOverlay>

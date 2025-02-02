@@ -1,8 +1,8 @@
-import {Editor, Extension} from '@tiptap/core'
-import {Node as ProsemirrorNode} from 'prosemirror-model'
-import {Plugin, PluginKey} from 'prosemirror-state'
-import {Decoration, DecorationSet} from 'prosemirror-view'
-import {slashMenuPluginKey} from '../SlashMenu/SlashMenuPlugin'
+import { Editor, Extension } from '@tiptap/core'
+import { Node as ProsemirrorNode } from 'prosemirror-model'
+import { Plugin, PluginKey } from 'prosemirror-state'
+import { Decoration, DecorationSet } from 'prosemirror-view'
+import { slashMenuPluginKey } from '../SlashMenu/SlashMenuPlugin'
 
 const PLUGIN_KEY = new PluginKey(`blocknote-placeholder`)
 
@@ -19,12 +19,7 @@ export interface PlaceholderOptions {
   isFilterClass: string
   hasAnchorClass: string
   placeholder:
-    | ((PlaceholderProps: {
-        editor: Editor
-        node: ProsemirrorNode
-        pos: number
-        hasAnchor: boolean
-      }) => string)
+    | ((PlaceholderProps: { editor: Editor; node: ProsemirrorNode; pos: number; hasAnchor: boolean }) => string)
     | string
   showOnlyWhenEditable: boolean
   showOnlyCurrent: boolean
@@ -53,12 +48,11 @@ export const Placeholder = Extension.create<PlaceholderOptions>({
         key: PLUGIN_KEY,
         props: {
           decorations: (state) => {
-            const {doc, selection} = state
+            const { doc, selection } = state
             // Get state of slash menu
             const menuState = slashMenuPluginKey.getState(state)
-            const active =
-              this.editor.isEditable || !this.options.showOnlyWhenEditable
-            const {anchor} = selection
+            const active = this.editor.isEditable || !this.options.showOnlyWhenEditable
+            const { anchor } = selection
             const decorations: Decoration[] = []
 
             if (!active) {

@@ -1,71 +1,13 @@
-import {useEffect, useState} from 'react'
-import { ResizeHandle } from '../../ui/src'
-import { 
-  Block, 
-  BlockNoteEditor, 
-  defaultProps 
-} from '@/lib/blocknote'
-import { createReactBlockSpec } from '@/lib/blocknote'
-import {MediaContainer} from '../media-container'
-import {DisplayComponentProps, MediaRender, MediaType} from '../media-render'
+// @ts-nocheck
+import { useEffect, useState } from 'react'
+import { ResizeHandle } from '@shm/ui/src/src'
+import { Block, BlockNoteEditor, defaultProps, createReactBlockSpec } from '@/lib/blocknote'
+import { MediaContainer } from '../media-container'
+import { DisplayComponentProps, MediaRender, MediaType } from '../media-render'
 import { HMBlockSchema } from '../../schema'
 import { isValidUrl } from '../utils'
 
-
-export const ImageBlock = createReactBlockSpec({
-  type: 'image',
-  propSchema: {
-    ...defaultProps,
-    url: {
-      default: '',
-    },
-    alt: {
-      default: '',
-    },
-    name: {
-      default: '',
-    },
-    width: {
-      default: '',
-    },
-    defaultOpen: {
-      values: ['false', 'true'],
-      default: 'false',
-    },
-  },
-  containsInlineContent: true,
-
-  render: ({
-    block,
-    editor,
-  }: {
-    block: Block<HMBlockSchema>
-    editor: BlockNoteEditor<HMBlockSchema>
-  }) => Render(block, editor),
-
-  parseHTML: [
-    {
-      tag: 'img[src]',
-      getAttrs: (element: any) => {
-        const name = element.getAttribute('title')
-        const width = element.getAttribute('width') || element.style.width
-        const alt = element.getAttribute('alt')
-        return {
-          url: element.getAttribute('src'),
-          name,
-          width,
-          alt,
-        }
-      },
-      node: 'image',
-    },
-  ],
-})
-
-const Render = (
-  block: Block<HMBlockSchema>,
-  editor: BlockNoteEditor<HMBlockSchema>,
-) => {
+const Render = (block: Block<HMBlockSchema>, editor: BlockNoteEditor<HMBlockSchema>) => {
   const submitImage = async (
     assignMedia: (props: MediaType) => void,
     queryType: string,
@@ -80,12 +22,8 @@ const Render = (
         const fileData = await window.fileSystem.readFile(filePath, 'base64')
         const imageData = `data:image/png;base64,${fileData}`
 
-        const storedImageUrl = await window.fileSystem.storeImage(
-          imageData,
-          filePath,
-          block.id,
-        )
-        
+        const storedImageUrl = await window.fileSystem.storeImage(imageData, filePath, block.id)
+
         assignMedia({
           id: block.id,
           props: {
@@ -110,13 +48,9 @@ const Render = (
         reader.onloadend = async () => {
           const imageData = reader.result as string
 
-          const sanitizedURL = url.split('?')[0];
+          const sanitizedURL = url.split('?')[0]
 
-          const storedImageUrl = await window.fileSystem.storeImage(
-            imageData,
-            sanitizedURL,
-            block.id,
-          )
+          const storedImageUrl = await window.fileSystem.storeImage(imageData, sanitizedURL, block.id)
 
           assignMedia({
             id: block.id,
@@ -133,7 +67,9 @@ const Render = (
       } catch (error) {
         setErrorRaised('Failed to fetch image')
       }
-    } else { setErrorRaised('Invalid URL') }
+    } else {
+      setErrorRaised('Invalid URL')
+    }
   }
 
   return (
@@ -148,13 +84,7 @@ const Render = (
   )
 }
 
-const display = ({
-  editor,
-  block,
-  selected,
-  setSelected,
-  assign,
-}: DisplayComponentProps) => {
+const display = ({ editor, block, selected, setSelected, assign }: DisplayComponentProps) => {
   const [imageUrl, setImageUrl] = useState(block.props.url)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -182,9 +112,7 @@ const display = ({
 
   // Min image width in px.
   const minWidth = 64
-  let width: number =
-    parseFloat(block.props.width) ||
-    editor.domElement.firstElementChild!.clientWidth
+  let width: number = parseFloat(block.props.width) || editor.domElement.firstElementChild!.clientWidth
   const [currentWidth, setCurrentWidth] = useState(width)
   const [showHandle, setShowHandle] = useState(false)
   let resizeParams:
@@ -209,13 +137,9 @@ const display = ({
 
     let newWidth: number
     if (resizeParams.handleUsed === 'left') {
-      newWidth =
-        resizeParams.initialWidth +
-        (resizeParams.initialClientX - event.clientX) * 2
+      newWidth = resizeParams.initialWidth + (resizeParams.initialClientX - event.clientX) * 2
     } else {
-      newWidth =
-        resizeParams.initialWidth +
-        (event.clientX - resizeParams.initialClientX) * 2
+      newWidth = resizeParams.initialWidth + (event.clientX - resizeParams.initialClientX) * 2
     }
 
     // Ensures the image is not wider than the editor and not smaller than a
@@ -270,9 +194,7 @@ const display = ({
 
   // Sets the resize params, allowing the user to begin resizing the image by
   // moving the cursor left or right.
-  const leftResizeHandleMouseDownHandler = (
-    event: React.MouseEvent<HTMLDivElement>,
-  ) => {
+  const leftResizeHandleMouseDownHandler = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault()
 
     setShowHandle(true)
@@ -285,9 +207,7 @@ const display = ({
     editor.setTextCursorPosition(block.id, 'start')
   }
 
-  const rightResizeHandleMouseDownHandler = (
-    event: React.MouseEvent<HTMLDivElement>,
-  ) => {
+  const rightResizeHandleMouseDownHandler = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault()
 
     setShowHandle(true)
@@ -318,19 +238,13 @@ const display = ({
     >
       {showHandle && (
         <>
-          <ResizeHandle
-            left={4}
-            onMouseDown={leftResizeHandleMouseDownHandler}
-          />
-          <ResizeHandle
-            right={4}
-            onMouseDown={rightResizeHandleMouseDownHandler}
-          />
+          <ResizeHandle left={4} onMouseDown={leftResizeHandleMouseDownHandler} />
+          <ResizeHandle right={4} onMouseDown={rightResizeHandleMouseDownHandler} />
         </>
       )}
       {!isLoading && imageUrl && (
         <img
-          style={{width: `100%`}}
+          style={{ width: `100%` }}
           src={imageUrl}
           alt={block.props.name || block.props.alt}
           contentEditable={false}
@@ -339,3 +253,50 @@ const display = ({
     </MediaContainer>
   )
 }
+
+const ImageBlock = createReactBlockSpec({
+  type: 'image',
+  propSchema: {
+    ...defaultProps,
+    url: {
+      default: '',
+    },
+    alt: {
+      default: '',
+    },
+    name: {
+      default: '',
+    },
+    width: {
+      default: '',
+    },
+    defaultOpen: {
+      values: ['false', 'true'],
+      default: 'false',
+    },
+  },
+  containsInlineContent: true,
+
+  render: ({ block, editor }: { block: Block<HMBlockSchema>; editor: BlockNoteEditor<HMBlockSchema> }) =>
+    Render(block, editor),
+
+  parseHTML: [
+    {
+      tag: 'img[src]',
+      getAttrs: (element: any) => {
+        const name = element.getAttribute('title')
+        const width = element.getAttribute('width') || element.style.width
+        const alt = element.getAttribute('alt')
+        return {
+          url: element.getAttribute('src'),
+          name,
+          width,
+          alt,
+        }
+      },
+      node: 'image',
+    },
+  ],
+})
+
+export default ImageBlock

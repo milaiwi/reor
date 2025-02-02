@@ -46,9 +46,7 @@ const IndexingProgress: React.FC<IndexingProgressProps> = ({ indexingProgress })
           />
         </div>
         <div className="flex">
-          {indexingProgress === 0 && (
-            <CircularProgress size={20} thickness={7} className="mr-2" />
-          )}
+          {indexingProgress === 0 && <CircularProgress size={20} thickness={7} className="mr-2" />}
 
           <SizableText fontSize={14} color="$gray13">
             {indexingProgress > 0 && <>{Math.round(indexingProgress * 100)}% -</>} {eta}

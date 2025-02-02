@@ -7,7 +7,6 @@ import ChunkSizeSettings from '../ChunkSizeSettings'
 import EmbeddingModelSelect from './EmbeddingModelSelect'
 import NewRemoteEmbeddingModelModal from './modals/NewRemoteEmbeddingModel'
 import { Button } from '@/components/ui/button'
-import { YStack, XStack, SizableText } from 'tamagui'
 import SettingsSection, { SettingsRow } from '../Shared/SettingsRow'
 
 interface EmbeddingModelManagerProps {
@@ -62,7 +61,7 @@ const EmbeddingModelSettings: React.FC<EmbeddingModelManagerProps> = ({
   }
 
   return (
-    <SettingsSection 
+    <SettingsSection
       title="Embedding Model"
       footnote="Note: If you notice some lag in the editor it is likely because you chose too large of an embedding model..."
     >
@@ -78,8 +77,8 @@ const EmbeddingModelSettings: React.FC<EmbeddingModelManagerProps> = ({
       />
 
       <SettingsRow
-        title='Custom Embedding Model'
-        description='Reor will download a HuggingFace embedding model for you.'
+        title="Custom Embedding Model"
+        description="Reor will download a HuggingFace embedding model for you."
         control={
           <Button variant="secondary" onClick={() => setIsContextLengthModalOpen(true)}>
             Attach
@@ -88,7 +87,7 @@ const EmbeddingModelSettings: React.FC<EmbeddingModelManagerProps> = ({
       />
 
       <SettingsRow
-        title='Change Chunk Size'
+        title="Change Chunk Size"
         description='A larger chunk size means more context is fed to the model at the cost of "needle in a haystack" effects.'
         control={<ChunkSizeSettings />}
         divider={false}

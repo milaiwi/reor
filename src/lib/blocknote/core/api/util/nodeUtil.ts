@@ -1,14 +1,11 @@
-import {Node} from 'prosemirror-model'
+import { Node } from 'prosemirror-model'
 
 /**
  * Get a TipTap node by id
  */
-export function getNodeById(
-  id: string,
-  doc: Node,
-): {node: Node; posBeforeNode: number} {
-  let targetNode: Node | undefined = undefined
-  let posBeforeNode: number | undefined = undefined
+export function getNodeById(id: string, doc: Node): { node: Node; posBeforeNode: number } {
+  let targetNode: Node | undefined
+  let posBeforeNode: number | undefined
 
   doc.firstChild!.descendants((node, pos) => {
     // Skips traversing nodes after node with target ID has been found.
@@ -33,6 +30,6 @@ export function getNodeById(
 
   return {
     node: targetNode,
-    posBeforeNode: posBeforeNode,
+    posBeforeNode,
   }
 }

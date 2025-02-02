@@ -1,4 +1,4 @@
-import { app, ipcMain, shell, dialog,  } from 'electron'
+import { app, ipcMain, shell } from 'electron'
 import Store from 'electron-store'
 
 import WindowsManager from '../common/windowManager'

@@ -1,41 +1,40 @@
-import {createThemeBuilder} from "@tamagui/theme-builder";
+import { createThemeBuilder } from '@tamagui/theme-builder'
 
-import {masks} from "./masks";
-import {palettes} from "./palettes";
-import {shadows} from "./shadows";
-import {templates} from "./templates";
-import {darkColors, lightColors} from "./token-colors";
-
+import { masks } from './masks'
+import { palettes } from './palettes'
+import { shadows } from './shadows'
+import { templates } from './templates'
+import { darkColors, lightColors } from './token-colors'
 
 const colorThemeDefinition = (colorName: string) => [
   {
-    parent: "light",
+    parent: 'light',
     palette: colorName,
-    template: "colorLight",
+    template: 'colorLight',
   },
   {
-    parent: "dark",
+    parent: 'dark',
     palette: colorName,
-    template: "base",
+    template: 'base',
   },
-];
+]
 
 const themesBuilder = createThemeBuilder()
-  .addPalettes({...palettes})
+  .addPalettes({ ...palettes })
   .addTemplates(templates)
   .addMasks(masks)
   .addThemes({
     light: {
-      template: "base",
-      palette: "light",
+      template: 'base',
+      palette: 'light',
       nonInheritedValues: {
         ...lightColors,
         ...shadows.light,
       },
     },
     dark: {
-      template: "base",
-      palette: "dark",
+      template: 'base',
+      palette: 'dark',
       nonInheritedValues: {
         ...darkColors,
         ...shadows.dark,
@@ -43,13 +42,12 @@ const themesBuilder = createThemeBuilder()
     },
   })
   .addChildThemes({
-    yellow: colorThemeDefinition("yellow"),
-    green: colorThemeDefinition("green"),
-    blue: colorThemeDefinition("blue"),
-    purple: colorThemeDefinition("purple"),
-    red: colorThemeDefinition("red"),
-    brand: colorThemeDefinition("brand"),
-  });
+    yellow: colorThemeDefinition('yellow'),
+    green: colorThemeDefinition('green'),
+    blue: colorThemeDefinition('blue'),
+    purple: colorThemeDefinition('purple'),
+    red: colorThemeDefinition('red'),
+    brand: colorThemeDefinition('brand'),
+  })
 
-
-export const themes = themesBuilder.build();
+export const themes = themesBuilder.build()

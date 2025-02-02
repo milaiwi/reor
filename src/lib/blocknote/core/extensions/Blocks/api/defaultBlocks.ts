@@ -1,8 +1,8 @@
-import {HeadingBlockContent} from '../nodes/BlockContent/HeadingBlockContent/HeadingBlockContent'
-import {BulletListItemBlockContent} from '../nodes/BlockContent/ListItemBlockContent/BulletListItemBlockContent/BulletListItemBlockContent'
-import {NumberedListItemBlockContent} from '../nodes/BlockContent/ListItemBlockContent/NumberedListItemBlockContent/NumberedListItemBlockContent'
-import {ParagraphBlockContent} from '../nodes/BlockContent/ParagraphBlockContent/ParagraphBlockContent'
-import {PropSchema, TypesMatch} from './blockTypes'
+import { HeadingBlockContent } from '../nodes/BlockContent/HeadingBlockContent/HeadingBlockContent'
+import { BulletListItemBlockContent } from '../nodes/BlockContent/ListItemBlockContent/BulletListItemBlockContent/BulletListItemBlockContent'
+import { NumberedListItemBlockContent } from '../nodes/BlockContent/ListItemBlockContent/NumberedListItemBlockContent/NumberedListItemBlockContent'
+import { ParagraphBlockContent } from '../nodes/BlockContent/ParagraphBlockContent/ParagraphBlockContent'
+import { PropSchema, TypesMatch } from './blockTypes'
 
 export const defaultProps = {
   textAlignment: {
@@ -28,14 +28,14 @@ export const defaultBlockSchema = {
   paragraph: {
     propSchema: {
       ...defaultProps,
-      type: {default: 'p'},
+      type: { default: 'p' },
     },
     node: ParagraphBlockContent,
   },
   heading: {
     propSchema: {
       ...defaultProps,
-      level: {default: '2', values: ['1', '2', '3'] as const},
+      level: { default: '2', values: ['1', '2', '3'] as const },
     },
     node: HeadingBlockContent,
   },

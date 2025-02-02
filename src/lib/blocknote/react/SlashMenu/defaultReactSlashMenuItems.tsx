@@ -1,27 +1,17 @@
-import { 
+import { MdPreview } from 'react-icons/md'
+import { RiChatQuoteLine, RiCodeLine, RiFolder2Line, RiH1, RiPlayCircleLine, RiText } from 'react-icons/ri'
+import {
   BaseSlashMenuItem,
   BlockSchema,
   defaultBlockSchema,
-  DefaultBlockSchema, 
-  getDefaultSlashMenuItems 
+  DefaultBlockSchema,
+  getDefaultSlashMenuItems,
 } from '../../core'
-import {MdPreview} from 'react-icons/md'
-import {
-  RiChatQuoteLine,
-  RiCodeLine,
-  RiFolder2Line,
-  RiH1,
-  RiPlayCircleLine,
-  RiText,
-} from 'react-icons/ri'
-import {ReactSlashMenuItem} from './ReactSlashMenuItem'
+import { ReactSlashMenuItem } from './ReactSlashMenuItem'
 
 const extraFields: Record<
   string,
-  Omit<
-    ReactSlashMenuItem<DefaultBlockSchema>,
-    keyof BaseSlashMenuItem<DefaultBlockSchema>
-  >
+  Omit<ReactSlashMenuItem<DefaultBlockSchema>, keyof BaseSlashMenuItem<DefaultBlockSchema>>
 > = {
   Heading: {
     group: 'Text Content',
@@ -99,8 +89,7 @@ export function getDefaultReactSlashMenuItems<BSchema extends BlockSchema>(
   // infer to DefaultBlockSchema if it is not defined.
   schema: BSchema = defaultBlockSchema as unknown as BSchema,
 ): ReactSlashMenuItem<BSchema>[] {
-  const slashMenuItems: BaseSlashMenuItem<BSchema>[] =
-    getDefaultSlashMenuItems(schema)
+  const slashMenuItems: BaseSlashMenuItem<BSchema>[] = getDefaultSlashMenuItems(schema)
 
   return slashMenuItems.map((item) => ({
     ...item,

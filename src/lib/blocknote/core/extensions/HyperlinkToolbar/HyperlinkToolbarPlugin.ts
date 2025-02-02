@@ -1,12 +1,12 @@
-import {getMarkRange, posToDOMRect, Range} from '@tiptap/core'
-import {EditorView} from '@tiptap/pm/view'
-import {Mark, Node as PMNode} from 'prosemirror-model'
-import {Plugin, PluginKey} from 'prosemirror-state'
-import type {BlockNoteEditor} from '../../BlockNoteEditor'
-import {BaseUiElementState} from '../../shared/BaseUiElementTypes'
-import {EventEmitter} from '../../shared/EventEmitter'
-import {BlockSchema} from '../Blocks/api/blockTypes'
-import {getGroupInfoFromPos} from '../Blocks/helpers/getGroupInfoFromPos'
+import { getMarkRange, posToDOMRect, Range } from '@tiptap/core'
+import { EditorView } from '@tiptap/pm/view'
+import { Mark, Node as PMNode } from 'prosemirror-model'
+import { Plugin, PluginKey } from 'prosemirror-state'
+import type { BlockNoteEditor } from '../../BlockNoteEditor'
+import { BaseUiElementState } from '../../shared/BaseUiElementTypes'
+import { EventEmitter } from '../../shared/EventEmitter'
+import { BlockSchema } from '../Blocks/api/blockTypes'
+import { getGroupInfoFromPos } from '../Blocks/helpers/getGroupInfoFromPos'
 
 export type HyperlinkToolbarState = BaseUiElementState & {
   // The hovered hyperlink's URL, and the text it's displayed with in the
@@ -19,27 +19,31 @@ export type HyperlinkToolbarState = BaseUiElementState & {
 
 class HyperlinkToolbarView<BSchema extends BlockSchema> {
   private hyperlinkToolbarState?: HyperlinkToolbarState
+
   public updateHyperlinkToolbar: () => void
 
   menuUpdateTimer: ReturnType<typeof setTimeout> | undefined
+
   startMenuUpdateTimer: () => void
+
   stopMenuUpdateTimer: () => void
 
   mouseHoveredHyperlinkMark: Mark | PMNode | undefined
+
   mouseHoveredHyperlinkMarkRange: Range | undefined
 
   keyboardHoveredHyperlinkMark: Mark | PMNode | undefined
+
   keyboardHoveredHyperlinkMarkRange: Range | undefined
 
   hyperlinkMark: Mark | PMNode | undefined
+
   hyperlinkMarkRange: Range | undefined
 
   constructor(
     private readonly editor: BlockNoteEditor<BSchema>,
     private readonly pmView: EditorView,
-    updateHyperlinkToolbar: (
-      hyperlinkToolbarState: HyperlinkToolbarState,
-    ) => void,
+    updateHyperlinkToolbar: (hyperlinkToolbarState: HyperlinkToolbarState) => void,
   ) {
     this.updateHyperlinkToolbar = () => {
       if (!this.hyperlinkToolbarState) {
@@ -163,10 +167,7 @@ class HyperlinkToolbarView<BSchema extends BlockSchema> {
       event &&
       event.target &&
       // The clicked element is not the editor.
-      !(
-        editorWrapper === (event.target as Node) ||
-        editorWrapper?.contains(event.target as Node)
-      )
+      !(editorWrapper === (event.target as Node) || editorWrapper?.contains(event.target as Node))
     ) {
       if (this.hyperlinkToolbarState?.show) {
         this.hyperlinkToolbarState.show = false
@@ -187,31 +188,23 @@ class HyperlinkToolbarView<BSchema extends BlockSchema> {
       }
     }
   }
+
   // the latest param here is to change the latest HM param without closing the link modal.
   // it should be TRUE if you DON't want to close the modal when called.
   editHyperlink(url: string, text: string) {
-    let tr = this.pmView.state.tr
-    if (
-      this.hyperlinkToolbarState &&
-      this.hyperlinkToolbarState.type === 'mention'
-    ) {
-      const pos = this.hyperlinkMarkRange
-        ? this.hyperlinkMarkRange.from
-        : this.pmView.state.selection.from
+    let { tr } = this.pmView.state
+    if (this.hyperlinkToolbarState && this.hyperlinkToolbarState.type === 'mention') {
+      const pos = this.hyperlinkMarkRange ? this.hyperlinkMarkRange.from : this.pmView.state.selection.from
       tr = tr.setNodeMarkup(pos, null, {
         link: url,
       })
       // return
     } else {
-      tr = this.pmView.state.tr.insertText(
-        text,
-        this.hyperlinkMarkRange!.from,
-        this.hyperlinkMarkRange!.to,
-      )
+      tr = this.pmView.state.tr.insertText(text, this.hyperlinkMarkRange!.from, this.hyperlinkMarkRange!.to)
       tr.addMark(
         this.hyperlinkMarkRange!.from,
         this.hyperlinkMarkRange!.from + text.length,
-        this.pmView.state.schema.mark('link', {href: url}),
+        this.pmView.state.schema.mark('link', { href: url }),
       )
     }
 
@@ -226,14 +219,9 @@ class HyperlinkToolbarView<BSchema extends BlockSchema> {
   }
 
   updateHyperlink(url: string, text: string) {
-    let tr = this.pmView.state.tr
-    if (
-      this.hyperlinkToolbarState &&
-      this.hyperlinkToolbarState.type === 'mention'
-    ) {
-      const pos = this.hyperlinkMarkRange
-        ? this.hyperlinkMarkRange.from
-        : this.pmView.state.selection.from
+    let { tr } = this.pmView.state
+    if (this.hyperlinkToolbarState && this.hyperlinkToolbarState.type === 'mention') {
+      const pos = this.hyperlinkMarkRange ? this.hyperlinkMarkRange.from : this.pmView.state.selection.from
       tr = tr.setNodeMarkup(pos, null, {
         link: url,
       })
@@ -241,16 +229,8 @@ class HyperlinkToolbarView<BSchema extends BlockSchema> {
     } else {
       const newLength = this.hyperlinkMarkRange!.from + text.length
       tr = this.pmView.state.tr
-        .insertText(
-          text,
-          this.hyperlinkMarkRange!.from,
-          this.hyperlinkMarkRange!.to,
-        )
-        .addMark(
-          this.hyperlinkMarkRange!.from,
-          newLength,
-          this.pmView.state.schema.mark('link', {href: url}),
-        )
+        .insertText(text, this.hyperlinkMarkRange!.from, this.hyperlinkMarkRange!.to)
+        .addMark(this.hyperlinkMarkRange!.from, newLength, this.pmView.state.schema.mark('link', { href: url }))
 
       this.hyperlinkMarkRange!.to = newLength
     }
@@ -277,29 +257,17 @@ class HyperlinkToolbarView<BSchema extends BlockSchema> {
     if (this.hyperlinkMark instanceof Mark) {
       this.pmView.dispatch(
         this.pmView.state.tr
-          .removeMark(
-            this.hyperlinkMarkRange!.from,
-            this.hyperlinkMarkRange!.to,
-            this.hyperlinkMark!.type,
-          )
+          .removeMark(this.hyperlinkMarkRange!.from, this.hyperlinkMarkRange!.to, this.hyperlinkMark!.type)
           .setMeta('preventAutolink', true),
       )
-    } else if (
-      this.hyperlinkToolbarState &&
-      this.hyperlinkToolbarState.type === 'mention'
-    ) {
-      const state = this.pmView.state
-      let tr = state.tr
-      const pos = this.hyperlinkMarkRange
-        ? this.hyperlinkMarkRange.from
-        : this.pmView.state.selection.from
+    } else if (this.hyperlinkToolbarState && this.hyperlinkToolbarState.type === 'mention') {
+      const { state } = this.pmView
+      let { tr } = state
+      const pos = this.hyperlinkMarkRange ? this.hyperlinkMarkRange.from : this.pmView.state.selection.from
       const $pos = state.doc.resolve(pos)
       let offset = 0
       $pos.parent.descendants((node, pos) => {
-        if (
-          node.type.name === 'inline-embed' &&
-          node.attrs.link === this.hyperlinkToolbarState!.url
-        ) {
+        if (node.type.name === 'inline-embed' && node.attrs.link === this.hyperlinkToolbarState!.url) {
           offset = pos
         }
       })
@@ -344,16 +312,10 @@ class HyperlinkToolbarView<BSchema extends BlockSchema> {
 
     if (marksAtPos.length > 0) {
       for (const mark of marksAtPos) {
-        if (
-          mark.type.name === this.pmView.state.schema.mark('link').type.name
-        ) {
+        if (mark.type.name === this.pmView.state.schema.mark('link').type.name) {
           this.keyboardHoveredHyperlinkMark = mark
           this.keyboardHoveredHyperlinkMarkRange =
-            getMarkRange(
-              this.pmView.state.selection.$from,
-              mark.type,
-              mark.attrs,
-            ) || undefined
+            getMarkRange(this.pmView.state.selection.$from, mark.type, mark.attrs) || undefined
 
           break
         }
@@ -361,10 +323,7 @@ class HyperlinkToolbarView<BSchema extends BlockSchema> {
     } else {
       const textNode = this.pmView.state.selection.$from.nodeAfter
       if (textNode && textNode.type.name === 'inline-embed') {
-        if (
-          this.pmView.state.selection.to - this.pmView.state.selection.from ===
-          1
-        ) {
+        if (this.pmView.state.selection.to - this.pmView.state.selection.from === 1) {
           this.keyboardHoveredHyperlinkMark = textNode
           this.keyboardHoveredHyperlinkMarkRange = {
             from: this.pmView.state.selection.from,
@@ -386,39 +345,21 @@ class HyperlinkToolbarView<BSchema extends BlockSchema> {
     }
 
     if (this.hyperlinkMark && this.editor.isEditable) {
-      const {container} = getGroupInfoFromPos(
-        this.pmView.state.selection.from,
-        this.pmView.state,
-      )
+      const { container } = getGroupInfoFromPos(this.pmView.state.selection.from, this.pmView.state)
       if (this.hyperlinkMark instanceof Mark) {
         this.hyperlinkToolbarState = {
           show: this.pmView.state.selection.empty,
-          referencePos: posToDOMRect(
-            this.pmView,
-            this.hyperlinkMarkRange!.from,
-            this.hyperlinkMarkRange!.to,
-          ),
+          referencePos: posToDOMRect(this.pmView, this.hyperlinkMarkRange!.from, this.hyperlinkMarkRange!.to),
           url: this.hyperlinkMark!.attrs.href,
-          text: this.pmView.state.doc.textBetween(
-            this.hyperlinkMarkRange!.from,
-            this.hyperlinkMarkRange!.to,
-          ),
+          text: this.pmView.state.doc.textBetween(this.hyperlinkMarkRange!.from, this.hyperlinkMarkRange!.to),
           type: 'link',
           id: container ? container.attrs.id : '',
         }
       } else if (this.hyperlinkMark instanceof PMNode) {
-        const parent = this.pmView.state.selection.$anchor.parent
+        const { parent } = this.pmView.state.selection.$anchor
         this.hyperlinkToolbarState = {
-          show:
-            parent &&
-            this.pmView.state.doc
-              .resolve(this.hyperlinkMarkRange!.from)
-              .parent.eq(parent),
-          referencePos: posToDOMRect(
-            this.pmView,
-            this.hyperlinkMarkRange!.from,
-            this.hyperlinkMarkRange!.to,
-          ),
+          show: parent && this.pmView.state.doc.resolve(this.hyperlinkMarkRange!.from).parent.eq(parent),
+          referencePos: posToDOMRect(this.pmView, this.hyperlinkMarkRange!.from, this.hyperlinkMarkRange!.to),
           url: this.hyperlinkMark!.attrs.link,
           text: ' ',
           type: 'mention',
@@ -432,16 +373,10 @@ class HyperlinkToolbarView<BSchema extends BlockSchema> {
     }
 
     // Hides menu.
-    if (
-      this.hyperlinkToolbarState?.show &&
-      prevHyperlinkMark &&
-      (!this.hyperlinkMark || !this.editor.isEditable)
-    ) {
+    if (this.hyperlinkToolbarState?.show && prevHyperlinkMark && (!this.hyperlinkMark || !this.editor.isEditable)) {
       this.hyperlinkToolbarState.show = false
 
       this.updateHyperlinkToolbar()
-
-      return
     }
   }
 
@@ -454,10 +389,9 @@ class HyperlinkToolbarView<BSchema extends BlockSchema> {
 
 export const hyperlinkToolbarPluginKey = new PluginKey('HyperlinkToolbarPlugin')
 
-export class HyperlinkToolbarProsemirrorPlugin<
-  BSchema extends BlockSchema,
-> extends EventEmitter<any> {
+export class HyperlinkToolbarProsemirrorPlugin<BSchema extends BlockSchema> extends EventEmitter<any> {
   private view: HyperlinkToolbarView<BSchema> | undefined
+
   public readonly plugin: Plugin
 
   constructor(editor: BlockNoteEditor<BSchema>) {

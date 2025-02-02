@@ -1,14 +1,10 @@
+import { NodeViewProps, NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react'
+import { FC } from 'react'
 import styles from '../blocknote/core/extensions/Blocks/nodes/Block.module.css'
-import {
-  NodeViewProps,
-  NodeViewWrapper,
-  ReactNodeViewRenderer,
-} from '@tiptap/react'
-import {FC} from 'react'
-import {mergeCSSClasses} from '../blocknote'
-import {CodeBlock, CodeBlockOptions} from './code-block'
-import {CodeBlockView} from './code-block-view'
-import {LowlightPlugin} from './lowlight-plugin'
+import { mergeCSSClasses } from '../blocknote'
+import { CodeBlock, CodeBlockOptions } from './code-block'
+import { CodeBlockView } from './code-block-view'
+import { LowlightPlugin } from './lowlight-plugin'
 
 export interface CodeBlockLowlightOptions extends CodeBlockOptions {
   lowlight: any
@@ -27,17 +23,12 @@ export const CodeBlockLowlight = CodeBlock.extend<CodeBlockLowlightOptions>({
   addNodeView() {
     const BlockContent: FC<NodeViewProps> = (props: NodeViewProps) => {
       const Content = CodeBlockView
-      const blockContentDOMAttributes =
-        this.options.domAttributes?.blockContent || {}
-      const language = props.node.attrs.language
-      const node = props.node
+      const blockContentDOMAttributes = this.options.domAttributes?.blockContent || {}
+      const { language } = props.node.attrs
+      const { node } = props
       return (
         <NodeViewWrapper
-          {...Object.fromEntries(
-            Object.entries(blockContentDOMAttributes).filter(
-              ([key]) => key !== 'class',
-            ),
-          )}
+          {...Object.fromEntries(Object.entries(blockContentDOMAttributes).filter(([key]) => key !== 'class'))}
           className={mergeCSSClasses(
             styles.blockContent,
             blockContentDOMAttributes.class,
@@ -47,9 +38,7 @@ export const CodeBlockLowlight = CodeBlock.extend<CodeBlockLowlightOptions>({
         >
           <Content
             props={props}
-            languages={[...this.options.lowlight.listLanguages(), 'html'].sort(
-              (a, b) => a.localeCompare(b),
-            )}
+            languages={[...this.options.lowlight.listLanguages(), 'html'].sort((a, b) => a.localeCompare(b))}
           />
         </NodeViewWrapper>
       )

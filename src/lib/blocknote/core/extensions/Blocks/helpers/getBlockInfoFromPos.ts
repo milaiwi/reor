@@ -20,11 +20,10 @@ export type BlockInfo = BlockInfoWithoutPositions & {
  * @param blockContainer The blockContainer node to retrieve info for.
  */
 export function getBlockInfo(blockContainer: Node): BlockInfoWithoutPositions {
-  const id = blockContainer.attrs['id']
+  const { id } = blockContainer.attrs
   const contentNode = blockContainer.firstChild!
   const contentType = contentNode.type
-  const numChildBlocks =
-    blockContainer.childCount === 2 ? blockContainer.lastChild!.childCount : 0
+  const numChildBlocks = blockContainer.childCount === 2 ? blockContainer.lastChild!.childCount : 0
 
   return {
     id,
@@ -36,14 +35,14 @@ export function getBlockInfo(blockContainer: Node): BlockInfoWithoutPositions {
 }
 
 /**
- * 
+ *
  * Retrieves information regarding the nearest blockContainer node in a
  * ProseMirror doc, relative to a position.
  * @param doc The ProseMirror doc.
  * @param pos An integer position.
  * @returns A BlockInfo object for the nearest blockContainer node.
  */
-export function getBlockInfoFromPos(doc: Node, pos: number): BlockInfo { 
+export function getBlockInfoFromPos(doc: Node, pos: number): BlockInfo {
   // If the position is outside the outer block group, we need to move it to the
   // nearest block. This happens when the collaboration plugin is active, where
   // the selection is placed at the very end of the doc.
@@ -52,19 +51,13 @@ export function getBlockInfoFromPos(doc: Node, pos: number): BlockInfo {
   if (pos <= outerBlockGroupStartPos) {
     pos = outerBlockGroupStartPos + 1
 
-    while (
-      doc.resolve(pos).parent.type.name !== 'blockContainer' &&
-      pos < outerBlockGroupEndPos
-    ) {
+    while (doc.resolve(pos).parent.type.name !== 'blockContainer' && pos < outerBlockGroupEndPos) {
       pos++
     }
   } else if (pos >= outerBlockGroupEndPos) {
     pos = outerBlockGroupEndPos - 1
 
-    while (
-      doc.resolve(pos).parent.type.name !== 'blockContainer' &&
-      pos > outerBlockGroupStartPos
-    ) {
+    while (doc.resolve(pos).parent.type.name !== 'blockContainer' && pos > outerBlockGroupStartPos) {
       pos--
     }
   }
@@ -97,7 +90,7 @@ export function getBlockInfoFromPos(doc: Node, pos: number): BlockInfo {
     node = $pos.node(depth)
   }
 
-  const {id, contentNode, contentType, numChildBlocks} = getBlockInfo(node)
+  const { id, contentNode, contentType, numChildBlocks } = getBlockInfo(node)
 
   const startPos = $pos.start(depth)
   const endPos = $pos.end(depth)

@@ -1,23 +1,15 @@
-import { 
-  BlockSchema,
-  DefaultBlockSchema,
-  BlockNoteEditor
- } from '@/lib/blocknote/core'
 import Tippy from '@tippyjs/react'
-import {FC, useEffect, useMemo, useRef, useState} from 'react'
-import {sticky} from 'tippy.js'
+import { FC, useEffect, useMemo, useRef, useState } from 'react'
+import { sticky } from 'tippy.js'
+import { BlockSchema, DefaultBlockSchema, BlockNoteEditor } from '@/lib/blocknote/core'
 
-import {DefaultFormattingToolbar} from './DefaultFormattingToolbar'
+import { DefaultFormattingToolbar } from './DefaultFormattingToolbar'
 
-export type FormattingToolbarProps<
-  BSchema extends BlockSchema = DefaultBlockSchema,
-> = {
+export type FormattingToolbarProps<BSchema extends BlockSchema = DefaultBlockSchema> = {
   editor: BlockNoteEditor<BSchema>
 }
 
-export const FormattingToolbarPositioner = <
-  BSchema extends BlockSchema = DefaultBlockSchema,
->(props: {
+export const FormattingToolbarPositioner = <BSchema extends BlockSchema = DefaultBlockSchema>(props: {
   editor: BlockNoteEditor<BSchema>
   formattingToolbar?: FC<FormattingToolbarProps<BSchema>>
 }) => {
@@ -44,8 +36,7 @@ export const FormattingToolbarPositioner = <
   )
 
   const formattingToolbarElement = useMemo(() => {
-    const FormattingToolbar =
-      props.formattingToolbar || DefaultFormattingToolbar
+    const FormattingToolbar = props.formattingToolbar || DefaultFormattingToolbar
 
     return <FormattingToolbar editor={props.editor} />
   }, [props.editor, props.formattingToolbar])
@@ -55,11 +46,11 @@ export const FormattingToolbarPositioner = <
       appendTo={props.editor.domElement.parentElement ?? document.body}
       content={formattingToolbarElement}
       getReferenceClientRect={getReferenceClientRect}
-      interactive={true}
+      interactive
       visible={show}
-      animation={'fade'}
-      placement={'top-start'}
-      sticky={true}
+      animation="fade"
+      placement="top-start"
+      sticky
       plugins={tippyPlugins}
     />
   )

@@ -1,6 +1,6 @@
-import {Menu} from '@mantine/core'
-import {TiTick} from 'react-icons/ti'
-import {ColorIcon} from './ColorIcon'
+import { Menu } from '@mantine/core'
+import { TiTick } from 'react-icons/ti'
+import { ColorIcon } from './ColorIcon'
 
 export const ColorPicker = (props: {
   onClick?: () => void
@@ -13,32 +13,21 @@ export const ColorPicker = (props: {
   return (
     <>
       <Menu.Label>Text</Menu.Label>
-      {[
-        'default',
-        'gray',
-        'brown',
-        'red',
-        'orange',
-        'yellow',
-        'green',
-        'blue',
-        'purple',
-        'pink',
-      ].map((color) => (
+      {['default', 'gray', 'brown', 'red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink'].map((color) => (
         <Menu.Item
           onClick={() => {
             props.onClick && props.onClick()
             props.setTextColor(color)
           }}
-          component={'div'}
-          data-test={'text-color-' + color}
+          component="div"
+          data-test={`text-color-${color}`}
           icon={<ColorIcon textColor={color} size={props.iconSize} />}
-          key={'text-color-' + color}
+          key={`text-color-${color}`}
           rightSection={
             props.textColor === color ? (
-              <TiTick size={16} style={{paddingLeft: '8px'}} />
+              <TiTick size={16} style={{ paddingLeft: '8px' }} />
             ) : (
-              <div style={{width: '24px', padding: '0'}} />
+              <div style={{ width: '24px', padding: '0' }} />
             )
           }
         >
@@ -46,32 +35,21 @@ export const ColorPicker = (props: {
         </Menu.Item>
       ))}
       <Menu.Label>Background</Menu.Label>
-      {[
-        'default',
-        'gray',
-        'brown',
-        'red',
-        'orange',
-        'yellow',
-        'green',
-        'blue',
-        'purple',
-        'pink',
-      ].map((color) => (
+      {['default', 'gray', 'brown', 'red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink'].map((color) => (
         <Menu.Item
           onClick={() => {
             props.onClick && props.onClick()
             props.setBackgroundColor(color)
           }}
-          component={'div'}
-          data-test={'background-color-' + color}
+          component="div"
+          data-test={`background-color-${color}`}
           icon={<ColorIcon backgroundColor={color} size={props.iconSize} />}
-          key={'background-color-' + color}
+          key={`background-color-${color}`}
           rightSection={
             props.backgroundColor === color ? (
-              <TiTick size={16} style={{paddingLeft: '8px'}} />
+              <TiTick size={16} style={{ paddingLeft: '8px' }} />
             ) : (
-              <div style={{width: '24px', padding: '0'}} />
+              <div style={{ width: '24px', padding: '0' }} />
             )
           }
         >

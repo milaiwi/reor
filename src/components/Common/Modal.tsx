@@ -7,16 +7,9 @@ interface ModalProps {
   onClose: () => void
   children: React.ReactNode
   hideCloseButton?: boolean
-  tailwindStylesOnBackground?: string
 }
 
-const ReorModal: React.FC<ModalProps> = ({
-  isOpen,
-  onClose,
-  children,
-  hideCloseButton,
-  tailwindStylesOnBackground,
-}) => {
+const ReorModal: React.FC<ModalProps> = ({ isOpen, onClose, children, hideCloseButton }) => {
   const modalRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -58,11 +51,8 @@ const ReorModal: React.FC<ModalProps> = ({
         padding="$4"
       >
         {!hideCloseButton && (
-          <XStack 
-            position="absolute" 
-            top={10}
-            right={15}>
-            <button onClick={onClose} style={{ background: 'transparent', border: 'none' }}>
+          <XStack position="absolute" top={10} right={15}>
+            <button onClick={onClose} style={{ background: 'transparent', border: 'none' }} type="button">
               <span style={{ fontSize: 24, cursor: 'pointer' }}>&times;</span>
             </button>
           </XStack>

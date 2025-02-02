@@ -1,29 +1,15 @@
-import {mergeAttributes, Node} from '@tiptap/core'
-import {Fragment, Node as PMNode, Slice} from 'prosemirror-model'
-import {
-  EditorState,
-  NodeSelection,
-  Plugin,
-  PluginKey,
-  TextSelection,
-} from 'prosemirror-state'
-import {Decoration, DecorationSet} from 'prosemirror-view'
-import {
-  blockToNode,
-  inlineContentToNodes,
-} from '../../../api/nodeConversions/nodeConversions'
+import { mergeAttributes, Node } from '@tiptap/core'
+import { Fragment, Node as PMNode, Slice } from 'prosemirror-model'
+import { EditorState, NodeSelection, Plugin, PluginKey, TextSelection } from 'prosemirror-state'
+import { Decoration, DecorationSet } from 'prosemirror-view'
+import { ResolvedPos } from '@tiptap/pm/model'
+import { EditorView } from '@tiptap/pm/view'
+import { blockToNode, inlineContentToNodes } from '../../../api/nodeConversions/nodeConversions'
 
-import { BlockChildrenType } from '../api/blockTypes'
-import {ResolvedPos} from '@tiptap/pm/model'
-import {EditorView} from '@tiptap/pm/view'
-import {mergeCSSClasses} from '../../../shared/utils'
-import {
-  BlockNoteDOMAttributes,
-  BlockSchema,
-  PartialBlock,
-} from '../api/blockTypes'
-import {getBlockInfoFromPos} from '../helpers/getBlockInfoFromPos'
-import {getGroupInfoFromPos} from '../helpers/getGroupInfoFromPos'
+import { BlockChildrenType, BlockNoteDOMAttributes, BlockSchema, PartialBlock } from '../api/blockTypes'
+import { mergeCSSClasses } from '../../../shared/utils'
+import { getBlockInfoFromPos } from '../helpers/getBlockInfoFromPos'
+import { getGroupInfoFromPos } from '../helpers/getGroupInfoFromPos'
 import styles from './Block.module.css'
 import BlockAttributes from './BlockAttributes'
 
@@ -55,25 +41,20 @@ const ClickSelectionPlugin = new Plugin({
     handleDOMEvents: {
       mousedown(view, event) {
         if (event.shiftKey && event.button === 0) {
-          const {state} = view
-          const editorBoundingBox = (
-            view.dom.firstChild! as HTMLElement
-          ).getBoundingClientRect()
+          const { state } = view
+          const editorBoundingBox = (view.dom.firstChild! as HTMLElement).getBoundingClientRect()
           const coords = {
             left: editorBoundingBox.left + editorBoundingBox.width / 2, // take middle of editor
             top: event.clientY,
           }
-          let pos = view.posAtCoords(coords)
+          const pos = view.posAtCoords(coords)
           if (!pos) {
             return undefined
           }
-          const {selection} = state
+          const { selection } = state
           const selectedPos = state.doc.resolve(selection.from)
           const nodePos = state.doc.resolve(pos.pos)
-          if (
-            selectedPos.start() === selection.from &&
-            pos.pos === nodePos.end()
-          ) {
+          if (selectedPos.start() === selection.from && pos.pos === nodePos.end()) {
             const decoration = Decoration.widget(nodePos.pos, () => {
               const span = document.createElement('span')
               span.style.backgroundColor = 'blue'
@@ -100,19 +81,15 @@ const PastePlugin = new Plugin({
         return false
       }
 
-      const {state} = view
-      let {tr} = state
-      const {selection} = state
-      const {$from, $to} = selection
+      const { state } = view
+      let { tr } = state
+      const { selection } = state
+      const { $from, $to } = selection
 
       const targetNode = state.doc.resolve($from.pos).parent
 
       if (targetNode.type.name === 'image') {
-        tr = tr.insertText(
-          event.clipboardData.getData('text/plain'),
-          $from.pos,
-          $to.pos,
-        )
+        tr = tr.insertText(event.clipboardData.getData('text/plain'), $from.pos, $to.pos)
         view.dispatch(tr)
         return true
       }
@@ -131,6 +108,7 @@ const headingLinePlugin = new Plugin({
 
 class HeadingLinePlugin {
   private line: HTMLElement
+
   constructor(view: EditorView) {
     this.line = document.createElement('div')
     this.line.style.transition = 'all 0.15s ease-in-out'
@@ -143,28 +121,21 @@ class HeadingLinePlugin {
   }
 
   update(view: EditorView, lastState: EditorState | null) {
-    let state = view.state
+    const { state } = view
     // Don't do anything if the document/selection didn't change
-    if (
-      lastState &&
-      lastState.doc.eq(state.doc) &&
-      lastState.selection.eq(state.selection)
-    )
-      return
+    if (lastState && lastState.doc.eq(state.doc) && lastState.selection.eq(state.selection)) return
 
-    let res = getNearestHeadingFromPos(state, state.selection.from)
+    const res = getNearestHeadingFromPos(state, state.selection.from)
 
     if (res && res.heading?.type.name === 'heading') {
-      let {node} = view.domAtPos(res.groupStartPos)
+      const { node } = view.domAtPos(res.groupStartPos)
 
-      let rect = (node as HTMLElement).getBoundingClientRect()
-      let editorRect = view.dom.getBoundingClientRect()
-      let groupPadding = 10
-      let editorPaddingTop = 40
+      const rect = (node as HTMLElement).getBoundingClientRect()
+      const editorRect = view.dom.getBoundingClientRect()
+      const groupPadding = 10
+      const editorPaddingTop = 40
       this.line.style.position = 'absolute'
-      this.line.style.top = `${
-        rect.top + editorPaddingTop + groupPadding - editorRect.top
-      }px`
+      this.line.style.top = `${rect.top + editorPaddingTop + groupPadding - editorRect.top}px`
       this.line.style.left = `${rect.left - editorRect.left + groupPadding}px`
       this.line.style.width = `2.5px`
       this.line.style.height = `${rect.height - groupPadding * 2}px`
@@ -172,7 +143,6 @@ class HeadingLinePlugin {
       this.line.style.opacity = '0.4'
     } else {
       this.line.style.opacity = '0'
-      return
     }
   }
 
@@ -194,10 +164,7 @@ function getNearestHeadingFromPos(state: EditorState, pos: number) {
         break
       }
 
-      if (
-        group.type.name === 'blockContainer' &&
-        heading?.type.name === 'heading'
-      ) {
+      if (group.type.name === 'blockContainer' && heading?.type.name === 'heading') {
         break
       }
 
@@ -213,19 +180,17 @@ function getNearestHeadingFromPos(state: EditorState, pos: number) {
       $pos,
     }
   }
-
-  return
 }
 
 export function getParentBlockFromPos(state: EditorState, pos: number) {
   const $pos = state.doc.resolve(pos)
-  const depth = $pos.depth
+  const { depth } = $pos
 
   // if (depth > 3 && container.type.name == 'blockContainer') {
   if (depth > 3) {
-    let parent = $pos.node(depth - 3)
-    let parentGroup = $pos.node(depth - 2)
-    let parentPos = $pos.start(depth - 3)
+    const parent = $pos.node(depth - 3)
+    const parentGroup = $pos.node(depth - 2)
+    const parentPos = $pos.start(depth - 3)
     return {
       parentGroup,
       parentBlock: parent.firstChild,
@@ -234,8 +199,6 @@ export function getParentBlockFromPos(state: EditorState, pos: number) {
       $pos,
     }
   }
-
-  return
 }
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -245,10 +208,7 @@ declare module '@tiptap/core' {
       BNMergeBlocks: (posBetweenBlocks: number) => ReturnType
       BNSplitBlock: (posInBlock: number, keepType: boolean) => ReturnType
       BNSplitHeadingBlock: (posInBlock: number) => ReturnType
-      BNUpdateBlock: <BSchema extends BlockSchema>(
-        posInBlock: number,
-        block: PartialBlock<BSchema>,
-      ) => ReturnType
+      BNUpdateBlock: <BSchema extends BlockSchema>(posInBlock: number, block: PartialBlock<BSchema>) => ReturnType
       BNCreateOrUpdateBlock: <BSchema extends BlockSchema>(
         posInBlock: number,
         block: PartialBlock<BSchema>,
@@ -312,7 +272,7 @@ export const BlockContainer = Node.create<{
     ]
   },
 
-  renderHTML({HTMLAttributes}) {
+  renderHTML({ HTMLAttributes }) {
     const domAttributes = this.options.domAttributes?.blockContainer || {}
 
     return [
@@ -341,8 +301,8 @@ export const BlockContainer = Node.create<{
       // Creates a new text block at a given position.
       BNCreateBlock:
         (pos) =>
-        ({state, dispatch}) => {
-          const newBlock = state.schema.nodes['blockContainer'].createAndFill()!
+        ({ state, dispatch }) => {
+          const newBlock = state.schema.nodes.blockContainer.createAndFill()!
 
           if (dispatch) {
             state.tr.insert(pos, newBlock)
@@ -353,13 +313,13 @@ export const BlockContainer = Node.create<{
       // Deletes a block at a given position.
       BNDeleteBlock:
         (posInBlock) =>
-        ({state, dispatch}) => {
+        ({ state, dispatch }) => {
           const blockInfo = getBlockInfoFromPos(state.doc, posInBlock)
           if (blockInfo === undefined) {
             return false
           }
 
-          const {startPos, endPos} = blockInfo
+          const { startPos, endPos } = blockInfo
 
           if (dispatch) {
             state.tr.deleteRange(startPos, endPos)
@@ -370,13 +330,13 @@ export const BlockContainer = Node.create<{
       // Updates a block at a given position.
       BNUpdateBlock:
         (posInBlock, block) =>
-        ({state, dispatch}) => {
+        ({ state, dispatch }) => {
           const blockInfo = getBlockInfoFromPos(state.doc, posInBlock)
           if (blockInfo === undefined) {
             return false
           }
 
-          const {startPos, endPos, node, contentNode} = blockInfo
+          const { startPos, endPos, node, contentNode } = blockInfo
 
           if (dispatch) {
             // Adds blockGroup node with child blocks if necessary.
@@ -398,10 +358,7 @@ export const BlockContainer = Node.create<{
                 )
               } else {
                 // Inserts a new blockGroup containing the child nodes created earlier.
-                state.tr.insert(
-                  startPos + contentNode.nodeSize,
-                  state.schema.nodes['blockGroup'].create({}, childNodes),
-                )
+                state.tr.insert(startPos + contentNode.nodeSize, state.schema.nodes.blockGroup.create({}, childNodes))
               }
             }
 
@@ -429,20 +386,14 @@ export const BlockContainer = Node.create<{
 
             // Changes the blockContent node type and adds the provided props as attributes. Also preserves all existing
             // attributes that are compatible with the new type.
-            state.tr.setNodeMarkup(
-              startPos,
-              block.type === undefined
-                ? undefined
-                : state.schema.nodes[block.type],
-              {
-                ...contentNode.attrs,
-                ...block.props,
-              },
-            )
+            state.tr.setNodeMarkup(startPos, block.type === undefined ? undefined : state.schema.nodes[block.type], {
+              ...contentNode.attrs,
+              ...block.props,
+            })
 
             // Adds all provided props as attributes to the parent blockContainer node too, and also preserves existing
             // attributes.
-            let providedProps = {
+            const providedProps = {
               ...node.attrs,
               ...block.props,
             }
@@ -470,31 +421,22 @@ export const BlockContainer = Node.create<{
       //     Block5
       BNMergeBlocks:
         (posBetweenBlocks) =>
-        ({state, dispatch}) => {
-          const nextNodeIsBlock =
-            state.doc.resolve(posBetweenBlocks + 1).node().type.name ===
-            'blockContainer'
-          const prevNodeIsBlock =
-            state.doc.resolve(posBetweenBlocks - 1).node().type.name ===
-            'blockContainer'
+        ({ state, dispatch }) => {
+          const nextNodeIsBlock = state.doc.resolve(posBetweenBlocks + 1).node().type.name === 'blockContainer'
+          const prevNodeIsBlock = state.doc.resolve(posBetweenBlocks - 1).node().type.name === 'blockContainer'
 
           if (!nextNodeIsBlock || !prevNodeIsBlock) {
             return false
           }
 
-          const nextBlockInfo = getBlockInfoFromPos(
-            state.doc,
-            posBetweenBlocks + 1,
-          )
+          const nextBlockInfo = getBlockInfoFromPos(state.doc, posBetweenBlocks + 1)
 
-          const {node, contentNode, startPos, endPos, depth} = nextBlockInfo!
+          const { node, contentNode, startPos, endPos, depth } = nextBlockInfo!
 
           // Removes a level of nesting all children of the next block by 1 level, if it contains both content and block
           // group nodes.
           if (node.childCount === 2) {
-            const childBlocksStart = state.doc.resolve(
-              startPos + contentNode.nodeSize + 1,
-            )
+            const childBlocksStart = state.doc.resolve(startPos + contentNode.nodeSize + 1)
             const childBlocksEnd = state.doc.resolve(endPos - 1)
             const childBlocksRange = childBlocksStart.blockRange(childBlocksEnd)
 
@@ -522,17 +464,11 @@ export const BlockContainer = Node.create<{
             dispatch(
               state.tr
                 .deleteRange(startPos, startPos + contentNode.nodeSize)
-                .replace(
-                  prevBlockEndPos - 1,
-                  startPos,
-                  new Slice(contentNode.content, 0, 0),
-                )
+                .replace(prevBlockEndPos - 1, startPos, new Slice(contentNode.content, 0, 0))
                 .scrollIntoView(),
             )
 
-            state.tr.setSelection(
-              new TextSelection(state.doc.resolve(prevBlockEndPos - 1)),
-            )
+            state.tr.setSelection(new TextSelection(state.doc.resolve(prevBlockEndPos - 1)))
           }
 
           return true
@@ -541,18 +477,18 @@ export const BlockContainer = Node.create<{
       // nesting level.
       BNSplitBlock:
         (posInBlock, keepType) =>
-        ({state, dispatch}) => {
+        ({ state, dispatch }) => {
           const blockInfo = getBlockInfoFromPos(state.doc, posInBlock)
           if (blockInfo === undefined) {
             return false
           }
 
-          const {contentNode, contentType, startPos, endPos, depth} = blockInfo
+          const { contentNode, contentType, startPos, endPos, depth } = blockInfo
 
           const originalBlockContent = state.doc.cut(startPos + 1, posInBlock)
           const newBlockContent = state.doc.cut(posInBlock, endPos - 1)
 
-          const newBlock = state.schema.nodes['blockContainer'].createAndFill()!
+          const newBlock = state.schema.nodes.blockContainer.createAndFill()!
 
           const newBlockInsertionPos = endPos + 1
           const newBlockContentPos = newBlockInsertionPos + 2
@@ -568,11 +504,7 @@ export const BlockContainer = Node.create<{
               newBlockContentPos,
               newBlockContentPos + 1,
               newBlockContent.content.size > 0
-                ? new Slice(
-                    Fragment.from(newBlockContent),
-                    depth + 2,
-                    depth + 2,
-                  )
+                ? new Slice(Fragment.from(newBlockContent), depth + 2, depth + 2)
                 : undefined,
             )
 
@@ -588,9 +520,7 @@ export const BlockContainer = Node.create<{
             }
 
             // Sets the selection to the start of the new block's content node.
-            state.tr.setSelection(
-              new TextSelection(state.doc.resolve(newBlockContentPos)),
-            )
+            state.tr.setSelection(new TextSelection(state.doc.resolve(newBlockContentPos)))
 
             // Replaces the content of the original block's content node. Doesn't replace the whole content node so its
             // type doesn't change.
@@ -598,11 +528,7 @@ export const BlockContainer = Node.create<{
               startPos + 1,
               endPos - 1,
               originalBlockContent.content.size > 0
-                ? new Slice(
-                    Fragment.from(originalBlockContent),
-                    depth + 2,
-                    depth + 2,
-                  )
+                ? new Slice(Fragment.from(originalBlockContent), depth + 2, depth + 2)
                 : undefined,
             )
           }
@@ -613,12 +539,12 @@ export const BlockContainer = Node.create<{
       // nesting level.
       BNSplitHeadingBlock:
         (posInBlock) =>
-        ({state, dispatch}) => {
+        ({ state, dispatch }) => {
           const blockInfo = getBlockInfoFromPos(state.doc, posInBlock)
           if (blockInfo === undefined) {
             return false
           }
-          let {node, startPos, contentNode, depth} = blockInfo
+          const { node, startPos, contentNode, depth } = blockInfo
           if (node.childCount === 1) {
             setTimeout(() => {
               this.editor
@@ -630,16 +556,9 @@ export const BlockContainer = Node.create<{
                 .run()
             })
           } else {
-            const originalBlockContent = state.doc.cut(
-              startPos + 1,
-              state.selection.from,
-            )
-            let newBlockContent = state.doc.cut(
-              state.selection.from,
-              startPos + contentNode.nodeSize - 1,
-            )
-            const newBlock =
-              state.schema.nodes['blockContainer'].createAndFill()!
+            const originalBlockContent = state.doc.cut(startPos + 1, state.selection.from)
+            const newBlockContent = state.doc.cut(state.selection.from, startPos + contentNode.nodeSize - 1)
+            const newBlock = state.schema.nodes.blockContainer.createAndFill()!
             const newBlockInsertionPos = startPos + contentNode.nodeSize + 1
             const newBlockContentPos = newBlockInsertionPos + 2
 
@@ -654,28 +573,18 @@ export const BlockContainer = Node.create<{
                 newBlockContentPos,
                 newBlockContentPos + 1,
                 newBlockContent.content.size > 0
-                  ? new Slice(
-                      Fragment.from(newBlockContent),
-                      depth + 2,
-                      depth + 2,
-                    )
+                  ? new Slice(Fragment.from(newBlockContent), depth + 2, depth + 2)
                   : undefined,
               )
 
               // Sets the selection to the start of the new block's content node.
-              state.tr.setSelection(
-                new TextSelection(state.doc.resolve(newBlockContentPos)),
-              )
+              state.tr.setSelection(new TextSelection(state.doc.resolve(newBlockContentPos)))
 
               state.tr.replace(
                 startPos + 1,
                 startPos + contentNode.nodeSize - 1,
                 originalBlockContent.content.size > 0
-                  ? new Slice(
-                      Fragment.from(originalBlockContent),
-                      depth + 2,
-                      depth + 2,
-                    )
+                  ? new Slice(Fragment.from(originalBlockContent), depth + 2, depth + 2)
                   : undefined,
               )
             }
@@ -685,7 +594,7 @@ export const BlockContainer = Node.create<{
       // Updates group's child groups.
       UpdateGroupChildren:
         (group, groupPos, groupLevel, listType, indent) =>
-        ({state, dispatch}) => {
+        ({ state, dispatch }) => {
           if (dispatch) {
             group.descendants((child, pos) => {
               // If child is a group, update it's list level attribute
@@ -702,18 +611,11 @@ export const BlockContainer = Node.create<{
                   const numericLevel = $pos.depth / 2 + groupLevel - 1
                   newLevel = numericLevel < 4 ? numericLevel.toString() : '3'
                 }
-                const container = state.doc.resolve(
-                  groupPos.start() + pos - 1,
-                ).parent
-                const posAddition =
-                  container.type.name === 'blockContainer' ? -1 : 0
+                const container = state.doc.resolve(groupPos.start() + pos - 1).parent
+                const posAddition = container.type.name === 'blockContainer' ? -1 : 0
 
                 if (newLevel !== child.attrs.listLevel) {
-                  state.tr.setNodeAttribute(
-                    groupPos.start() + pos + posAddition,
-                    'listLevel',
-                    newLevel,
-                  )
+                  state.tr.setNodeAttribute(groupPos.start() + pos + posAddition, 'listLevel', newLevel)
                 }
               }
             })
@@ -724,7 +626,7 @@ export const BlockContainer = Node.create<{
       // Updates a block group at a given position.
       UpdateGroup:
         (posInBlock, listType, tab, isSank = false, turnInto = false) =>
-        ({state, dispatch}) => {
+        ({ state, dispatch }) => {
           // Find block group, block container and depth it is at
           const {
             group,
@@ -732,23 +634,16 @@ export const BlockContainer = Node.create<{
             depth,
             level: groupLevel,
             $pos,
-          } = getGroupInfoFromPos(
-            posInBlock < 0 ? state.selection.from : posInBlock,
-            state,
-          )
+          } = getGroupInfoFromPos(posInBlock < 0 ? state.selection.from : posInBlock, state)
 
           if (isSank && group.attrs.listType === listType) return true
 
           // Change group type to div
-          if (
-            group.attrs.listType !== 'div' &&
-            listType === 'div' &&
-            container
-          ) {
+          if (group.attrs.listType !== 'div' && listType === 'div' && container) {
             setTimeout(() => {
               this.editor
                 .chain()
-                .command(({state, dispatch}) => {
+                .command(({ state, dispatch }) => {
                   if (dispatch) {
                     // setTimeout(() => {
                     state.tr.setNodeMarkup($pos.before(depth), null, {
@@ -761,13 +656,7 @@ export const BlockContainer = Node.create<{
                   }
                   return false
                 })
-                .UpdateGroupChildren(
-                  container,
-                  $pos,
-                  2,
-                  group.attrs.listType,
-                  -1,
-                )
+                .UpdateGroupChildren(container, $pos, 2, group.attrs.listType, -1)
                 .run()
             })
 
@@ -783,18 +672,9 @@ export const BlockContainer = Node.create<{
             return false
 
           // If block is not the first in its' group, sink list item and then update group
-          if (
-            group.firstChild &&
-            container &&
-            group.firstChild.attrs.id !== container.attrs.id &&
-            !tab
-          ) {
+          if (group.firstChild && container && group.firstChild.attrs.id !== container.attrs.id && !tab) {
             setTimeout(() => {
-              this.editor
-                .chain()
-                .sinkListItem('blockContainer')
-                .UpdateGroup(-1, listType, tab, true)
-                .run()
+              this.editor.chain().sinkListItem('blockContainer').UpdateGroup(-1, listType, tab, true).run()
 
               return true
             })
@@ -812,11 +692,7 @@ export const BlockContainer = Node.create<{
             !isSank
           ) {
             setTimeout(() => {
-              this.editor
-                .chain()
-                .sinkListItem('blockContainer')
-                .UpdateGroup(-1, listType, tab, true)
-                .run()
+              this.editor.chain().sinkListItem('blockContainer').UpdateGroup(-1, listType, tab, true).run()
 
               return true
             })
@@ -849,19 +725,13 @@ export const BlockContainer = Node.create<{
             //   :
             state.tr.setNodeMarkup($pos.before(depth), null, {
               ...group.attrs,
-              listType: listType,
+              listType,
               listLevel: level,
             })
 
             if (container) {
               setTimeout(() => {
-                this.editor.commands.UpdateGroupChildren(
-                  container!,
-                  $pos,
-                  groupLevel,
-                  listType,
-                  1,
-                )
+                this.editor.commands.UpdateGroupChildren(container!, $pos, groupLevel, listType, 1)
               })
             }
           }
@@ -884,28 +754,23 @@ export const BlockContainer = Node.create<{
   addKeyboardShortcuts() {
     // handleBackspace is partially adapted from https://github.com/ueberdosis/tiptap/blob/ed56337470efb4fd277128ab7ef792b37cfae992/packages/core/src/extensions/keymap.ts
     const handleBackspace = () =>
-      this.editor.commands.first(({commands}) => [
+      this.editor.commands.first(({ commands }) => [
         // Deletes the selection if it's not empty.
         () => commands.deleteSelection(),
         // Undoes an input rule if one was triggered in the last editor state change.
         () => commands.undoInputRule(),
         () =>
-          commands.command(({state, dispatch, chain}) => {
-            const selectionAtBlockStart =
-              state.selection.$anchor.parentOffset === 0
-            const blockInfo = getBlockInfoFromPos(
-              state.doc,
-              state.selection.from,
-            )!
+          commands.command(({ state, dispatch, chain }) => {
+            const selectionAtBlockStart = state.selection.$anchor.parentOffset === 0
+            const blockInfo = getBlockInfoFromPos(state.doc, state.selection.from)!
 
             const isParagraph = blockInfo.contentType.name === 'paragraph'
-            let parentInfo = getParentBlockFromPos(state, state.selection.from)
+            const parentInfo = getParentBlockFromPos(state, state.selection.from)
 
             if (selectionAtBlockStart && isParagraph && parentInfo) {
-              let {parentBlock, parentGroup, parentPos} = parentInfo
-              let isFirstChild =
-                blockInfo.node.attrs.id === parentGroup.firstChild?.attrs.id
-              let isParentBlockHeading = parentBlock?.type.name === 'heading'
+              const { parentBlock, parentGroup, parentPos } = parentInfo
+              const isFirstChild = blockInfo.node.attrs.id === parentGroup.firstChild?.attrs.id
+              const isParentBlockHeading = parentBlock?.type.name === 'heading'
 
               if (
                 // is the first child of the parent group
@@ -915,7 +780,7 @@ export const BlockContainer = Node.create<{
                 // parentBlock is defined
                 parentBlock
               ) {
-                const {startPos, node, depth, endPos, contentNode} = blockInfo
+                const { startPos, node, depth, endPos, contentNode } = blockInfo
 
                 // the position in which we are inserting the current block content
                 const parentInsertPos = parentPos + parentBlock?.nodeSize - 1
@@ -923,12 +788,9 @@ export const BlockContainer = Node.create<{
                 // lift any children of current block (if any)
                 if (node.childCount === 2) {
                   // the current block has children, we need to re-parent
-                  const childBlocksStart = state.doc.resolve(
-                    startPos + contentNode.nodeSize + 1,
-                  )
+                  const childBlocksStart = state.doc.resolve(startPos + contentNode.nodeSize + 1)
                   const childBlocksEnd = state.doc.resolve(endPos - 1)
-                  const childBlocksRange =
-                    childBlocksStart.blockRange(childBlocksEnd)
+                  const childBlocksRange = childBlocksStart.blockRange(childBlocksEnd)
 
                   // Moves the block group node inside the block into the block group node that the current block is in.
                   if (dispatch) {
@@ -948,9 +810,7 @@ export const BlockContainer = Node.create<{
                   // set the selection to the join between the previous heading content and the new content inserted
                   // this needs to happen after the transaction above because the document now is "different", hence we need to set
                   // the selection to a new pos.
-                  state.tr.setSelection(
-                    new TextSelection(state.doc.resolve(parentInsertPos)),
-                  )
+                  state.tr.setSelection(new TextSelection(state.doc.resolve(parentInsertPos)))
                 }
 
                 return true
@@ -960,18 +820,12 @@ export const BlockContainer = Node.create<{
           }),
         // Convert a list into a normal group if the selection is at the start of the list
         () =>
-          commands.command(({state, view}) => {
-            const {group, container, depth, $pos} = getGroupInfoFromPos(
-              state.selection.from,
-              state,
-            )
+          commands.command(({ state, view }) => {
+            const { group, container, depth, $pos } = getGroupInfoFromPos(state.selection.from, state)
 
             if (group.attrs.listType !== 'div' && $pos.pos === $pos.start()) {
               // If block is first in the group change group type
-              if (
-                container &&
-                group.firstChild?.attrs.id === container.attrs.id
-              ) {
+              if (container && group.firstChild?.attrs.id === container.attrs.id) {
                 setTimeout(() => {
                   view.dispatch(
                     state.tr.setNodeMarkup($pos.before(depth), null, {
@@ -981,13 +835,7 @@ export const BlockContainer = Node.create<{
                     }),
                   )
 
-                  this.editor.commands.UpdateGroupChildren(
-                    container,
-                    $pos,
-                    2,
-                    group.attrs.listType,
-                    -1,
-                  )
+                  this.editor.commands.UpdateGroupChildren(container, $pos, 2, group.attrs.listType, -1)
                 })
 
                 return true
@@ -997,46 +845,34 @@ export const BlockContainer = Node.create<{
           }),
         // If previous block is media, node select it
         () =>
-          commands.command(({state, dispatch, view}) => {
-            const blockInfo = getBlockInfoFromPos(
-              state.doc,
-              state.selection.from,
-            )!
+          commands.command(({ state, dispatch, view }) => {
+            const blockInfo = getBlockInfoFromPos(state.doc, state.selection.from)!
             const prevBlockInfo = getBlockInfoFromPos(
               state.doc,
               state.selection.$anchor.pos - state.selection.$anchor.depth,
             )
-            const selectionAtBlockStart =
-              state.selection.$anchor.parentOffset === 0
+            const selectionAtBlockStart = state.selection.$anchor.parentOffset === 0
 
             const isParagraph = blockInfo.contentType.name === 'paragraph'
 
             if (selectionAtBlockStart) {
               if (isParagraph) {
                 if (blockInfo.contentType.name === 'image') {
-                  let tr = state.tr
-                  const selection = NodeSelection.create(
-                    state.doc,
-                    blockInfo.startPos,
-                  )
+                  let { tr } = state
+                  const selection = NodeSelection.create(state.doc, blockInfo.startPos)
                   tr = tr.setSelection(selection)
                   view.dispatch(tr)
                   return true
                 }
                 if (!prevBlockInfo) return false
                 if (
-                  ['file', 'embed', 'video', 'web-embed', 'math'].includes(
-                    prevBlockInfo.contentType.name,
-                  ) ||
-                  (prevBlockInfo.contentType.name === 'image' &&
-                    prevBlockInfo.contentNode.attrs.url.length === 0)
+                  ['file', 'embed', 'video', 'web-embed', 'math'].includes(prevBlockInfo.contentType.name) ||
+                  (prevBlockInfo.contentType.name === 'image' && prevBlockInfo.contentNode.attrs.url.length === 0)
                 ) {
                   if (dispatch) {
-                    const {startPos, contentNode} = blockInfo
+                    const { startPos, contentNode } = blockInfo
                     state.tr
-                      .setSelection(
-                        NodeSelection.create(state.doc, prevBlockInfo.startPos),
-                      )
+                      .setSelection(NodeSelection.create(state.doc, prevBlockInfo.startPos))
                       .deleteRange(startPos, startPos + contentNode.nodeSize)
                     return true
                   }
@@ -1053,17 +889,13 @@ export const BlockContainer = Node.create<{
           }),
         // move blockID with content if selection is at the start of block, the block has content AND the block above is empty
         () =>
-          commands.command(({state, chain}) => {
-            const blockData = getBlockInfoFromPos(
-              state.doc,
-              state.selection.from,
-            )!
+          commands.command(({ state, chain }) => {
+            const blockData = getBlockInfoFromPos(state.doc, state.selection.from)!
             const groupData = getGroupInfoFromPos(state.selection.from!, state)
-            const selectionAtBlockStart =
-              state.selection.$anchor.parentOffset === 0
+            const selectionAtBlockStart = state.selection.$anchor.parentOffset === 0
 
-            let prevBlockEndPos = blockData.startPos - 2
-            let prevBlockInfo = getBlockInfoFromPos(state.doc, prevBlockEndPos)
+            const prevBlockEndPos = blockData.startPos - 2
+            const prevBlockInfo = getBlockInfoFromPos(state.doc, prevBlockEndPos)
 
             if (
               // selection is at the start of the block
@@ -1085,17 +917,13 @@ export const BlockContainer = Node.create<{
           }),
         // Merge blocks if a block is in the middle of a list
         () =>
-          commands.command(({state, chain}) => {
-            const blockData = getBlockInfoFromPos(
-              state.doc,
-              state.selection.from,
-            )!
+          commands.command(({ state, chain }) => {
+            const blockData = getBlockInfoFromPos(state.doc, state.selection.from)!
             const groupData = getGroupInfoFromPos(state.selection.from!, state)
-            const selectionAtBlockStart =
-              state.selection.$anchor.parentOffset === 0
+            const selectionAtBlockStart = state.selection.$anchor.parentOffset === 0
 
-            let prevBlockEndPos = blockData.startPos - 2
-            let prevBlockInfo = getBlockInfoFromPos(state.doc, prevBlockEndPos)
+            const prevBlockEndPos = blockData.startPos - 2
+            const prevBlockInfo = getBlockInfoFromPos(state.doc, prevBlockEndPos)
 
             if (
               // selection is at the start of the block
@@ -1111,14 +939,10 @@ export const BlockContainer = Node.create<{
           }),
         // Reverts block content type to a paragraph if the selection is at the start of the block.
         () =>
-          commands.command(({state}) => {
-            const {contentType} = getBlockInfoFromPos(
-              state.doc,
-              state.selection.from,
-            )!
+          commands.command(({ state }) => {
+            const { contentType } = getBlockInfoFromPos(state.doc, state.selection.from)!
 
-            const selectionAtBlockStart =
-              state.selection.$anchor.parentOffset === 0
+            const selectionAtBlockStart = state.selection.$anchor.parentOffset === 0
             const isParagraph = contentType.name === 'paragraph'
 
             if (selectionAtBlockStart && !isParagraph) {
@@ -1132,9 +956,8 @@ export const BlockContainer = Node.create<{
           }),
         // Removes a level of nesting if the block is indented if the selection is at the start of the block.
         () =>
-          commands.command(({state}) => {
-            const selectionAtBlockStart =
-              state.selection.$anchor.parentOffset === 0
+          commands.command(({ state }) => {
+            const selectionAtBlockStart = state.selection.$anchor.parentOffset === 0
 
             if (selectionAtBlockStart) {
               return commands.liftListItem('blockContainer')
@@ -1145,26 +968,16 @@ export const BlockContainer = Node.create<{
         // Merges block with the previous one if it isn't indented, isn't the first block in the doc, and the selection
         // is at the start of the block.
         () =>
-          commands.command(({state}) => {
-            const {depth, startPos} = getBlockInfoFromPos(
-              state.doc,
-              state.selection.from,
-            )!
+          commands.command(({ state }) => {
+            const { depth, startPos } = getBlockInfoFromPos(state.doc, state.selection.from)!
 
-            const selectionAtBlockStart =
-              state.selection.$anchor.parentOffset === 0
-            const selectionEmpty =
-              state.selection.anchor === state.selection.head
+            const selectionAtBlockStart = state.selection.$anchor.parentOffset === 0
+            const selectionEmpty = state.selection.anchor === state.selection.head
             const blockAtDocStart = startPos === 2
 
             const posBetweenBlocks = startPos - 1
 
-            if (
-              !blockAtDocStart &&
-              selectionAtBlockStart &&
-              selectionEmpty &&
-              depth === 2
-            ) {
+            if (!blockAtDocStart && selectionAtBlockStart && selectionEmpty && depth === 2) {
               return commands.BNMergeBlocks(posBetweenBlocks)
             }
 
@@ -1173,16 +986,14 @@ export const BlockContainer = Node.create<{
       ])
 
     const handleEnter = () =>
-      this.editor.commands.first(({commands}) => [
+      this.editor.commands.first(({ commands }) => [
         // add a block on top of the current one so the block ID will follow the content
         () =>
-          commands.command(({state, chain}) => {
+          commands.command(({ state, chain }) => {
             const data = getBlockInfoFromPos(state.doc, state.selection.from)!
 
-            const selectionAtBlockStart =
-              state.selection.$anchor.parentOffset === 0
-            const selectionEmpty =
-              state.selection.anchor === state.selection.head
+            const selectionAtBlockStart = state.selection.$anchor.parentOffset === 0
+            const selectionEmpty = state.selection.anchor === state.selection.head
             const blockEmpty = data.node.textContent.length === 0
             const newBlockInsertionPos = data.startPos - 1
 
@@ -1199,22 +1010,15 @@ export const BlockContainer = Node.create<{
           }),
         // when the current block is a heading, do a special splitBlock to suggest heading hierarchy
         () =>
-          commands.command(({state, chain}) => {
-            const {contentNode} = getBlockInfoFromPos(
-              state.doc,
-              state.selection.from,
-            )!
+          commands.command(({ state, chain }) => {
+            const { contentNode } = getBlockInfoFromPos(state.doc, state.selection.from)!
 
-            const selectionAtBlockStart =
-              state.selection.$anchor.parentOffset === 0
+            const selectionAtBlockStart = state.selection.$anchor.parentOffset === 0
 
             // if selection is not in the beginning of the heading and is a heading,
             // we need to check what we need to do
             if (!selectionAtBlockStart && contentNode.type.name === 'heading') {
-              chain()
-                .deleteSelection()
-                .BNSplitHeadingBlock(state.selection.from)
-                .run()
+              chain().deleteSelection().BNSplitHeadingBlock(state.selection.from).run()
               return true
             }
 
@@ -1223,29 +1027,18 @@ export const BlockContainer = Node.create<{
         // Removes a level of nesting if the block is empty & indented, while the selection is also empty & at the start
         // of the block.
         () =>
-          commands.command(({state}) => {
-            const {node, depth} = getBlockInfoFromPos(
-              state.doc,
-              state.selection.from,
-            )!
+          commands.command(({ state }) => {
+            const { node, depth } = getBlockInfoFromPos(state.doc, state.selection.from)!
 
-            const {group} = getGroupInfoFromPos(state.selection.from, state)
+            const { group } = getGroupInfoFromPos(state.selection.from, state)
             const isLastBlock = group.lastChild?.attrs.id === node.attrs.id
 
-            const selectionAtBlockStart =
-              state.selection.$anchor.parentOffset === 0
-            const selectionEmpty =
-              state.selection.anchor === state.selection.head
+            const selectionAtBlockStart = state.selection.$anchor.parentOffset === 0
+            const selectionEmpty = state.selection.anchor === state.selection.head
             const blockEmpty = node.textContent.length === 0
             const blockIndented = depth > 2
 
-            if (
-              selectionAtBlockStart &&
-              selectionEmpty &&
-              blockEmpty &&
-              blockIndented &&
-              isLastBlock
-            ) {
+            if (selectionAtBlockStart && selectionEmpty && blockEmpty && blockIndented && isLastBlock) {
               return commands.liftListItem('blockContainer')
             }
 
@@ -1254,26 +1047,18 @@ export const BlockContainer = Node.create<{
         // Creates a new block and moves the selection to it if the current one is empty, while the selection is also
         // empty & at the start of the block.
         () =>
-          commands.command(({state, chain}) => {
-            const {node, endPos} = getBlockInfoFromPos(
-              state.doc,
-              state.selection.from,
-            )!
+          commands.command(({ state, chain }) => {
+            const { node, endPos } = getBlockInfoFromPos(state.doc, state.selection.from)!
 
-            const selectionAtBlockStart =
-              state.selection.$anchor.parentOffset === 0
-            const selectionEmpty =
-              state.selection.anchor === state.selection.head
+            const selectionAtBlockStart = state.selection.$anchor.parentOffset === 0
+            const selectionEmpty = state.selection.anchor === state.selection.head
             const blockEmpty = node.textContent.length === 0
 
             if (selectionAtBlockStart && selectionEmpty && blockEmpty) {
               const newBlockInsertionPos = endPos + 1
               const newBlockContentPos = newBlockInsertionPos + 2
 
-              chain()
-                .BNCreateBlock(newBlockInsertionPos)
-                .setTextSelection(newBlockContentPos)
-                .run()
+              chain().BNCreateBlock(newBlockInsertionPos).setTextSelection(newBlockContentPos).run()
 
               return true
             }
@@ -1284,16 +1069,13 @@ export const BlockContainer = Node.create<{
         // Splits the current block, moving content inside that's after the cursor to a new text block below. Also
         // deletes the selection beforehand, if it's not empty.
         () =>
-          commands.command(({state, chain}) => {
-            const {node} = getBlockInfoFromPos(state.doc, state.selection.from)!
+          commands.command(({ state, chain }) => {
+            const { node } = getBlockInfoFromPos(state.doc, state.selection.from)!
 
             const blockEmpty = node.textContent.length === 0
 
             if (!blockEmpty) {
-              chain()
-                .deleteSelection()
-                .BNSplitBlock(state.selection.from, false)
-                .run()
+              chain().deleteSelection().BNSplitBlock(state.selection.from, false).run()
 
               return true
             }
@@ -1303,46 +1085,30 @@ export const BlockContainer = Node.create<{
       ])
 
     const handleTab = () =>
-      this.editor.commands.first(({commands}) => [
+      this.editor.commands.first(({ commands }) => [
         () =>
-          commands.command(({state}) => {
+          commands.command(({ state }) => {
             // Find block group, block container and depth it is at
-            const {group} = getGroupInfoFromPos(state.selection.from, state)
+            const { group } = getGroupInfoFromPos(state.selection.from, state)
 
-            if (
-              group.type.name === 'blockGroup' &&
-              group.attrs.listType !== 'Group'
-            ) {
+            if (group.type.name === 'blockGroup' && group.attrs.listType !== 'Group') {
               setTimeout(() => {
-                this.editor
-                  .chain()
-                  .sinkListItem('blockContainer')
-                  .UpdateGroup(-1, group.attrs.listType, true)
-                  .run()
+                this.editor.chain().sinkListItem('blockContainer').UpdateGroup(-1, group.attrs.listType, true).run()
               })
               return true
             }
             return false
           }),
         () => {
-          commands.command(({state}) => {
-            const {group, container, level, $pos} = getGroupInfoFromPos(
-              state.selection.from,
-              state,
-            )
+          commands.command(({ state }) => {
+            const { group, container, level, $pos } = getGroupInfoFromPos(state.selection.from, state)
 
             if (container)
               setTimeout(() => {
                 this.editor
                   .chain()
                   .sinkListItem('blockContainer')
-                  .UpdateGroupChildren(
-                    container,
-                    $pos,
-                    level + 1,
-                    group.attrs.listType,
-                    1,
-                  )
+                  .UpdateGroupChildren(container, $pos, level + 1, group.attrs.listType, 1)
                   .run()
               })
             else commands.sinkListItem('blockContainer')
@@ -1353,26 +1119,17 @@ export const BlockContainer = Node.create<{
       ])
 
     const handleShiftTab = () =>
-      this.editor.commands.first(({commands}) => [
+      this.editor.commands.first(({ commands }) => [
         () =>
-          commands.command(({state}) => {
+          commands.command(({ state }) => {
             // Find block group, block container and depth it is at
-            const {group, container, level, $pos} = getGroupInfoFromPos(
-              state.selection.from,
-              state,
-            )
+            const { group, container, level, $pos } = getGroupInfoFromPos(state.selection.from, state)
 
             // if (group.attrs.listType === 'Group') return false
 
             if (container) {
               setTimeout(() => {
-                this.editor.commands.UpdateGroupChildren(
-                  container,
-                  $pos,
-                  level,
-                  group.attrs.listType,
-                  -1,
-                )
+                this.editor.commands.UpdateGroupChildren(container, $pos, level, group.attrs.listType, -1)
               })
             }
             return false
@@ -1390,10 +1147,7 @@ export const BlockContainer = Node.create<{
       // editor since the browser will try to use tab for keyboard navigation.
       Tab: handleTab,
       'Shift-Tab': handleShiftTab,
-      'Mod-Alt-0': () =>
-        this.editor.commands.BNCreateBlock(
-          this.editor.state.selection.anchor + 2,
-        ),
+      'Mod-Alt-0': () => this.editor.commands.BNCreateBlock(this.editor.state.selection.anchor + 2),
       'Mod-Alt-1': () =>
         this.editor.commands.BNUpdateBlock(this.editor.state.selection.anchor, {
           type: 'heading',
@@ -1426,23 +1180,17 @@ export const BlockContainer = Node.create<{
           props: {},
         }),
       'Shift-ArrowLeft': () => {
-        const {state, view} = this.editor
-        const {selection} = state
-        const {id: selectedId} = getBlockInfoFromPos(
-          state.doc,
-          selection.from - 1,
-        )
+        const { state, view } = this.editor
+        const { selection } = state
+        const { id: selectedId } = getBlockInfoFromPos(state.doc, selection.from - 1)
         if (selection.from <= 3) {
           return false
         }
         if (selection.from === selection.$from.start()) {
           let currentPos = selection.from - 1
           let currentNode = state.doc.resolve(currentPos).parent
-          let {id: currentId} = getBlockInfoFromPos(state.doc, currentPos)
-          while (
-            selectedId === currentId ||
-            ['blockContainer', 'blockGroup'].includes(currentNode.type.name)
-          ) {
+          let { id: currentId } = getBlockInfoFromPos(state.doc, currentPos)
+          while (selectedId === currentId || ['blockContainer', 'blockGroup'].includes(currentNode.type.name)) {
             currentPos--
             currentNode = state.doc.resolve(currentPos).parent
             currentId = getBlockInfoFromPos(state.doc, currentPos).id

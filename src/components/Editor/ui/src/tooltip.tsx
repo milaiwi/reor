@@ -1,10 +1,10 @@
-import {Text, Theme } from "@tamagui/core";
-import React from "react";
-import {Tooltip as TTooltip, TooltipProps} from "./TamaguiTooltip";
+import { Text } from '@tamagui/core'
+import React from 'react'
+import { ScrollView } from 'tamagui'
+import { Tooltip as TTooltip, TooltipProps } from './TamaguiTooltip'
 import MarkdownRenderer from '@/components/Common/MarkdownRenderer'
-import { ScrollView } from "tamagui";
 
-export function Tooltip({
+export const Tooltip = ({
   children,
   content,
   placement,
@@ -12,21 +12,21 @@ export function Tooltip({
   open,
   renderMarkdown,
 }: {
-  children: React.ReactNode;
-  content: string | React.ReactElement;
-  placement?: TooltipProps["placement"];
-  delay?: number;
-  open?: boolean;
-  renderMarkdown?: boolean;
-}) {
+  children: React.ReactNode
+  content: string | React.ReactElement
+  placement?: TooltipProps['placement']
+  delay?: number
+  open?: boolean
+  renderMarkdown?: boolean
+}) => {
   return content ? (
     <TTooltip placement={placement} delay={delay} open={open}>
       <TTooltip.Trigger asChild>{children}</TTooltip.Trigger>
       <TTooltip.Content
         maxWidth="350px"
         backgroundColor="$gray4"
-        enterStyle={{x: 0, y: -5, opacity: 0, scale: 0.9}}
-        exitStyle={{x: 0, y: -5, opacity: 0, scale: 0.9}}
+        enterStyle={{ x: 0, y: -5, opacity: 0, scale: 0.9 }}
+        exitStyle={{ x: 0, y: -5, opacity: 0, scale: 0.9 }}
         scale={1}
         x={0}
         y={0}
@@ -34,7 +34,7 @@ export function Tooltip({
         paddingVertical="$1"
         paddingHorizontal="$2"
         animation={[
-          "fast",
+          'fast',
           {
             opacity: {
               overshootClamping: true,
@@ -44,25 +44,13 @@ export function Tooltip({
       >
         <TTooltip.Arrow />
         <ScrollView maxHeight="300px" overflowY="auto">
-          <Text
-            fontSize="$1"
-            fontFamily="$body"
-            margin={0}
-            padding={0}
-            lineHeight="$1"
-          >
-            {renderMarkdown ? (
-              <MarkdownRenderer content={content as string} />
-            ) : (
-              content
-            )}
+          <Text fontSize="$1" fontFamily="$body" margin={0} padding={0} lineHeight="$1">
+            {renderMarkdown ? <MarkdownRenderer content={content as string} /> : content}
           </Text>
         </ScrollView>
       </TTooltip.Content>
     </TTooltip>
   ) : (
     children
-  );
+  )
 }
-
-

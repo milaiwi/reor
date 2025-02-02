@@ -1,15 +1,13 @@
-import {Menu} from '@mantine/core'
+import { Menu } from '@mantine/core'
 import { createStyles } from '@mantine/styles'
 import * as _ from 'lodash'
 
-import {BlockSchema} from '@/editor/blocknote/core'
-import {SlashMenuItem} from './SlashMenuItem'
-import {SlashMenuProps} from './SlashMenuPositioner'
+import { BlockSchema } from '@/editor/blocknote/core'
+import { SlashMenuItem } from './SlashMenuItem'
+import { SlashMenuProps } from './SlashMenuPositioner'
 
-export function DefaultSlashMenu<BSchema extends BlockSchema>(
-  props: SlashMenuProps<BSchema>,
-) {
-  const {classes} = createStyles({root: {}})(undefined, {
+export const DefaultSlashMenu = <BSchema extends BlockSchema>(props: SlashMenuProps<BSchema>) => {
+  const { classes } = createStyles({ root: {} })(undefined, {
     name: 'SlashMenu',
   })
   const renderedItems: any[] = []
@@ -19,11 +17,7 @@ export function DefaultSlashMenu<BSchema extends BlockSchema>(
   // const showNostr = trpc.experiments.get.useQuery().data?.nostr
 
   _.forEach(groups, (groupedItems) => {
-    renderedItems.push(
-      <Menu.Label key={groupedItems[0].group}>
-        {groupedItems[0].group}
-      </Menu.Label>,
-    )
+    renderedItems.push(<Menu.Label key={groupedItems[0].group}>{groupedItems[0].group}</Menu.Label>)
 
     for (const item of groupedItems) {
       // if (item.name !== 'Nostr' || showNostr) {
@@ -51,8 +45,8 @@ export function DefaultSlashMenu<BSchema extends BlockSchema>(
        * practically indefinitely, as normally hovering off it would cause it to
        * close due to trigger="hover".
        */
-      defaultOpened={true}
-      trigger={'hover'}
+      defaultOpened
+      trigger="hover"
       closeDelay={10000000}
     >
       <Menu.Dropdown
@@ -60,11 +54,7 @@ export function DefaultSlashMenu<BSchema extends BlockSchema>(
         onMouseDown={(event) => event.preventDefault()}
         className={classes.root}
       >
-        {renderedItems.length > 0 ? (
-          renderedItems
-        ) : (
-          <Menu.Item>No match found</Menu.Item>
-        )}
+        {renderedItems.length > 0 ? renderedItems : <Menu.Item>No match found</Menu.Item>}
       </Menu.Dropdown>
     </Menu>
   )

@@ -1,4 +1,4 @@
-import {config} from './src/components/Editor/ui/src/tamagui/tamagui.config'
+import { config } from '@shm/ui'
 
 type Conf = typeof config
 
@@ -10,7 +10,7 @@ declare module 'tamagui' {
   }
 
   export interface ThemeNameOverrides {
-    fileSidebar: true;
+    fileSidebar: true
   }
 }
 

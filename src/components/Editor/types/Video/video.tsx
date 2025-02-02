@@ -1,17 +1,14 @@
+import { useEffect, useState } from 'react'
+import { ResizeHandle, XStack } from '@shm/ui/src/src'
 import { isValidUrl, youtubeParser } from '../utils'
-import { ResizeHandle, XStack } from '../../ui/src'
-import {useEffect, useState} from 'react'
-import { Block, BlockNoteEditor, defaultProps } from '@/lib/blocknote'
-import { createReactBlockSpec } from '@/lib/blocknote'
-import {MediaContainer} from '../media-container'
-import {DisplayComponentProps, MediaRender, MediaType} from '../media-render'
+import { Block, BlockNoteEditor, defaultProps, createReactBlockSpec } from '@/lib/blocknote'
+import { MediaContainer } from '../media-container'
+import { DisplayComponentProps, MediaRender, MediaType } from '../media-render'
 import { HMBlockSchema } from '../../schema'
 
 export const getSourceType = (name: string) => {
   const nameArray = name.split('.')
-  return nameArray[nameArray.length - 1]
-    ? `video/${nameArray[nameArray.length - 1]}`
-    : undefined
+  return nameArray[nameArray.length - 1] ? `video/${nameArray[nameArray.length - 1]}` : undefined
 }
 
 export const VideoBlock = createReactBlockSpec({
@@ -37,53 +34,41 @@ export const VideoBlock = createReactBlockSpec({
   },
   containsInlineContent: true,
   // @ts-ignore
-  render: ({
-    block,
-    editor,
-  }: {
-    block: Block<HMBlockSchema>
-    editor: BlockNoteEditor<HMBlockSchema>
-  }) => Render(block, editor),
+  render: ({ block, editor }: { block: Block<HMBlockSchema>; editor: BlockNoteEditor<HMBlockSchema> }) =>
+    Render(block, editor),
 
   parseHTML: [
     {
       tag: 'video[src]',
       getAttrs: (element: any) => {
-        return {url: element.getAttribute('src')}
+        return { url: element.getAttribute('src') }
       },
     },
     {
       tag: 'iframe',
       getAttrs: (element: any) => {
-        return {url: element.getAttribute('src')}
+        return { url: element.getAttribute('src') }
       },
     },
   ],
 })
 
-const Render = (
-  block: Block<HMBlockSchema>,
-  editor: BlockNoteEditor<HMBlockSchema>,
-) => {
+const Render = (block: Block<HMBlockSchema>, editor: BlockNoteEditor<HMBlockSchema>) => {
   const submitVideo = async (
     assignMedia: (props: MediaType) => void,
     queryType: string,
     url?: string,
-    setErrorRaised?: any
+    setErrorRaised?: any,
   ) => {
     if (queryType === 'upload') {
       const filePaths = await window.fileSystem.openVideoFileDialog()
-  
+
       if (filePaths && filePaths.length > 0) {
         const filePath: string = filePaths[0]
         const fileData = await window.fileSystem.readFile(filePath, 'base64')
-        const videoData = `data:video/mp4;base64,${fileData}`;
-  
-        const storedVideoUrl = await window.fileSystem.storeVideo(
-          videoData,
-          filePath,
-          block.id,
-        )
+        const videoData = `data:video/mp4;base64,${fileData}`
+
+        const storedVideoUrl = await window.fileSystem.storeVideo(videoData, filePath, block.id)
         console.log(`storedVideoURL: ${storedVideoUrl}`)
         assignMedia({
           id: block.id,
@@ -94,47 +79,37 @@ const Render = (
           children: [],
           content: [],
           type: 'video',
-        }) 
-    }
-  } else if (url && isValidUrl(url)) {
-    let embedUrl = 'https://www.youtube.com/embed/'
-    if (url.includes('youtu.be') || url.includes('youtube')) {
-      let ytId = youtubeParser(url)
-      if (ytId) {
-        embedUrl = embedUrl + ytId
+        })
+      }
+    } else if (url && isValidUrl(url)) {
+      let embedUrl = 'https://www.youtube.com/embed/'
+      if (url.includes('youtu.be') || url.includes('youtube')) {
+        const ytId = youtubeParser(url)
+        if (ytId) {
+          embedUrl += ytId
+        } else {
+          setErrorRaised(`Unsupported Youtube URL`)
+          return
+        }
+      } else if (url.includes('vimeo')) {
+        const urlArray = url.split('/')
+        embedUrl = `https://player.vimeo.com/video/${urlArray[urlArray.length - 1]}`
       } else {
-        setErrorRaised(`Unsupported Youtube URL`)
+        setErrorRaised(`Unsupported video source.`)
         return
       }
-    } else if (url.includes('vimeo')) {
-      const urlArray = url.split('/')
-      embedUrl = `https://player.vimeo.com/video/${
-        urlArray[urlArray.length - 1]
-      }`
+      assignMedia({ props: { url: embedUrl } } as MediaType)
     } else {
-      setErrorRaised(`Unsupported video source.`)
+      setErrorRaised(`The provided URL is invalid`)
       return
     }
-    assignMedia({props: {url: embedUrl}} as MediaType)
-  } else {
-    setErrorRaised(`The provided URL is invalid`)
-    return
-  }
     const cursorPosition = editor.getTextCursorPosition()
     editor.focus()
     if (cursorPosition.block.id === block.id) {
-      if (cursorPosition.nextBlock)
-        editor.setTextCursorPosition(cursorPosition.nextBlock, 'start')
+      if (cursorPosition.nextBlock) editor.setTextCursorPosition(cursorPosition.nextBlock, 'start')
       else {
-        editor.insertBlocks(
-          [{type: 'paragraph', content: ''}],
-          block.id,
-          'after',
-        )
-        editor.setTextCursorPosition(
-          editor.getTextCursorPosition().nextBlock!,
-          'start',
-        )
+        editor.insertBlocks([{ type: 'paragraph', content: '' }], block.id, 'after')
+        editor.setTextCursorPosition(editor.getTextCursorPosition().nextBlock!, 'start')
       }
     }
   }
@@ -151,21 +126,13 @@ const Render = (
   )
 }
 
-const display = ({
-  editor,
-  block,
-  selected,
-  setSelected,
-  assign,
-}: DisplayComponentProps) => {
+const display = ({ editor, block, selected, setSelected, assign }: DisplayComponentProps) => {
   const [videoURL, setVideoURL] = useState(block.props.url)
   const [isLoading, setIsLoading] = useState(true)
 
   // Min video width in px.
   const minWidth = 256
-  let width: number =
-    parseFloat(block.props.width) ||
-    editor.domElement.firstElementChild!.clientWidth
+  let width: number = parseFloat(block.props.width) || editor.domElement.firstElementChild!.clientWidth
   const [currentWidth, setCurrentWidth] = useState(width)
   const [showHandle, setShowHandle] = useState(false)
   let resizeParams:
@@ -212,13 +179,9 @@ const display = ({
 
     let newWidth: number
     if (resizeParams.handleUsed === 'left') {
-      newWidth =
-        resizeParams.initialWidth +
-        (resizeParams.initialClientX - event.clientX) * 2
+      newWidth = resizeParams.initialWidth + (resizeParams.initialClientX - event.clientX) * 2
     } else {
-      newWidth =
-        resizeParams.initialWidth +
-        (event.clientX - resizeParams.initialClientX) * 2
+      newWidth = resizeParams.initialWidth + (event.clientX - resizeParams.initialClientX) * 2
     }
 
     // Ensures the video is not wider than the editor and not smaller than a
@@ -273,9 +236,7 @@ const display = ({
 
   // Sets the resize params, allowing the user to begin resizing the video by
   // moving the cursor left or right.
-  const leftResizeHandleMouseDownHandler = (
-    event: React.MouseEvent<HTMLDivElement>,
-  ) => {
+  const leftResizeHandleMouseDownHandler = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault()
 
     setShowHandle(true)
@@ -288,9 +249,7 @@ const display = ({
     editor.setTextCursorPosition(block.id, 'start')
   }
 
-  const rightResizeHandleMouseDownHandler = (
-    event: React.MouseEvent<HTMLDivElement>,
-  ) => {
+  const rightResizeHandleMouseDownHandler = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault()
 
     setShowHandle(true)
@@ -328,26 +287,14 @@ const display = ({
     >
       {showHandle && (
         <>
-          <ResizeHandle
-            left={4}
-            onMouseDown={leftResizeHandleMouseDownHandler}
-          />
-          <ResizeHandle
-            right={4}
-            onMouseDown={rightResizeHandleMouseDownHandler}
-          />
+          <ResizeHandle left={4} onMouseDown={leftResizeHandleMouseDownHandler} />
+          <ResizeHandle right={4} onMouseDown={rightResizeHandleMouseDownHandler} />
         </>
       )}
       {isLoading ? (
-        <div className="flex items-center justify-center w-full h-32 bg-gray-100">
-          Loading video...
-        </div>
+        <div className="flex h-32 w-full items-center justify-center bg-gray-100">Loading video...</div>
       ) : videoURL.startsWith('data:video/') ? (
-        <video
-          controls
-          width="100%"
-          preload="metadata"
-        >
+        <video controls width="100%" preload="metadata">
           <source src={videoURL} type="video/mp4" />
           Your browser does not support the video tag.
         </video>

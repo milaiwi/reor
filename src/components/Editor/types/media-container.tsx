@@ -1,10 +1,9 @@
-// import {DAEMON_FILE_UPLOAD_URL} from '@shm/shared'
-import {Button, Text, XStack, YStack, toast} from '@shm/ui'
-import {useState} from 'react'
-import {Block, BlockNoteEditor} from '@lib/blocknote'
+import React, { useState } from 'react'
+import { Button, Text, XStack, YStack, toast } from '@shm/ui'
+import { Block, BlockNoteEditor } from '@lib/blocknote'
 import { HMBlockSchema } from '../schema'
 import { InlineContent } from '@/lib/blocknote/react'
-import {MediaType} from './media-render'
+import { MediaType } from './media-render'
 
 interface ContainerProps {
   editor: BlockNoteEditor<HMBlockSchema>
@@ -22,7 +21,7 @@ interface ContainerProps {
   onPress?: (e: Event) => void
 }
 
-export const MediaContainer = ({
+const MediaContainer = ({
   editor,
   block,
   mediaType,
@@ -42,33 +41,8 @@ export const MediaContainer = ({
   const isEmbed = ['embed', 'web-embed'].includes(mediaType)
 
   const handleDragReplace = async (file: File) => {
-    // if (file.size > MaxFileSizeB) {
-    //   toast.error(`The size of ${file.name} exceeds ${MaxFileSizeMB} MB.`)
-    //   return
-    // }
-
     const formData = new FormData()
     formData.append('file', file)
-
-    // try {
-    //   const response = await fetch(DAEMON_FILE_UPLOAD_URL, {
-    //     method: 'POST',
-    //     body: formData,
-    //   })
-    //   const data = await response.text()
-
-    //   assign({
-    //     props: {
-    //       url: data ? `ipfs://${data}` : '',
-    //       name: file.name,
-    //       size: file.size.toString(),
-    //     },
-    //   } as MediaType)
-    // } catch (error) {
-    //   console.error(
-    //     `Editor: ${mediaType} upload error (MediaComponent): ${mediaType}: ${file.name} error: ${error}`,
-    //   )
-    // }
   }
 
   const dragProps = {
@@ -81,42 +55,26 @@ export const MediaContainer = ({
       if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
         const file = Array.from(e.dataTransfer.files)[0]
         if (!file.type.includes(`${mediaType}/`) && mediaType !== 'file') {
-          toast.error(
-            `The dragged file is not ${
-              mediaType === 'image' ? 'an' : 'a'
-            } ${mediaType}.`,
-          )
+          toast.error(`The dragged file is not ${mediaType === 'image' ? 'an' : 'a'} ${mediaType}.`)
           return
         }
         handleDragReplace(file)
-        return
       }
     },
     onDragOver: (e: React.DragEvent<HTMLDivElement>) => {
-      if (
-        e.dataTransfer &&
-        e.dataTransfer.types &&
-        Array.from(e.dataTransfer.types).includes('Files')
-      ) {
+      if (e.dataTransfer && e.dataTransfer.types && Array.from(e.dataTransfer.types).includes('Files')) {
         e.preventDefault()
         e.stopPropagation()
         setDrag(true)
       }
     },
     onDragEnter: (e: React.DragEvent<HTMLDivElement>) => {
-      if (
-        e.dataTransfer &&
-        e.dataTransfer.types &&
-        Array.from(e.dataTransfer.types).includes('Files')
-      ) {
+      if (e.dataTransfer && e.dataTransfer.types && Array.from(e.dataTransfer.types).includes('Files')) {
         const relatedTarget = e.relatedTarget as HTMLElement
         e.preventDefault()
         e.stopPropagation()
         setDrag(true)
-        if (
-          (!relatedTarget || !e.currentTarget.contains(relatedTarget)) &&
-          e.dataTransfer.effectAllowed !== 'move'
-        ) {
+        if ((!relatedTarget || !e.currentTarget.contains(relatedTarget)) && e.dataTransfer.effectAllowed !== 'move') {
           setSelected(true)
         }
       }
@@ -126,10 +84,7 @@ export const MediaContainer = ({
       e.preventDefault()
       e.stopPropagation()
       setDrag(false)
-      if (
-        (!relatedTarget || !e.currentTarget.contains(relatedTarget)) &&
-        e.dataTransfer.effectAllowed !== 'move'
-      ) {
+      if ((!relatedTarget || !e.currentTarget.contains(relatedTarget)) && e.dataTransfer.effectAllowed !== 'move') {
         setSelected(false)
       }
     },
@@ -138,7 +93,7 @@ export const MediaContainer = ({
   const mediaProps = {
     ...styleProps,
     ...(isEmbed ? {} : dragProps),
-    onHoverIn: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    onHoverIn: () => {
       if (onHoverIn) onHoverIn()
       setHover(true)
     },
@@ -159,11 +114,6 @@ export const MediaContainer = ({
       borderWidth={0}
       draggable="true"
       onDragStart={(e: any) => {
-        // Uncomment to allow drag only if block is selected
-        // if (!selected) {
-        //   e.preventDefault()
-        //   return
-        // }
         e.stopPropagation()
         editor.sideMenu.blockDragStart(e)
       }}
@@ -196,30 +146,20 @@ export const MediaContainer = ({
             backgroundColor="$backgroundColor"
             borderWidth={2}
             borderRadius="$2"
-            borderColor={'$color8'}
+            borderColor="$color8"
           >
             <Text fontFamily="$mono" fontSize="$3" zIndex={2}>
               Drop to replace
             </Text>
           </XStack>
-          <XStack
-            opacity={0.75}
-            backgroundColor="$backgroundHover"
-            position="absolute"
-            fullscreen
-            zIndex={1}
-          />
+          <XStack opacity={0.75} backgroundColor="$backgroundHover" position="absolute" fullscreen zIndex={1} />
         </XStack>
       ) : null}
       <YStack
-        // backgroundColor={selected ? '$color4' : '$color3'}
         borderColor={selected ? '$color8' : '$colorTransparent'}
         borderWidth={3}
         borderRadius="$2"
-        // hoverStyle={{
-        //   backgroundColor: '$color4',
-        // }}
-        {...mediaProps}
+        style={mediaProps}
         // @ts-ignore
         contentEditable={false}
         className={className ?? block.type}
@@ -241,10 +181,7 @@ export const MediaContainer = ({
                       url: '',
                       name: '',
                       size: '0',
-                      width:
-                        mediaType === 'image'
-                          ? editor.domElement.firstElementChild!.clientWidth
-                          : undefined,
+                      width: mediaType === 'image' ? editor.domElement.firstElementChild!.clientWidth : undefined,
                     },
                     children: [],
                     content: [],
@@ -265,3 +202,5 @@ export const MediaContainer = ({
     </YStack>
   )
 }
+
+export default MediaContainer

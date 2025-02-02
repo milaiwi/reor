@@ -58,7 +58,7 @@
 //     const calculatePosition = () => {
 //       if (!optionsContainerRef.current) return
 //       const posData = getBlockInfoFromPos(
-//         editor._tiptapEditor.state.doc,
+//         editor.tiptapEditor.state.doc,
 //         posBeforeNode + 1,
 //       )
 //       const { startPos } = posData
