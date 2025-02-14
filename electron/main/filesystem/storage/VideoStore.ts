@@ -15,11 +15,6 @@ class VideoStore extends MediaStore {
   constructor(appDataPath: string) {
     super(appDataPath, 'videos')
   }
-
-  getMimeType(dataUrl: string): string {
-    const match = dataUrl.match(/^data:video\/([a-zA-Z0-9-.+]+);base64,/)
-    return match ? `video/${match[1]}` : 'video/mp4'
-  }
 }
 
 export default VideoStore

@@ -28,7 +28,7 @@ const registerFileHandlers = (store: Store<StoreSchema>, _windowsManager: Window
 
   ipcMain.handle('read-file', async (event, filePath, encoding = 'utf-8') => {
     try {
-      const data = fs.promises.readFile(filePath, encoding)
+      const data = await fs.promises.readFile(filePath, encoding)
       return data
     } catch (error) {
       console.error('Failed to read file:', error)

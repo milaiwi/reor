@@ -15,6 +15,17 @@ interface FileType {
   mime: string
 }
 
+
+/** Represents a Metadata object */
+interface MediaMetadata {
+  id: string            /* ID of Media Block */
+  fileName: string      /* Name of the file */
+  originalName: string  /* Original name of the file */
+  mimeType: string      /* MIME type of the file (jpeg, gif, etc..) */
+  createdAt: string     /* Date of creation of file */
+  fileSize: number      /* Size of the file */
+}
+
 export class MediaStore {
   protected storageDir: string
   protected metadataFile: string
@@ -136,10 +147,5 @@ export class MediaStore {
       default:
         return null
     }
-  }
-
-  public getMimeType(dataUrl: string): string {
-    const match = dataUrl.match(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+);base64,/)
-    return match ? match[1] : 'application/octet-stream'
   }
 }

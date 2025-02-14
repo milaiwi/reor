@@ -15,11 +15,6 @@ class ImageStore extends MediaStore {
   constructor(appDataPath: string) {
     super(appDataPath, 'images')
   }
-
-  getMimeType(dataUrl: string): string {
-    const match = dataUrl.match(/^data:image\/([a-zA-Z0-9-.+]+);base64,/)
-    return match ? `image/${match[1]}` : 'image/png'
-  }
 }
 
 export default ImageStore
