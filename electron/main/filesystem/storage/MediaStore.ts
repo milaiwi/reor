@@ -62,7 +62,7 @@ export class MediaStore {
     return hash
   }
 
-  protected async checkFileType(buffer: any): Promise<FileType | undefined> {
+  protected async checkFileType(buffer: Buffer): Promise<FileType | undefined> {
     const { fileTypeFromBuffer } = await import('file-type')
     const type = await fileTypeFromBuffer(buffer)
     return type
