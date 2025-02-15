@@ -15,7 +15,6 @@ interface FileType {
   mime: string
 }
 
-
 /** Represents a Metadata object */
 interface MediaMetadata {
   id: string            /* ID of Media Block */

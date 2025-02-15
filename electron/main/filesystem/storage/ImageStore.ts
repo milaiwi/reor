@@ -11,8 +11,10 @@
  */
 import { MediaStore } from './MediaStore'
 
-export class ImageStorage extends MediaStore {
+class ImageStorage extends MediaStore {
   constructor(appDataPath: string) {
     super(appDataPath, 'images')
   }
 }
+
+export default ImageStorage

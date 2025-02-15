@@ -53,7 +53,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
       <div className="z-50 flex w-full flex-col overflow-hidden rounded border-2">
         <TextArea
           value={userTextFieldInput}
-          onKeyPress={(e) => {
+          onKeyDown={(e: KeyboardEvent) => {
             if (!e.shiftKey && e.key === 'Enter') {
               e.preventDefault()
               handleSubmitNewMessage()

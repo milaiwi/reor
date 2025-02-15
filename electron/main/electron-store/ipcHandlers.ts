@@ -16,16 +16,25 @@ import WindowsManager from '../common/windowManager'
 import { initializeAndMaybeMigrateStore } from './storeSchemaMigrator'
 import { Chat, AgentConfig, ChatMetadata } from '@/lib/llm/types'
 
-export const registerStoreHandlers = (store: Store<StoreSchema>, windowsManager: WindowsManager) => {
+export const registerStoreHandlers = (
+  store: Store<StoreSchema>,
+  windowsManager: WindowsManager,
+) => {
   initializeAndMaybeMigrateStore(store)
-  ipcMain.handle('set-vault-directory-for-window', async (event, userDirectory: string): Promise<void> => {
+  ipcMain.handle('set-vault-directory-for-window', async (
+    event,
+    userDirectory: string,
+  ): Promise<void> => {
     windowsManager.setVaultDirectoryForContents(event.sender, userDirectory, store)
   })
 
   ipcMain.handle('get-vault-directory-for-window', (event) => {
     let vaultPathForWindow = windowsManager.getVaultDirectoryForWinContents(event.sender)
     if (!vaultPathForWindow) {
-      vaultPathForWindow = windowsManager.getAndSetupDirectoryForWindowFromPreviousAppSession(event.sender, store)
+      vaultPathForWindow = windowsManager.getAndSetupDirectoryForWindowFromPreviousAppSession(
+        event.sender,
+        store,
+      )
     }
     return vaultPathForWindow
   })
@@ -56,7 +65,11 @@ export const registerStoreHandlers = (store: Store<StoreSchema>, windowsManager:
 
   ipcMain.handle(
     'update-embedding-model',
-    (event, modelName: string, updatedModel: EmbeddingModelWithLocalPath | EmbeddingModelWithRepo) => {
+    (
+      _,
+      modelName: string,
+      updatedModel: EmbeddingModelWithLocalPath | EmbeddingModelWithRepo,
+    ) => {
       const currentModels = store.get(StoreKeys.EmbeddingModels) || {}
       store.set(StoreKeys.EmbeddingModels, {
         ...currentModels,
@@ -91,9 +104,7 @@ export const registerStoreHandlers = (store: Store<StoreSchema>, windowsManager:
     store.set(StoreKeys.LLMGenerationParameters, generationParams)
   })
 
-  ipcMain.handle('get-llm-generation-params', () => {
-    return store.get(StoreKeys.LLMGenerationParameters)
-  })
+  ipcMain.handle('get-llm-generation-params', () => store.get(StoreKeys.LLMGenerationParameters))
 
   ipcMain.handle('get-editor-flex-center', () => store.get(StoreKeys.EditorFlexCenter))
 
@@ -119,26 +130,20 @@ export const registerStoreHandlers = (store: Store<StoreSchema>, windowsManager:
     store.set(StoreKeys.Analytics, isAnalytics)
   })
 
-  ipcMain.handle('get-analytics-mode', () => {
-    return store.get(StoreKeys.Analytics)
-  })
+  ipcMain.handle('get-analytics-mode', () => store.get(StoreKeys.Analytics))
 
   ipcMain.handle('set-spellcheck-mode', (event, isSpellCheck) => {
     store.set(StoreKeys.SpellCheck, isSpellCheck)
   })
 
-  ipcMain.handle('get-spellcheck-mode', () => {
-    return store.get(StoreKeys.SpellCheck)
-  })
+  ipcMain.handle('get-spellcheck-mode', () => store.get(StoreKeys.SpellCheck))
 
   ipcMain.handle('set-document-stats', (event, showDocumentStats: boolean) => {
     store.set(StoreKeys.showDocumentStats, showDocumentStats)
     event.sender.send('show-doc-stats-changed', showDocumentStats)
   })
 
-  ipcMain.handle('get-document-stats', () => {
-    return store.get(StoreKeys.showDocumentStats, false)
-  })
+  ipcMain.handle('get-document-stats', () => store.get(StoreKeys.showDocumentStats, false))
 
   ipcMain.handle('has-user-opened-app-before', () => store.get(StoreKeys.hasUserOpenedAppBefore))
 
@@ -167,7 +172,9 @@ export const registerStoreHandlers = (store: Store<StoreSchema>, windowsManager:
     const allChatHistories = store.get(StoreKeys.Chats)
     const chatHistoriesCorrespondingToVault = allChatHistories?.[vaultDir] ?? []
 
-    const existingChatIndex = chatHistoriesCorrespondingToVault.findIndex((chat) => chat.id === newChat.id)
+    const existingChatIndex = chatHistoriesCorrespondingToVault.findIndex(
+      (chat) => chat.id === newChat.id,
+    )
     if (existingChatIndex !== -1) {
       chatHistoriesCorrespondingToVault[existingChatIndex] = newChat
     } else {
@@ -213,34 +220,32 @@ export const registerStoreHandlers = (store: Store<StoreSchema>, windowsManager:
     event.sender.send('auto-context-changed', autoContext)
   })
 
-  ipcMain.handle('get-auto-context', () => {
-    return store.get(StoreKeys.AutoContext, true) // Default to true
-  })
+  // Defaults to true
+  ipcMain.handle('get-auto-context', () => store.get(StoreKeys.AutoContext, true))
 
   ipcMain.handle('set-tamagui-theme', (event, theme: TamaguiThemeTypes) => {
     store.set(StoreKeys.TamaguiTheme, theme)
     event.sender.send('tamagui-theme-changed', theme)
   })
 
-  ipcMain.handle('get-tamagui-theme', () => {
-    return store.get(StoreKeys.TamaguiTheme, 'dark') // Default to dark
-  })
+  // Defaults to dark
+  ipcMain.handle('get-tamagui-theme', () => store.get(StoreKeys.TamaguiTheme, 'dark'))
 }
 
 export function getDefaultEmbeddingModelConfig(store: Store<StoreSchema>): EmbeddingModelConfig {
-  const defaultEmbeddingModelAlias = store.get(StoreKeys.DefaultEmbeddingModelAlias) as string | undefined
+  const defaultEmbedding = store.get(StoreKeys.DefaultEmbeddingModelAlias) as string | undefined
 
   // Check if the default model alias is defined and not empty
-  if (!defaultEmbeddingModelAlias) {
+  if (!defaultEmbedding) {
     throw new Error('No default embedding model is specified')
   }
 
   const embeddingModels = store.get(StoreKeys.EmbeddingModels) || {}
 
   // Check if the model with the default alias exists
-  const model = embeddingModels[defaultEmbeddingModelAlias]
+  const model = embeddingModels[defaultEmbedding]
   if (!model) {
-    throw new Error(`No embedding model found for alias '${defaultEmbeddingModelAlias}'`)
+    throw new Error(`No embedding model found for alias '${defaultEmbedding}'`)
   }
 
   return model

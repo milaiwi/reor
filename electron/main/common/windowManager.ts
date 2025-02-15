@@ -1,6 +1,11 @@
 /* eslint-disable class-methods-use-this */
 import chokidar from 'chokidar'
-import { BrowserWindow, WebContents, screen, shell } from 'electron'
+import {
+  BrowserWindow,
+  WebContents,
+  screen,
+  shell,
+} from 'electron'
 import Store from 'electron-store'
 
 import { StoreSchema, StoreKeys } from '../electron-store/storeConfig'
@@ -19,7 +24,12 @@ class WindowsManager {
 
   watcher: chokidar.FSWatcher | undefined
 
-  async createWindow(store: Store<StoreSchema>, preload: string, url: string | undefined, indexHtml: string) {
+  async createWindow(
+    store: Store<StoreSchema>,
+    preload: string,
+    url: string | undefined,
+    indexHtml: string,
+  ) {
     const { x, y } = this.getNextWindowPosition()
     const { width, height } = this.getWindowSize()
 
@@ -78,7 +88,9 @@ class WindowsManager {
     if (!lastUsedVaultDirectory) {
       return ''
     }
-    const isUserDirectoryUsed = this.activeWindows.some((w) => w.vaultDirectoryForWindow === lastUsedVaultDirectory)
+    const isUserDirectoryUsed = this.activeWindows.some(
+      (w) => w.vaultDirectoryForWindow === lastUsedVaultDirectory,
+    )
     if (!isUserDirectoryUsed) {
       this.setVaultDirectoryForContents(webContents, lastUsedVaultDirectory, store)
       return lastUsedVaultDirectory
@@ -133,7 +145,11 @@ class WindowsManager {
     return windowInfo ? windowInfo.vaultDirectoryForWindow : null
   }
 
-  setVaultDirectoryForContents(webContents: WebContents, directory: string, store: Store<StoreSchema>): void {
+  setVaultDirectoryForContents(
+    webContents: WebContents,
+    directory: string,
+    store: Store<StoreSchema>,
+  ): void {
     if (!webContents) {
       throw new Error('Invalid webContents provided.')
     }
@@ -152,7 +168,7 @@ class WindowsManager {
     if (!windowInfo) {
       windowInfo = {
         windowID,
-        dbTableClient: new LanceDBTableWrapper(), // Assuming default value as null, modify as needed
+        dbTableClient: new LanceDBTableWrapper(), // Assuming default value as null
         vaultDirectoryForWindow: directory,
       }
       this.activeWindows.push(windowInfo)

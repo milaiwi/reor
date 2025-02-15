@@ -8,7 +8,7 @@ module.exports = {
     'airbnb',
     'airbnb/hooks',
     'airbnb-typescript',
-    'plugin:prettier/recommended',
+    // 'plugin:prettier/recommended',
     'plugin:tailwindcss/recommended',
   ],
   parser: '@typescript-eslint/parser',
@@ -20,7 +20,8 @@ module.exports = {
   plugins: ['@typescript-eslint', 'react', 'import', 'jsx-a11y', 'unused-imports', 'prettier', 'tailwindcss'],
   rules: {
     'unused-imports/no-unused-imports': 'error',
-    'prettier/prettier': 'error',
+    'prettier/prettier': 'off',
+    "no-trailing-spaces": ["error", { "ignoreComments": true }],
     'react/function-component-definition': [
       'error',
       {
@@ -33,6 +34,8 @@ module.exports = {
     'jsx-a11y/click-events-have-key-events': 'off',
     'react/require-default-props': 'off',
     'import/no-extraneous-dependencies': ['error', { devDependencies: ['**/electron/**', '**/preload/**'] }],
+    "@typescript-eslint/semi": "off",
+    "@typescript-eslint/indent": "off"
   },
   ignorePatterns: ['vite.config.ts', '.eslintrc.js'],
   settings: {

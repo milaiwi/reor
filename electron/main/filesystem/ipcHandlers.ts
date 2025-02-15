@@ -10,8 +10,8 @@ import { handleFileRename, updateFileInTable } from '../vector-database/tableHel
 
 import { GetFilesInfoTree, createFileRecursive, isHidden, GetFilesInfoListForListOfPaths } from './filesystem'
 import { FileInfoTree, WriteFileProps, RenameFileProps, FileInfoWithContent } from './types'
-import { ImageStorage } from './storage/ImageStore'
-import { VideoStorage } from './storage/VideoStore'
+import ImageStorage from './storage/ImageStore'
+import VideoStorage from './storage/VideoStore'
 
 const imageStorage = new ImageStorage(app.getPath('userData'))
 const videoStorage = new VideoStorage(app.getPath('userData'))

@@ -44,7 +44,9 @@ export const chunkStringsRecursively = async (
   return mappedChunks
 }
 
-export const chunkMarkdownByHeadingsAndByCharsIfBig = async (markdownContent: string): Promise<string[]> => {
+export const chunkMarkdownByHeadingsAndByCharsIfBig = async (
+  markdownContent: string,
+): Promise<string[]> => {
   const chunkOverlap = 20
   const chunksByHeading = chunkMarkdownByHeadings(markdownContent)
 
@@ -57,8 +59,10 @@ export const chunkMarkdownByHeadingsAndByCharsIfBig = async (markdownContent: st
       chunksWithSmallChunksSplit.push(chunk)
     }
   })
-
-  const chunkedRecursively = await chunkStringsRecursively(chunksWithBigChunksSplit, chunkSize, chunkOverlap)
-
+  const chunkedRecursively = await chunkStringsRecursively(
+    chunksWithBigChunksSplit,
+    chunkSize,
+    chunkOverlap,
+  )
   return chunksWithSmallChunksSplit.concat(chunkedRecursively)
 }
