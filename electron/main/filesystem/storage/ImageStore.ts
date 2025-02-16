@@ -9,16 +9,11 @@
  * We maintain metadata about each image including the original filename and creation date. Since this app is locally
  *  ran, each image path will exist on the user's disk (upload) or on the cloud (embed).
  */
-import { MediaStore } from './MediaStore'
+import MediaStore from './MediaStore'
 
 class ImageStore extends MediaStore {
   constructor(appDataPath: string) {
     super(appDataPath, 'images')
-  }
-
-  getMimeType(dataUrl: string): string {
-    const match = dataUrl.match(/^data:image\/([a-zA-Z0-9-.+]+);base64,/)
-    return match ? `image/${match[1]}` : 'image/png'
   }
 }
 

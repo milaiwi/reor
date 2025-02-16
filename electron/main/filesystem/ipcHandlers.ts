@@ -27,23 +27,15 @@ const registerFileHandlers = (store: Store<StoreSchema>, _windowsManager: Window
   })
 
   ipcMain.handle('read-file', async (event, filePath, encoding = 'utf-8') => {
-    try {
-      const data = fs.promises.readFile(filePath, encoding)
-      return data
-    } catch (error) {
-      console.error('Failed to read file:', error)
-      throw error
-    }
+    const data = await fs.promises.readFile(filePath, encoding)
+    return data
   })
 
   ipcMain.handle('check-file-exists', async (event, filePath) => {
     try {
-      // Attempt to access the file to check existence
       await fs.promises.access(filePath, fs.constants.F_OK)
-      // If access is successful, return true
       return true
     } catch (error) {
-      // If an error occurs (e.g., file doesn't exist), return false
       return false
     }
   })
@@ -93,7 +85,6 @@ const registerFileHandlers = (store: Store<StoreSchema>, _windowsManager: Window
       const localURL = await imageStorage.storeMedia(imageData, originalName, blockID)
       return localURL
     } catch (error) {
-      console.error(`Failed to store image:`, error)
       throw new Error(`Failed to store image`)
     }
   })
@@ -103,7 +94,6 @@ const registerFileHandlers = (store: Store<StoreSchema>, _windowsManager: Window
       const imageData = await imageStorage.getMedia(fileName)
       return imageData
     } catch (error) {
-      console.error(`Failed to get image:`, error)
       throw new Error(`Failed to get image`)
     }
   })
@@ -113,7 +103,6 @@ const registerFileHandlers = (store: Store<StoreSchema>, _windowsManager: Window
       const localURL = await videoStorage.storeMedia(videoData, originalName, blockId)
       return localURL
     } catch (error) {
-      console.error(`Failed to store video:`, error)
       throw new Error(`Failed to store video`)
     }
   })
@@ -123,7 +112,6 @@ const registerFileHandlers = (store: Store<StoreSchema>, _windowsManager: Window
       const videoData = await videoStorage.getMedia(fileName)
       return videoData
     } catch (error) {
-      console.error(`Failed to get video:`, error)
       throw new Error(`Failed to get video`)
     }
   })

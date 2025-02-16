@@ -15,9 +15,20 @@ interface FileType {
   mime: string
 }
 
-export class MediaStore {
+interface MediaMetadata {
+  id: string
+  fileName: string
+  originalName: string
+  mimeType: string
+  createdAt: string
+  fileSize: number
+}
+
+class MediaStore {
   protected storageDir: string
+
   protected metadataFile: string
+
   protected mediaType: string
 
   constructor(appDataPath: string, mediaType: string) {
@@ -45,13 +56,13 @@ export class MediaStore {
     fs.writeFileSync(this.metadataFile, JSON.stringify(metadata))
   }
 
-  protected generateFileName(originalName: string): string {
+  static generateFileName(originalName: string): string {
     const timestamp = Date.now()
     const hash = crypto.createHash('md5').update(`${originalName}${timestamp}`).digest('hex')
     return hash
   }
 
-  protected async checkFileType(buffer: any): Promise<FileType | undefined> {
+  static async checkFileType(buffer: Buffer): Promise<FileType | undefined> {
     const { fileTypeFromBuffer } = await import('file-type')
     const type = await fileTypeFromBuffer(buffer)
     return type
@@ -64,35 +75,30 @@ export class MediaStore {
   }
 
   public async storeMedia(mediaData: string, originalName: string, blockId: string): Promise<string> {
-    try {
-      const base64Data = mediaData.replace(/^data:[^;]+;base64,/, '')
-      const buffer: any = Buffer.from(base64Data, 'base64')
+    const base64Data = mediaData.replace(/^data:[^;]+;base64,/, '')
+    const buffer: any = Buffer.from(base64Data, 'base64')
 
-      const type = await this.checkFileType(buffer)
-      if (!type || !this.validateFileType(type.mime)) {
-        throw new Error(`Invalid ${this.mediaType.slice(0, -1)} file type`)
-      }
-
-      const fileName = `${this.generateFileName(originalName)}.${type.ext}`
-      const filePath = path.join(this.storageDir, fileName)
-
-      await fs.promises.writeFile(filePath, buffer)
-
-      const metadata = this.getMetadata()
-      metadata[blockId] = {
-        id: blockId,
-        fileName,
-        originalName,
-        mimeType: type.mime,
-        createdAt: new Date().toISOString(),
-        fileSize: buffer.length,
-      }
-      this.saveMetadata(metadata)
-      return `local://${fileName}`
-    } catch (error) {
-      console.error(`Error storing ${this.mediaType.slice(0, -1)}:`, error)
-      throw error
+    const type = await MediaStore.checkFileType(buffer)
+    if (!type || !this.validateFileType(type.mime)) {
+      throw new Error(`Invalid ${this.mediaType.slice(0, -1)} file type`)
     }
+
+    const fileName = `${MediaStore.generateFileName(originalName)}.${type.ext}`
+    const filePath = path.join(this.storageDir, fileName)
+
+    await fs.promises.writeFile(filePath, buffer)
+
+    const metadata = this.getMetadata()
+    metadata[blockId] = {
+      id: blockId,
+      fileName,
+      originalName,
+      mimeType: type.mime,
+      createdAt: new Date().toISOString(),
+      fileSize: buffer.length,
+    }
+    this.saveMetadata(metadata)
+    return `local://${fileName}`
   }
 
   public async getMedia(fileName: string): Promise<string | null> {
@@ -102,44 +108,16 @@ export class MediaStore {
       if (!fs.existsSync(filePath)) return null
 
       const buffer = await fs.promises.readFile(filePath)
-      const type = await this.checkFileType(buffer)
+      const type = await MediaStore.checkFileType(buffer)
 
-      if (!type || !this.validateFileType(type.mime)) {
+      if (!type || !this.validateFileType(type.mime))
         throw new Error(`Invalid ${this.mediaType.slice(0, -1)} file type`)
-      }
 
       return `data:${type.mime};base64,${buffer.toString('base64')}`
     } catch (error) {
-      console.error(`Error retrieving ${this.mediaType.slice(0, -1)}:`, error)
       return null
     }
   }
-
-  public getFileType(fileName: string): string | null {
-    const mimeType = path.extname(fileName).toLowerCase()
-
-    switch (mimeType) {
-      case '.png':
-        return 'image/png'
-      case '.jpg':
-        return 'image/jpeg'
-      case '.jpeg':
-        return 'image/jpeg'
-      case '.gif':
-        return 'image/gif'
-      case '.svg':
-        return 'image/svg+xml'
-      case '.mp4':
-        return 'video/mp4'
-      case '.webm':
-        return 'video/webm'
-      default:
-        return null
-    }
-  }
-
-  public getMimeType(dataUrl: string): string {
-    const match = dataUrl.match(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+);base64,/)
-    return match ? match[1] : 'application/octet-stream'
-  }
 }
+
+export default MediaStore

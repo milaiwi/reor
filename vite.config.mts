@@ -21,7 +21,6 @@ console.log(`Resolved: @shm/ui:`, path.join(__dirname, './src/components/Editor/
 export default defineConfig(({ command }) => {
   rmSync('dist-electron', { recursive: true, force: true })
 
-  const isServe = command === 'serve'
   const isBuild = command === 'build'
   const sourcemap = true
 
@@ -39,7 +38,7 @@ export default defineConfig(({ command }) => {
         config: './tamagui.config.ts',
         components: ['tamagui'],
       }),
-      tamaguiExtractPlugin(),
+      // tamaguiExtractPlugin(),
       react(),
       electron([
         {

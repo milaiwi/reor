@@ -50,6 +50,7 @@ app.whenReady().then(async () => {
   windowsManager.createWindow(store, preload, url, indexHtml)
 })
 
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
 })
