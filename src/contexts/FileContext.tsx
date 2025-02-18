@@ -39,7 +39,7 @@ import welcomeNote from '@/lib/welcome-note'
 import { BlockNoteEditor, useBlockNote } from '@/lib/blocknote'
 import { hmBlockSchema } from '@/components/Editor/schema'
 import { setGroupTypes } from '@/lib/utils'
-import { slashMenuItems } from '../components/Editor/slash-menu-items'
+import slashMenuItems from '../components/Editor/slash-menu-items'
 
 type FileContextType = {
   vaultFilesTree: FileInfoTree

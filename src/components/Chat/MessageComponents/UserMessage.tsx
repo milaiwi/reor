@@ -1,9 +1,9 @@
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
+import { SizableText } from 'tamagui'
 import { ReorChatMessage } from '../../../lib/llm/types'
 import { getDisplayMessage } from '../../../lib/llm/chat'
-import { SizableText } from 'tamagui'
 
 interface UserMessageProps {
   message: ReorChatMessage

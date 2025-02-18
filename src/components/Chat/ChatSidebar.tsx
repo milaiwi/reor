@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import { IoChatbubbles } from 'react-icons/io5'
 import { RiChatNewFill, RiArrowDownSLine } from 'react-icons/ri'
+import { YStack, XStack, SizableText } from 'tamagui'
 import { useChatContext } from '@/contexts/ChatContext'
 import { useContentContext } from '@/contexts/ContentContext'
 import { ChatMetadata } from '../../lib/llm/types'
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/ui/context-menu'
-import { YStack, XStack, SizableText } from 'tamagui'
 
 export interface ChatItemProps {
   chatMetadata: ChatMetadata

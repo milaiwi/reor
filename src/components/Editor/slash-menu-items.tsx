@@ -1,8 +1,10 @@
+import React from 'react'
+
 import { RiCodeBoxFill, RiHeading, RiImage2Fill, RiText, RiVideoAddFill } from 'react-icons/ri'
 import { BlockNoteEditor, BlockSpec, PartialBlock, PropSchema, insertOrUpdateBlock } from '@/lib/blocknote'
 import { HMBlockSchema } from './schema'
 
-export const slashMenuItems = [
+const slashMenuItems = [
   {
     name: 'Heading',
     aliases: ['h', 'heading1', 'subheading'],
@@ -94,3 +96,5 @@ export const slashMenuItems = [
     },
   },
 ]
+
+export default slashMenuItems

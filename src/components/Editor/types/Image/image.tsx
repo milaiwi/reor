@@ -1,135 +1,13 @@
-import { useEffect, useState } from 'react'
-import { ResizeHandle } from '../../ui/src'
-import { Block, BlockNoteEditor, defaultProps } from '@/lib/blocknote'
-import { createReactBlockSpec } from '@/lib/blocknote'
-import { MediaContainer } from '../media-container'
+/* eslint react/destructuring-assignment: "off" */
+import React, { useEffect, useState } from 'react'
+import { ResizeHandle } from '@/components/Editor/ui/src/resize-handle'
+import { Block, BlockNoteEditor, defaultProps, createReactBlockSpec } from '@/lib/blocknote'
+import MediaContainer from '../media-container'
 import { DisplayComponentProps, MediaRender, MediaType } from '../media-render'
-import { HMBlockSchema } from '../../schema'
+import type { HMBlockSchema } from '../../schema'
 import { isValidUrl } from '../utils'
 
-export const ImageBlock = createReactBlockSpec({
-  type: 'image',
-  propSchema: {
-    ...defaultProps,
-    url: {
-      default: '',
-    },
-    alt: {
-      default: '',
-    },
-    name: {
-      default: '',
-    },
-    width: {
-      default: '',
-    },
-    defaultOpen: {
-      values: ['false', 'true'],
-      default: 'false',
-    },
-  },
-  containsInlineContent: true,
-
-  render: ({ block, editor }: { block: Block<HMBlockSchema>; editor: BlockNoteEditor<HMBlockSchema> }) =>
-    Render(block, editor),
-
-  parseHTML: [
-    {
-      tag: 'img[src]',
-      getAttrs: (element: any) => {
-        const name = element.getAttribute('title')
-        const width = element.getAttribute('width') || element.style.width
-        const alt = element.getAttribute('alt')
-        return {
-          url: element.getAttribute('src'),
-          name,
-          width,
-          alt,
-        }
-      },
-      node: 'image',
-    },
-  ],
-})
-
-const Render = (block: Block<HMBlockSchema>, editor: BlockNoteEditor<HMBlockSchema>) => {
-  const submitImage = async (
-    assignMedia: (props: MediaType) => void,
-    queryType: string,
-    url?: string,
-    setErrorRaised?: any,
-  ) => {
-    if (queryType === 'upload') {
-      const filePaths = await window.fileSystem.openImageFileDialog()
-
-      if (filePaths && filePaths.length > 0) {
-        const filePath: string = filePaths[0]
-        const fileData = await window.fileSystem.readFile(filePath, 'base64')
-        const imageData = `data:image/png;base64,${fileData}`
-
-        const storedImageUrl = await window.fileSystem.storeImage(imageData, filePath, block.id)
-
-        assignMedia({
-          id: block.id,
-          props: {
-            url: storedImageUrl,
-            name: filePath,
-          },
-          children: [],
-          content: [],
-          type: 'image',
-        })
-      }
-    }
-
-    if (url && isValidUrl(url)) {
-      try {
-        const response = await fetch(url)
-        if (!response.ok) {
-          setErrorRaised('Failed to fetch image')
-        }
-        const blob = await response.blob()
-        const reader = new FileReader()
-        reader.onloadend = async () => {
-          const imageData = reader.result as string
-
-          const sanitizedURL = url.split('?')[0]
-
-          const storedImageUrl = await window.fileSystem.storeImage(imageData, sanitizedURL, block.id)
-
-          assignMedia({
-            id: block.id,
-            props: {
-              url: storedImageUrl,
-              name: url,
-            },
-            children: [],
-            content: [],
-            type: 'image',
-          })
-        }
-        reader.readAsDataURL(blob)
-      } catch (error) {
-        setErrorRaised('Failed to fetch image')
-      }
-    } else {
-      setErrorRaised('Invalid URL')
-    }
-  }
-
-  return (
-    <MediaRender
-      block={block}
-      hideForm={!!block.props.url}
-      editor={editor}
-      mediaType="image"
-      submit={submitImage}
-      DisplayComponent={display}
-    />
-  )
-}
-
-const display = ({ editor, block, selected, setSelected, assign }: DisplayComponentProps) => {
+const Display = ({ editor, block, selected, setSelected, assign }: DisplayComponentProps) => {
   const [imageUrl, setImageUrl] = useState(block.props.url)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -145,8 +23,6 @@ const display = ({ editor, block, selected, setSelected, assign }: DisplayCompon
         } else {
           setImageUrl(block.props.url)
         }
-      } catch (error) {
-        console.error('Error loading video:', error)
       } finally {
         setIsLoading(false)
       }
@@ -170,6 +46,7 @@ const display = ({ editor, block, selected, setSelected, assign }: DisplayCompon
 
   useEffect(() => {
     if (block.props.width) {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       width = parseFloat(block.props.width)
       setCurrentWidth(parseFloat(block.props.width))
     }
@@ -203,7 +80,7 @@ const display = ({ editor, block, selected, setSelected, assign }: DisplayCompon
 
   // Stops mouse movements from resizing the image and updates the block's
   // `width` prop to the new value.
-  const windowMouseUpHandler = (event: MouseEvent) => {
+  const windowMouseUpHandler = () => {
     setShowHandle(false)
 
     if (!resizeParams) {
@@ -298,3 +175,125 @@ const display = ({ editor, block, selected, setSelected, assign }: DisplayCompon
     </MediaContainer>
   )
 }
+
+const Render = (block: Block<HMBlockSchema>, editor: BlockNoteEditor<HMBlockSchema>) => {
+  const submitImage = async (
+    assignMedia: (props: MediaType) => void,
+    queryType: string,
+    url?: string,
+    setErrorRaised?: any,
+  ) => {
+    if (queryType === 'upload') {
+      const filePaths = await window.fileSystem.openImageFileDialog()
+
+      if (filePaths && filePaths.length > 0) {
+        const filePath: string = filePaths[0]
+        const fileData = await window.fileSystem.readFile(filePath, 'base64')
+        const imageData = `data:image/png;base64,${fileData}`
+
+        const storedImageUrl = await window.fileSystem.storeImage(imageData, filePath, block.id)
+
+        assignMedia({
+          id: block.id,
+          props: {
+            url: storedImageUrl,
+            name: filePath,
+          },
+          children: [],
+          content: [],
+          type: 'image',
+        })
+      }
+    }
+
+    if (url && isValidUrl(url)) {
+      try {
+        const response = await fetch(url)
+        if (!response.ok) {
+          setErrorRaised('Failed to fetch image')
+        }
+        const blob = await response.blob()
+        const reader = new FileReader()
+        reader.onloadend = async () => {
+          const imageData = reader.result as string
+          const sanitizedURL = url.split('?')[0]
+          const storedImageUrl = await window.fileSystem.storeImage(imageData, sanitizedURL, block.id)
+
+          assignMedia({
+            id: block.id,
+            props: {
+              url: storedImageUrl,
+              name: url,
+            },
+            children: [],
+            content: [],
+            type: 'image',
+          })
+        }
+        reader.readAsDataURL(blob)
+      } catch (error) {
+        setErrorRaised('Failed to fetch image')
+      }
+    } else {
+      setErrorRaised('Invalid URL')
+    }
+  }
+
+  return (
+    <MediaRender
+      block={block}
+      hideForm={!!block.props.url}
+      editor={editor}
+      mediaType="image"
+      submit={submitImage}
+      DisplayComponent={Display}
+    />
+  )
+}
+
+const ImageBlock = createReactBlockSpec({
+  type: 'image',
+  propSchema: {
+    ...defaultProps,
+    url: {
+      default: '',
+    },
+    alt: {
+      default: '',
+    },
+    name: {
+      default: '',
+    },
+    width: {
+      default: '',
+    },
+    defaultOpen: {
+      values: ['false', 'true'],
+      default: 'false',
+    },
+  },
+  containsInlineContent: true,
+
+  render: ({ block, editor }: { block: Block<HMBlockSchema>; editor: BlockNoteEditor<HMBlockSchema> }) =>
+    Render(block, editor),
+
+  parseHTML: [
+    {
+      tag: 'img[src]',
+      getAttrs: (element: any) => {
+        const name = element.getAttribute('title')
+        const width = element.getAttribute('width') || element.style.width
+        const alt = element.getAttribute('alt')
+        return {
+          url: element.getAttribute('src'),
+          name,
+          width,
+          alt,
+        }
+      },
+      node: 'image',
+    },
+  ],
+})
+
+export default ImageBlock

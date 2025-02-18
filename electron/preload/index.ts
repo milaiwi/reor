@@ -6,10 +6,10 @@ import {
   LLMConfig,
   LLMAPIConfig,
   LLMGenerationParameters,
+  TamaguiThemeTypes,
 } from 'electron/main/electron-store/storeConfig'
 import { FileInfoTree, FileInfoWithContent, RenameFileProps, WriteFileProps } from 'electron/main/filesystem/types'
 import { DBQueryResult } from 'electron/main/vector-database/schema'
-import { TamaguiThemeTypes } from 'electron/main/electron-store/storeConfig'
 
 import { AgentConfig, ChatMetadata, Chat } from '@/lib/llm/types'
 

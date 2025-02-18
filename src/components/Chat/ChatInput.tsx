@@ -1,11 +1,11 @@
 import React from 'react'
 
 import { PiPaperPlaneRight } from 'react-icons/pi'
+import { TextArea, Switch } from 'tamagui'
 import { AgentConfig, LoadingState } from '../../lib/llm/types'
 import { Button } from '../ui/button'
 import LLMSelectOrButton from '../Settings/LLMSettings/LLMSelectOrButton'
 import { Label } from '@/components/ui/label'
-import { TextArea, Switch } from 'tamagui'
 import { useThemeManager } from '@/contexts/ThemeContext'
 
 interface ChatInputProps {
@@ -29,7 +29,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   agentConfig,
   setAgentConfig,
 }) => {
-  const { state, actions } = useThemeManager()
+  const { state } = useThemeManager()
 
   const handleDbSearchToggle = (checked: boolean) => {
     setAgentConfig((prevConfig) => {
@@ -53,7 +53,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
       <div className="z-50 flex w-full flex-col overflow-hidden rounded border-2">
         <TextArea
           value={userTextFieldInput}
-          onKeyPress={(e) => {
+          onKeyPress={(e: KeyboardEvent) => {
             if (!e.shiftKey && e.key === 'Enter') {
               e.preventDefault()
               handleSubmitNewMessage()

@@ -2,10 +2,8 @@ import React from 'react'
 import { FileInfoWithContent } from 'electron/main/filesystem/types'
 import { DBEntry } from 'electron/main/vector-database/schema'
 import posthog from 'posthog-js'
-import { CardDescription } from '@/components/ui/card'
-import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card'
-import { useContentContext } from '@/contexts/ContentContext'
 import { Card, XStack, ScrollView } from 'tamagui'
+import { useContentContext } from '@/contexts/ContentContext'
 import { Tooltip } from '@/components/Editor/ui/src/tooltip'
 import MarkdownRenderer from '@/components/Common/MarkdownRenderer'
 import { useThemeManager } from '@/contexts/ThemeContext'
@@ -20,7 +18,7 @@ const truncateName = (name: string, maxLength: number) => {
 }
 
 const ChatSources: React.FC<ChatSourcesProps> = ({ contextItems }) => {
-  const { state, actions } = useThemeManager()
+  const { state } = useThemeManager()
   const { openContent } = useContentContext()
 
   const isDBEntry = (item: FileInfoWithContent | DBEntry): item is DBEntry => {
@@ -56,12 +54,12 @@ const ChatSources: React.FC<ChatSourcesProps> = ({ contextItems }) => {
       <div className="mb-1 text-sm text-muted-foreground">Sources:</div>
 
       <div
-        className={`scrollbar-thumb-rounded-full flex space-x-2 overflow-x-auto p-0 pb-1 scrollbar-thin scrollbar-track-transparent 
-          ${state == 'light' ? 'scrollbar-thumb-gray-200' : 'scrollbar-thumb-gray-700'}`}
+        className={`flex space-x-2 overflow-x-auto p-0 pb-1 scrollbar-thin scrollbar-track-transparent 
+          ${state === 'light' ? 'scrollbar-thumb-gray-200' : 'scrollbar-thumb-gray-700'}`}
       >
         {contextItems.map((contextItem) => (
           <XStack>
-            <Tooltip content={getItemContent(contextItem)} renderMarkdown={true} placement="top">
+            <Tooltip content={getItemContent(contextItem)} renderMarkdown placement="top">
               <Card
                 cursor="pointer"
                 overflow="hidden"

@@ -1,22 +1,16 @@
 import React, { useRef, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import { YStack, XStack } from 'tamagui'
+import { X } from '@tamagui/lucide-icons'
 
 interface ModalProps {
   isOpen: boolean
   onClose: () => void
   children: React.ReactNode
   hideCloseButton?: boolean
-  tailwindStylesOnBackground?: string
 }
 
-const ReorModal: React.FC<ModalProps> = ({
-  isOpen,
-  onClose,
-  children,
-  hideCloseButton,
-  tailwindStylesOnBackground,
-}) => {
+const ReorModal: React.FC<ModalProps> = ({ isOpen, onClose, children, hideCloseButton }) => {
   const modalRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -59,8 +53,10 @@ const ReorModal: React.FC<ModalProps> = ({
       >
         {!hideCloseButton && (
           <XStack position="absolute" top={10} right={15}>
-            <button onClick={onClose} style={{ background: 'transparent', border: 'none' }}>
-              <span style={{ fontSize: 24, cursor: 'pointer' }}>&times;</span>
+            <button type="button" onClick={onClose} style={{ background: 'transparent', border: 'none' }}>
+              <span style={{ fontSize: 24, cursor: 'pointer' }}>
+                <X size={18} />
+              </span>
             </button>
           </XStack>
         )}

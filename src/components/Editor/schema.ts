@@ -1,8 +1,7 @@
-import { BlockSchema, TypesMatch, defaultProps } from '@/lib/blocknote'
-import { defaultBlockSchema } from '@/lib/blocknote'
-import CodeBlockLowlight from '@/lib/tiptap-extension-code-block'
 import { common, createLowlight } from 'lowlight'
-import { ImageBlock } from './types/Image/image'
+import { BlockSchema, TypesMatch, defaultProps, defaultBlockSchema } from '@/lib/blocknote'
+import CodeBlockLowlight from '@/lib/tiptap-extension-code-block'
+import ImageBlock from './types/Image/image'
 import { VideoBlock } from './types/Video/video'
 
 export const hmBlockSchema: BlockSchema = {
@@ -11,7 +10,8 @@ export const hmBlockSchema: BlockSchema = {
   // bulletListItem: defaultBlockSchema.bulletListItem,
   // numberedListItem: defaultBlockSchema.numberedListItem,
   image: ImageBlock,
-  ['code-block']: {
+  // ts-ignore
+  'code-block': {
     propSchema: {
       ...defaultProps,
       language: { default: '' },
