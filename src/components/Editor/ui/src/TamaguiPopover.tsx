@@ -1,7 +1,7 @@
 // THIS FILE IS FORKED FROM TAMAGUI
 // https://github.com/tamagui/tamagui/blob/96536c32f09193934725acd39f3046ed527fcd15/code/ui/popover/src/Popover.tsx
 // Because if we use @tamagui/popper, it fails because Popper.tsx imports from RN (not RNW), and the rewrite is failing. So here we change the imports to RNW.
-///////////////////////
+//
 
 import '@tamagui/polyfill-dev'
 

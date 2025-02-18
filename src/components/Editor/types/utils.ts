@@ -4,16 +4,15 @@ import { EditorView } from '@tiptap/pm/view'
 import { Block, BlockSchema } from '@/lib/blocknote'
 
 export function youtubeParser(url: string) {
-  var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/
-  var match = url.match(regExp)
-  return match && match[7].length == 11 ? match[7] : false
+  const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/
+  const match = url.match(regExp)
+  return match && match[7].length === 11 ? match[7] : false
 }
 
 export function isValidUrl(urlString: string) {
   try {
     return Boolean(new URL(urlString))
   } catch (e) {
-    console.log(e)
     return false
   }
 }
@@ -27,6 +26,7 @@ export function camelToFlat(camel: string) {
 export const timeoutPromise = (promise: Promise<any>, delay: number, reason?: any): Promise<any> =>
   Promise.race([
     promise,
+    // eslint-disable-next-line no-promise-executor-return
     new Promise((resolve, reject) => setTimeout(() => (reason === undefined ? resolve(null) : reject(reason)), delay)),
   ])
 
@@ -37,12 +37,12 @@ export function setGroupTypes(tiptap: Editor, blocks: Array<Partial<Block<BlockS
         node.descendants((child: TipTapNode, childPos: number) => {
           if (child.type.name === 'blockGroup') {
             setTimeout(() => {
-              let tr = tiptap.state.tr
+              let { tr } = tiptap.state
               tr = block.props?.start
                 ? tr.setNodeMarkup(pos + childPos + 1, null, {
                     listType: block.props?.childrenType,
                     listLevel: block.props?.listLevel,
-                    start: parseInt(block.props?.start),
+                    start: parseInt(block.props?.start, 10),
                   })
                 : tr.setNodeMarkup(pos + childPos + 1, null, {
                     listType: block.props?.childrenType,
@@ -52,6 +52,7 @@ export function setGroupTypes(tiptap: Editor, blocks: Array<Partial<Block<BlockS
             })
             return false
           }
+          return true
         })
       }
     })
