@@ -45,6 +45,15 @@ module.exports = {
     'no-underscore-dangle': 'off',
     'react/destructoring-assignment': 'off',
     'react/jsx-props-no-spreading': 'off',
+    'object-shorthand': 'off',
+    "import/no-extraneous-dependencies": [
+      "error", {
+        "devDependencies": false, 
+        "optionalDependencies": false, 
+        "peerDependencies": false, 
+        "packageDir": "./"
+      }
+    ]
   },
   ignorePatterns: ['vite.config.ts', '.eslintrc.js'],
   settings: {
