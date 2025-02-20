@@ -44,7 +44,7 @@ const conf = {
   },
 } satisfies Parameters<typeof createTamagui>['0']
 
-// @ts-ignore - passing this directly breaks TS types
+// @ts-ignore
 conf.mediaQueryDefaultActive = mediaQueryDefaultActive
 
 export const config = createTamagui(conf)

@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react'
 import ReactDOM from 'react-dom'
-import { YStack, XStack } from 'tamagui'
+import { YStack, XStack } from '@tamagui/stacks'
 import { X } from '@tamagui/lucide-icons'
 
 interface ModalProps {
@@ -31,7 +31,7 @@ const ReorModal: React.FC<ModalProps> = ({ isOpen, onClose, children, hideCloseB
 
   const modalContent = (
     <YStack
-      position="fixed"
+      // position="fixed"
       top={0}
       left={0}
       right={0}

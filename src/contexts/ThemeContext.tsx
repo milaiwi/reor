@@ -1,7 +1,7 @@
-import { createContext, useContext, useEffect, useState, PropsWithChildren, FC, useLayoutEffect } from 'react'
+import { createContext, useContext, useEffect, useState, PropsWithChildren, FC } from 'react'
 import type { TamaguiThemeTypes } from 'electron/main/electron-store/storeConfig'
 import { TamaguiProvider } from 'tamagui'
-import tamaguiConfig from '../../tamagui.config'
+import config from '../../tamagui.config'
 import { themes } from '@/components/Editor/ui/src/tamagui/themes/theme'
 
 interface ThemeActions {
@@ -73,7 +73,7 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
   if (!manager) return null // Prevent rendering before the theme is set
   return (
     <ThemeContext.Provider value={manager.getContextValue()}>
-      <TamaguiProvider config={tamaguiConfig} defaultTheme={theme} themes={themes}>
+      <TamaguiProvider config={config} defaultTheme={theme} >
         {children}
       </TamaguiProvider>
     </ThemeContext.Provider>

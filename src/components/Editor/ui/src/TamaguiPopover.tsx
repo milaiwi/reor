@@ -9,7 +9,8 @@ import '@tamagui/polyfill-dev'
 
 import type { UseHoverProps } from '@floating-ui/react'
 // @ts-expect-error
-import { Adapt, useAdaptParent } from '@tamagui/adapt'
+import { Adapt } from '@tamagui/adapt'
+import { useAdaptParent } from '@/contexts/AdaptContext'
 import { Animate } from '@tamagui/animate'
 import { ResetPresence } from '@tamagui/animate-presence'
 import { hideOthers } from '@tamagui/aria-hidden'
@@ -588,11 +589,9 @@ export const Popover = withStaticProperties(
     } = props
 
     const id = React.useId()
-    const { when, AdaptProvider } = useAdaptParent({
-      Contents: React.useCallback(() => {
-        return <PortalHost name={`${id}PopoverContents`} />
-      }, [id]),
-    })
+    const { when, AdaptProvider } = useAdaptParent(
+      <PortalHost name={`${id}PopoverContents`} />
+    );
 
     const sheetBreakpoint = when
     const triggerRef = React.useRef<TamaguiElement>(null)
