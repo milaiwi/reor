@@ -32,7 +32,7 @@ const IndexingProgress: React.FC<IndexingProgressProps> = ({ indexingProgress })
   return (
     <ReorModal isOpen onClose={() => {}} hideCloseButton>
       <YStack className="mx-3 mb-3 mt-2 h-[100px] w-[500px]">
-        <H2 marginY={2} fontWeight="semi-bold" fontSize="xl" color="$gray13">
+        <H2 fontWeight="semi-bold" fontSize="xl" color="$gray13">
           {indexingProgress === 0 ? 'Initializing vector database...' : 'Indexing files...'}
         </H2>
         <div

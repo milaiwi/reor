@@ -1,11 +1,11 @@
 // THIS FILE IS FORKED FROM TAMAGUI
 // https://github.com/tamagui/tamagui/blob/master/code/ui/popper/src/Popper.tsx
 // Because if we use @tamagui/popper, it fails because Popper.tsx imports from RN (not RNW), and the rewrite is failing. So here we change the imports to RNW.
-///////////////////////
+//
 
 // adapted from radix-ui popper
 import { useComposedRefs } from '@tamagui/compose-refs'
-import { isAndroid, useIsomorphicLayoutEffect } from '@tamagui/constants'
+import { useIsomorphicLayoutEffect } from '@tamagui/constants'
 import type { ScopedProps, SizeTokens, StackProps } from '@tamagui/core'
 import {
   Stack,
@@ -21,7 +21,7 @@ import { arrow, autoUpdate, flip, offset as offsetFn, platform, shift, useFloati
 import { getSpace } from '@tamagui/get-token'
 import type { SizableStackProps, YStackProps } from '@tamagui/stacks'
 import { ThemeableStack, YStack } from '@tamagui/stacks'
-import * as React from 'react'
+import React, { useState, useEffect, useRef, useMemo, ReactNode, startTransition, forwardRef, RefObject } from 'react'
 import type { View } from 'react-native-web'
 import { Keyboard, useWindowDimensions } from 'react-native-web'
 
@@ -50,7 +50,7 @@ export const { useStyledContext: usePopperContext, Provider: PopperProvider } = 
 
 export type PopperProps = {
   size?: SizeTokens
-  children?: React.ReactNode
+  children?: ReactNode
   placement?: Placement
   stayInFrame?: ShiftProps | boolean
   allowFlip?: FlipProps | boolean
@@ -85,7 +85,7 @@ export function setupPopper(options?: PopperSetupOptions) {
   Object.assign(setupOptions, options)
 }
 
-export function Popper(props: ScopedPopperProps<PopperProps>) {
+export const Popper = (props: ScopedPopperProps<PopperProps>) => {
   const {
     children,
     size,
@@ -95,12 +95,13 @@ export function Popper(props: ScopedPopperProps<PopperProps>) {
     allowFlip,
     offset,
     disableRTL,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     __scopePopper,
   } = props
 
   const isMounted = useDidFinishSSR()
-  const [arrowEl, setArrow] = React.useState<any>(null)
-  const [arrowSize, setArrowSize] = React.useState(0)
+  const [arrowEl, setArrow] = useState<any>(null)
+  const [arrowSize, setArrowSize] = useState(0)
   const offsetOptions = offset ?? arrowSize
 
   const floating = useFloating({
@@ -111,7 +112,7 @@ export function Popper(props: ScopedPopperProps<PopperProps>) {
       (disableRTL ?? setupOptions.disableRTL)
         ? {
             ...platform,
-            isRTL(element) {
+            isRTL() {
               return false
             },
           }
@@ -132,50 +133,41 @@ export function Popper(props: ScopedPopperProps<PopperProps>) {
     open,
   } = floating
 
-  if (process.env.TAMAGUI_TARGET === 'web') {
-    useIsomorphicLayoutEffect(() => {
-      if (!open) return
-      if (!(refs.reference.current && refs.floating.current)) {
-        return
-      }
+  useIsomorphicLayoutEffect(() => {
+    if (process.env.TAMAGUI_TARGET !== 'web') return
 
+    if (open && refs.reference.current && refs.floating.current) {
       floating.update()
+      autoUpdate(refs.reference.current, refs.floating.current, floating.update)
+    }
+  }, [open, floating.update, refs.floating, refs.reference])
 
-      // Only call this when the floating element is rendered
-      return autoUpdate(refs.reference.current, refs.floating.current, floating.update)
-    }, [open, floating.update, refs.floating, refs.reference])
-  }
+  // Subscribe to window dimensions (orientation, scale, etc...)
+  const dimensions = useWindowDimensions()
 
-  if (process.env.TAMAGUI_TARGET === 'native') {
-    // On Native there's no autoupdate so we call update() when necessary
-
-    // Subscribe to window dimensions (orientation, scale, etc...)
-    const dimensions = useWindowDimensions()
-
-    // Subscribe to keyboard state
-    const [keyboardOpen, setKeyboardOpen] = React.useState(false)
-    React.useEffect(() => {
-      const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
-        React.startTransition(() => {
-          setKeyboardOpen(true)
-        })
+  // Subscribe to keyboard state
+  const [keyboardOpen, setKeyboardOpen] = useState(false)
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+      startTransition(() => {
+        setKeyboardOpen(true)
       })
-      const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
-        React.startTransition(() => {
-          setKeyboardOpen(false)
-        })
+    })
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+      startTransition(() => {
+        setKeyboardOpen(false)
       })
+    })
 
-      return () => {
-        showSubscription.remove()
-        hideSubscription.remove()
-      }
-    }, [])
+    return () => {
+      showSubscription.remove()
+      hideSubscription.remove()
+    }
+  }, [])
 
-    useIsomorphicLayoutEffect(() => {
-      floating.update()
-    }, [dimensions, keyboardOpen])
-  }
+  useIsomorphicLayoutEffect(() => {
+    floating.update()
+  }, [dimensions, keyboardOpen])
 
   const popperContext = {
     size,
@@ -198,24 +190,25 @@ export function Popper(props: ScopedPopperProps<PopperProps>) {
 type PopperAnchorRef = HTMLElement | View
 
 export type PopperAnchorProps = YStackProps & {
-  virtualRef?: React.RefObject<any>
+  virtualRef?: RefObject<any>
 }
 
 export const PopperAnchor = YStack.extractable(
-  React.forwardRef<PopperAnchorRef, ScopedPopperProps<PopperAnchorProps>>(function PopperAnchor(
+  forwardRef<PopperAnchorRef, ScopedPopperProps<PopperAnchorProps>>(function PopperAnchor(
     props: ScopedPopperProps<PopperAnchorProps>,
     forwardedRef,
   ) {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const { virtualRef, __scopePopper, ...anchorProps } = props
     const { getReferenceProps, refs } = usePopperContext(__scopePopper)
-    const ref = React.useRef<PopperAnchorRef>(null)
+    const ref = useRef<PopperAnchorRef>(null)
     const composedRefs = useComposedRefs(forwardedRef, ref, refs.setReference as any)
 
-    React.useEffect(() => {
+    useEffect(() => {
       if (virtualRef) {
         refs.setReference(virtualRef.current)
       }
-    }, [virtualRef])
+    }, [virtualRef, refs])
 
     // if (virtualRef) {
     //   return null
@@ -267,29 +260,15 @@ export const PopperContentFrame = styled(ThemeableStack, {
   },
 })
 
-export const PopperContent = React.forwardRef<PopperContentElement, ScopedPopperProps<PopperContentProps>>(
+export const PopperContent = forwardRef<PopperContentElement, ScopedPopperProps<PopperContentProps>>(
   function PopperContent(props: ScopedPopperProps<PopperContentProps>, forwardedRef) {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const { __scopePopper, enableAnimationForPositionChange, ...rest } = props
-    const { strategy, placement, refs, x, y, getFloatingProps, size, isMounted, update, floatingStyles, hasFloating } =
+    const { strategy, placement, refs, x, y, getFloatingProps, size, isMounted, update } =
       usePopperContext(__scopePopper)
     const contentRefs = useComposedRefs<any>(refs.setFloating, forwardedRef)
 
-    let finalHasFloatingValue = false
-    if (isAndroid) {
-      const initialRender = React.useRef(true)
-      const finalHasFloating = React.useRef(false)
-
-      if (hasFloating === false) {
-        initialRender.current = false
-      }
-
-      if (!initialRender.current) {
-        finalHasFloating.current = hasFloating
-      }
-      finalHasFloatingValue = finalHasFloating.current
-    }
-
-    const contents = React.useMemo(() => {
+    const contents = useMemo(() => {
       return (
         <PopperContentFrame
           key="popper-content-frame"
@@ -300,10 +279,10 @@ export const PopperContent = React.forwardRef<PopperContentElement, ScopedPopper
           {...rest}
         />
       )
-    }, [placement, strategy, props])
+    }, [placement, strategy, rest, size])
 
-    const [needsMeasure, setNeedsMeasure] = React.useState(true)
-    React.useEffect(() => {
+    const [needsMeasure, setNeedsMeasure] = useState(true)
+    useEffect(() => {
       if (x || y) {
         setNeedsMeasure(false)
       }
@@ -316,17 +295,7 @@ export const PopperContent = React.forwardRef<PopperContentElement, ScopedPopper
     }, [isMounted])
 
     // default to not showing if positioned at 0, 0
-    let show = true
-
-    if (isAndroid) {
-      const [show_, setShow] = React.useState(false)
-      show = show_
-      React.useEffect(() => {
-        if (finalHasFloatingValue) {
-          setShow(true)
-        }
-      }, [finalHasFloatingValue, x, y])
-    }
+    const show = true
 
     // all poppers hidden on ssr by default
     if (!isMounted) {
@@ -418,6 +387,7 @@ export const PopperArrow = PopperArrowFrame.styleable<PopperArrowExtraProps>(fun
   propsIn: ScopedPopperProps<PopperArrowProps>,
   forwardedRef,
 ) {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   const { __scopePopper, ...rest } = propsIn
   const props = useProps(rest)
   const { offset, size: sizeProp, borderWidth = 0, ...arrowProps } = props
@@ -466,6 +436,7 @@ export const PopperArrow = PopperArrowFrame.styleable<PopperArrowExtraProps>(fun
     }
 
     // send the Arrow's offset up to Popper
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     useIsomorphicLayoutEffect(() => {
       context.onArrowSize?.(size)
     }, [size, context.onArrowSize])

@@ -39,6 +39,7 @@ const ReorModal: React.FC<ModalProps> = ({ isOpen, onClose, children, hideCloseB
       alignItems="center"
       justifyContent="center"
       backgroundColor="rgba(0, 0, 0, 0.4)"
+      height="100vh"
     >
       <YStack
         ref={modalRef}

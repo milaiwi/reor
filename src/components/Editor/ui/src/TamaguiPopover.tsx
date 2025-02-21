@@ -10,7 +10,6 @@ import '@tamagui/polyfill-dev'
 import type { UseHoverProps } from '@floating-ui/react'
 // @ts-expect-error
 import { Adapt } from '@tamagui/adapt'
-import { useAdaptParent } from '@/contexts/AdaptContext'
 import { Animate } from '@tamagui/animate'
 import { ResetPresence } from '@tamagui/animate-presence'
 import { hideOthers } from '@tamagui/aria-hidden'
@@ -43,6 +42,7 @@ import { useControllableState } from '@tamagui/use-controllable-state'
 // import * as React from 'react'
 import React, { FocusEvent } from 'react'
 import { Platform, ScrollView } from 'react-native-web'
+import { useAdaptParent } from '@/contexts/AdaptContext'
 import type { PopperArrowExtraProps, PopperArrowProps, PopperContentProps, PopperProps } from './TamaguiPopper'
 import {
   Popper,
@@ -589,9 +589,7 @@ export const Popover = withStaticProperties(
     } = props
 
     const id = React.useId()
-    const { when, AdaptProvider } = useAdaptParent(
-      <PortalHost name={`${id}PopoverContents`} />
-    );
+    const { when, AdaptProvider } = useAdaptParent(<PortalHost name={`${id}PopoverContents`} />)
 
     const sheetBreakpoint = when
     const triggerRef = React.useRef<TamaguiElement>(null)
