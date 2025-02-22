@@ -3,7 +3,7 @@ const lightShadowColorStrong = 'rgba(0,0,0,0.066)'
 const darkShadowColor = 'rgba(0,0,0,0.2)'
 const darkShadowColorStrong = 'rgba(0,0,0,0.3)'
 
-export const shadows = {
+const shadows = {
   light: {
     shadowColor: lightShadowColorStrong,
     shadowColorHover: lightShadowColorStrong,
@@ -17,3 +17,5 @@ export const shadows = {
     shadowColorFocus: darkShadowColor,
   },
 }
+
+export default shadows

@@ -2,7 +2,7 @@ import { createThemeBuilder } from '@tamagui/theme-builder'
 
 import masks from './masks'
 import palettes from './palettes'
-import { shadows } from './shadows'
+import shadows from './shadows'
 import { templates } from './templates'
 import { darkColors, lightColors } from './token-colors'
 
@@ -50,4 +50,5 @@ const themesBuilder = createThemeBuilder()
     brand: colorThemeDefinition('brand'),
   })
 
-export const themes = themesBuilder.build()
+const themes = themesBuilder.build()
+export default themes

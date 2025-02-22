@@ -104,6 +104,7 @@
     "@tamagui/shorthands": "^1.122.6",
     "@tamagui/stacks": "^1.122.6",
     "@tamagui/text": "^1.125.12",
+    "@tamagui/theme-builder": "^1.125.12",
     "@tamagui/themes": "^1.122.6",
     "@tamagui/use-controllable-state": "^1.122.6",
     "@tamagui/vite-plugin": "^1.122.6",

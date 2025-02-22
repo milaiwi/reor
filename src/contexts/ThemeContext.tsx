@@ -2,7 +2,6 @@ import { createContext, useContext, useEffect, useState, PropsWithChildren, FC }
 import type { TamaguiThemeTypes } from 'electron/main/electron-store/storeConfig'
 import { TamaguiProvider } from 'tamagui'
 import config from '../../tamagui.config'
-import { themes } from '@/components/Editor/ui/src/tamagui/themes/theme'
 
 interface ThemeActions {
   toggle: () => void
