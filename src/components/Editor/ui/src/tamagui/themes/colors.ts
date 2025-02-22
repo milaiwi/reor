@@ -39,7 +39,7 @@ export const brand = {
   brand12: 'hsl(123, 50%, 93%)',
   brandHighlight: 'hsl(125, 50%, 96%)',
 }
-;``
+
 export const brandDark = {
   brand1: brand.brand12,
   brand2: brand.brand11,

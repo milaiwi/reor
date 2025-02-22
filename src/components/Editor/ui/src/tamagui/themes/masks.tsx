@@ -8,7 +8,7 @@ import {
   skipMask,
 } from '@tamagui/create-theme'
 
-export const masks = {
+const masks = {
   identity: createIdentityMask(),
   soften: createSoftenMask(),
   soften2: createSoftenMask({ strength: 2 }),
@@ -40,3 +40,5 @@ export const masks = {
     }
   }),
 }
+
+export default masks

@@ -1,7 +1,7 @@
 import { CiImageOn, CiVideoOn } from 'react-icons/ci'
 // import { LuAudioLines } from "react-icons/lu";
 
-export const mediaConfig = {
+const mediaConfig = {
   image: {
     mediaType: 'image',
     icon: CiImageOn,
@@ -26,3 +26,5 @@ export const mediaConfig = {
   //   embedOptionHint: "Embed Audio",
   // }
 }
+
+export default mediaConfig

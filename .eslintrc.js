@@ -53,7 +53,8 @@ module.exports = {
         "peerDependencies": false, 
         "packageDir": "./"
       }
-    ]
+    ],
+    "react/destructuring-assignment": "off",
   },
   ignorePatterns: ['vite.config.ts', '.eslintrc.js'],
   settings: {

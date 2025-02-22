@@ -1,7 +1,7 @@
 import { objectFromEntries, objectKeys } from './helpers'
 import { colorTokens } from './token-colors'
 
-export const palettes = (() => {
+const palettes = (() => {
   const lightTransparent = 'rgba(255,255,255,0)'
   const darkTransparent = 'rgba(10,10,10,0)'
 
@@ -78,3 +78,5 @@ export const palettes = (() => {
     ...colorPalettes,
   }
 })()
+
+export default palettes

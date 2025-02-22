@@ -1,5 +1,5 @@
 import { createInterFont } from '@tamagui/font-inter'
-import { createGenericFont } from './create-generic-font'
+import createGenericFont from './create-generic-font'
 
 export const headingFont = createInterFont(
   {
@@ -72,30 +72,6 @@ export const monoFont = createGenericFont(
     sizeLineHeight: (x) => x * 1.5,
   },
 )
-
-export const _editorBody = createInterFont({
-  weight: {
-    1: '500',
-  },
-  size: {
-    1: 12,
-    2: 14,
-    3: 16,
-    4: 18,
-    5: 20,
-    6: 22,
-    7: 28,
-    8: 32,
-    9: 40,
-    10: 42,
-    11: 52,
-    12: 62,
-    13: 72,
-    14: 92,
-    15: 114,
-    16: 124,
-  },
-})
 
 export const editorBody = createGenericFont(
   `Georgia, Times, "Times New Roman", serif`,

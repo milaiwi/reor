@@ -9,7 +9,7 @@ import { Block, BlockNoteEditor, useEditorSelectionChange } from '@/lib/blocknot
 import { MultipleNodeSelection } from '@/lib/blocknote/core/extensions/SideMenu/MultipleNodeSelection'
 import type { HMBlockSchema } from '../schema'
 import { getNodesInSelection } from './utils'
-import { mediaConfig } from '@/components/Editor/ui/src/tamagui/config/mediaEmbed'
+import mediaConfig from '@/components/Editor/ui/src/tamagui/config/mediaEmbed'
 
 export type MediaType = {
   id: string

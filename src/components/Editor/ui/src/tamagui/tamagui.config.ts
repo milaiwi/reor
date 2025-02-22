@@ -1,7 +1,7 @@
 import { createTamagui } from '@tamagui/core'
 import { shorthands } from '@tamagui/shorthands'
 import { createTokens } from '@tamagui/web'
-import { animations } from './config/animations'
+import animations from './config/animations'
 import { bodyFont, editorBody, headingFont, monoFont } from './config/fonts'
 import { media, mediaQueryDefaultActive } from './config/media'
 import { radius } from './themes/token-radius'
@@ -46,5 +46,6 @@ const conf = {
 
 // @ts-ignore
 conf.mediaQueryDefaultActive = mediaQueryDefaultActive
+const config = createTamagui(conf)
 
-export const config = createTamagui(conf)
+export default config

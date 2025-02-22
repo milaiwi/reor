@@ -1,5 +1,5 @@
 export * from 'tamagui'
-export { config } from './tamagui/tamagui.config'
+export { default as config } from './tamagui/tamagui.config'
 
 export { Button as TButton, Paragraph as TParagraph, Section as TSection, Tooltip as TTooltip } from 'tamagui'
 export { Button, AccountTypeButton } from './button'

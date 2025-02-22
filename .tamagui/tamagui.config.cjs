@@ -30,7 +30,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // tamagui.config.ts
 var tamagui_config_exports = {};
 __export(tamagui_config_exports, {
-  default: () => tamagui_config_default
+  default: () => tamagui_config_default2
 });
 module.exports = __toCommonJS(tamagui_config_exports);
 
@@ -254,6 +254,7 @@ var animations = createAnimations({
   medium: "ease-in-out 300ms",
   slow: "ease-in-out 450ms"
 });
+var animations_default = animations;
 
 // node_modules/@tamagui/font-inter/dist/esm/index.mjs
 var import_core = require("@tamagui/core");
@@ -332,6 +333,7 @@ function createGenericFont(family, font = {}, {
   });
 }
 __name(createGenericFont, "createGenericFont");
+var create_generic_font_default = createGenericFont;
 
 // src/components/Editor/ui/src/tamagui/config/fonts.ts
 var headingFont = createInterFont(
@@ -374,7 +376,7 @@ var bodyFont = createInterFont(
     sizeLineHeight: /* @__PURE__ */ __name((size2) => size2 + 5, "sizeLineHeight")
   }
 );
-var monoFont = createGenericFont(
+var monoFont = create_generic_font_default(
   `"ui-monospace", "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace`,
   {
     weight: {
@@ -403,30 +405,7 @@ var monoFont = createGenericFont(
     sizeLineHeight: /* @__PURE__ */ __name((x) => x * 1.5, "sizeLineHeight")
   }
 );
-var _editorBody = createInterFont({
-  weight: {
-    1: "500"
-  },
-  size: {
-    1: 12,
-    2: 14,
-    3: 16,
-    4: 18,
-    5: 20,
-    6: 22,
-    7: 28,
-    8: 32,
-    9: 40,
-    10: 42,
-    11: 52,
-    12: 62,
-    13: 72,
-    14: 92,
-    15: 114,
-    16: 124
-  }
-});
-var editorBody = createGenericFont(
+var editorBody = create_generic_font_default(
   `Georgia, Times, "Times New Roman", serif`,
   {
     weight: {
@@ -1896,7 +1875,7 @@ __name(postfixObjKeys, "postfixObjKeys");
 var conf = {
   themes,
   defaultFont: "body",
-  animations,
+  animations: animations_default,
   shouldAddPrefersColorThemes: true,
   themeClassNameOnRoot: true,
   shorthands,
@@ -1926,6 +1905,7 @@ var conf = {
 };
 conf.mediaQueryDefaultActive = mediaQueryDefaultActive;
 var config = (0, import_core2.createTamagui)(conf);
+var tamagui_config_default = config;
 
 // tamagui.config.ts
-var tamagui_config_default = config;
+var tamagui_config_default2 = tamagui_config_default;

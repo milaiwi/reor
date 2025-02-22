@@ -32295,13 +32295,13 @@ var cloneElementWithPropOrder = /* @__PURE__ */ __name((child, props) => {
   }, next);
 }, "cloneElementWithPropOrder");
 
-// node_modules/@tamagui/react-native-media-driver/dist/esm/createMedia.mjs
+// node_modules/tamagui/node_modules/@tamagui/react-native-media-driver/dist/esm/createMedia.mjs
 var import_web18 = require("@tamagui/core");
 
-// node_modules/@tamagui/react-native-media-driver/dist/esm/matchMedia.mjs
+// node_modules/tamagui/node_modules/@tamagui/react-native-media-driver/dist/esm/matchMedia.mjs
 var matchMedia = globalThis.matchMedia;
 
-// node_modules/@tamagui/react-native-media-driver/dist/esm/createMedia.mjs
+// node_modules/tamagui/node_modules/@tamagui/react-native-media-driver/dist/esm/createMedia.mjs
 function createMedia(media) {
   return (0, import_web18.setupMatchMedia)(matchMedia), media;
 }

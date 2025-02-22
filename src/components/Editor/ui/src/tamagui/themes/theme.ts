@@ -1,7 +1,7 @@
 import { createThemeBuilder } from '@tamagui/theme-builder'
 
-import { masks } from './masks'
-import { palettes } from './palettes'
+import masks from './masks'
+import palettes from './palettes'
 import { shadows } from './shadows'
 import { templates } from './templates'
 import { darkColors, lightColors } from './token-colors'
