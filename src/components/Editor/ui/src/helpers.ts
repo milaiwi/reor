@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 // @ts-nocheck
 type ObjectType = Record<PropertyKey, unknown>
 

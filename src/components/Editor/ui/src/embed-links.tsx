@@ -1,8 +1,7 @@
 import { YStack, XStack, Button, Popover, Separator, Input, Theme, SizableText, Text } from 'tamagui'
-import React from 'react'
+import React, { useState } from 'react'
 import { IconType } from 'react-icons'
-import { MediaType } from '../../types'
-import { useState } from 'react'
+import { MediaType } from '@/components/Editor/types/media-render'
 
 interface EmbedRenderProps {
   props: {
@@ -22,7 +21,8 @@ interface EmbedRenderProps {
   assign: (props: MediaType) => void
 }
 
-export const EmbedComponent: React.FC<EmbedRenderProps> = ({ props, submit, assign }) => {
+const EmbedComponent: React.FC<EmbedRenderProps> = ({ props, submit, assign }) => {
+  // eslint-disable-next-line react/prop-types
   const { mediaType, icon, hint, uploadOptionHint, embedPlaceholder, embedOptionHint } = props
   const [url, setURL] = useState('')
   const [isClicked, setIsClicked] = useState(false)
@@ -36,7 +36,7 @@ export const EmbedComponent: React.FC<EmbedRenderProps> = ({ props, submit, assi
       <Popover.Trigger asChild>
         <YStack
           position="relative"
-          borderColor={'$color8'}
+          borderColor="$color8"
           borderWidth={0}
           backgroundColor="$purple3"
           borderRadius="$4"
@@ -68,7 +68,7 @@ export const EmbedComponent: React.FC<EmbedRenderProps> = ({ props, submit, assi
 
       <Popover.Content
         borderWidth={1}
-        borderColor={'$color8'}
+        borderColor="$color8"
         borderRadius={10}
         enterStyle={{ y: -10, opacity: 0 }}
         exitStyle={{ y: -10, opacity: 0 }}
@@ -84,7 +84,7 @@ export const EmbedComponent: React.FC<EmbedRenderProps> = ({ props, submit, assi
         paddingTop={3}
         paddingHorizontal={12}
       >
-        <Popover.Arrow borderWidth={1} borderColor={'$color8'} />
+        <Popover.Arrow borderWidth={1} borderColor="$color8" />
         <YStack gap="$2" width={300}>
           <XStack gap="$1">
             <Button
@@ -137,7 +137,9 @@ export const EmbedComponent: React.FC<EmbedRenderProps> = ({ props, submit, assi
                   cursor: 'pointer',
                 }}
                 onPress={() => {
-                  submit && submit(assign, 'upload', undefined, setErrorRaised)
+                  if (submit) {
+                    submit(assign, 'upload', undefined, setErrorRaised)
+                  }
                   setErrorRaised('')
                 }}
               >
@@ -186,7 +188,9 @@ export const EmbedComponent: React.FC<EmbedRenderProps> = ({ props, submit, assi
                         cursor: 'pointer',
                       }}
                       onPress={() => {
-                        submit && submit(assign, 'embed', url, setErrorRaised)
+                        if (submit) {
+                          submit(assign, 'embed', url, setErrorRaised)
+                        }
                         setURL('')
                       }}
                     >
@@ -202,3 +206,5 @@ export const EmbedComponent: React.FC<EmbedRenderProps> = ({ props, submit, assi
     </Popover>
   )
 }
+
+export default EmbedComponent

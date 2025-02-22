@@ -28,7 +28,7 @@ export const List = forwardRef(function ListComponent<Item>(
     <YStack
       f={1}
       alignSelf="stretch"
-      height={'100%'}
+      height="100%"
       onLayout={(e) => {
         setContainerHeight(e.nativeEvent.layout.height)
         setContainerWidth(e.nativeEvent.layout.width)

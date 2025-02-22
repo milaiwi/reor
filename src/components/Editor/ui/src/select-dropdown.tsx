@@ -1,5 +1,5 @@
 import { Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
-import { ReactNode } from 'react'
+import React, { ReactNode } from 'react'
 import { Select, SizableText, SizeTokens, XStack, XStackProps, YStack } from 'tamagui'
 
 export type SelectOptions = Array<{

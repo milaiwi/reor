@@ -1,43 +1,15 @@
+import React, { ComponentProps, createElement, isValidElement, ReactNode, useState } from 'react'
 import { Button } from '@tamagui/button'
 import { useTheme, View } from '@tamagui/core'
 import { ListItem, ListItemProps } from '@tamagui/list-item'
 import { ArrowDownRight, ChevronDown, ChevronRight } from '@tamagui/lucide-icons'
 import { XStack } from '@tamagui/stacks'
 import { SizableText } from '@tamagui/text'
-import { ComponentProps, createElement, isValidElement, ReactNode, useState } from 'react'
 import { type GestureResponderEvent } from 'react-native'
 import { MenuItemType, OptionsDropdown } from './options-dropdown'
 import { Tooltip } from './tooltip'
 
-export function FocusButton({ onPress, label }: { onPress: () => void; label?: string }) {
-  return (
-    <Tooltip content={label ? `Focus ${label}` : 'Focus'}>
-      <Button
-        icon={ArrowDownRight}
-        onPress={(e: GestureResponderEvent) => {
-          e.stopPropagation()
-          onPress()
-        }}
-        chromeless
-        backgroundColor={'$colorTransparent'}
-        size="$1"
-      />
-    </Tooltip>
-  )
-}
-
-export function SmallCollapsableListItem({ children, ...props }: ComponentProps<typeof SmallListItem>) {
-  const [isCollapsed, setIsCollapsed] = useState(false)
-  const displayChildren = isCollapsed ? null : children
-  return (
-    <>
-      <SmallListItem isCollapsed={isCollapsed} onSetCollapsed={setIsCollapsed} {...props} />
-      {displayChildren}
-    </>
-  )
-}
-
-export function SmallListItem({
+export const SmallListItem = ({
   disabled,
   title,
   icon,
@@ -66,13 +38,13 @@ export function SmallListItem({
   isCollapsed?: boolean | null
   onSetCollapsed?: (collapsed: boolean) => void
   multiline?: boolean
-}) {
+}) => {
   const theme = useTheme()
-  const indent = indented ? (typeof indented === 'number' ? indented : 1) : 0
+  const indentType = typeof indented === 'number' ? indented : 1
+  const indent = indented ? indentType : 0
   const activeBg = activeBgColor || '$brand12'
   return (
     <ListItem
-      className="mobile-menu-item"
       hoverTheme
       pressTheme
       focusTheme
@@ -109,16 +81,22 @@ export function SmallListItem({
       {...props}
     >
       <XStack gap="$2" jc="center" f={1}>
-        {isValidElement(icon) ? (
-          icon
-        ) : icon ? (
-          <View width={18}>
-            {createElement(icon, {
-              size: 18,
-              color: color || theme.gray12.val,
-            })}
-          </View>
-        ) : null}
+        {(() => {
+          if (isValidElement(icon)) {
+            return icon
+          }
+          if (icon) {
+            return (
+              <View width={18}>
+                {createElement(icon, {
+                  size: 18,
+                  color: color || theme.gray12.val,
+                })}
+              </View>
+            )
+          }
+          return null
+        })()}
         {children}
         <SizableText
           f={1}
@@ -134,7 +112,6 @@ export function SmallListItem({
           color={color || '$gray12'}
           fontWeight={bold ? 'bold' : undefined}
           userSelect="none"
-          className="mobile-menu-item-label"
         >
           {title}
         </SizableText>
@@ -144,7 +121,7 @@ export function SmallListItem({
             left={-24}
             size="$1"
             chromeless
-            backgroundColor={'$colorTransparent'}
+            backgroundColor="$colorTransparent"
             onPress={(e: GestureResponderEvent) => {
               e.stopPropagation()
               e.preventDefault()
@@ -158,15 +135,43 @@ export function SmallListItem({
   )
 }
 
-export function SmallListGroupItem({
+export const FocusButton = ({ onPress, label }: { onPress: () => void; label?: string }) => {
+  return (
+    <Tooltip content={label ? `Focus ${label}` : 'Focus'}>
+      <Button
+        icon={ArrowDownRight}
+        onPress={(e: GestureResponderEvent) => {
+          e.stopPropagation()
+          onPress()
+        }}
+        chromeless
+        backgroundColor="$colorTransparent"
+        size="$1"
+      />
+    </Tooltip>
+  )
+}
+
+export const SmallCollapsableListItem = ({ children, ...props }: ComponentProps<typeof SmallListItem>) => {
+  const [isCollapsed, setIsCollapsed] = useState(false)
+  const displayChildren = isCollapsed ? null : children
+  return (
+    <>
+      <SmallListItem isCollapsed={isCollapsed} onSetCollapsed={setIsCollapsed} {...props} />
+      {displayChildren}
+    </>
+  )
+}
+
+export const SmallListGroupItem = ({
   items,
   defaultExpanded,
   ...props
 }: {
   items: ReactNode[]
   defaultExpanded?: boolean
-} & ComponentProps<typeof SmallListItem>) {
-  const [isCollapsed, setIsCollapsed] = useState(defaultExpanded ? false : true)
+} & ComponentProps<typeof SmallListItem>) => {
+  const [isCollapsed, setIsCollapsed] = useState(!defaultExpanded)
   return (
     <>
       <SmallListItem {...props} isCollapsed={items.length ? isCollapsed : null} onSetCollapsed={setIsCollapsed} />
