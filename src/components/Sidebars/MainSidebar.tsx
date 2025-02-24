@@ -2,12 +2,12 @@ import React, { useState } from 'react'
 
 import { DBQueryResult } from 'electron/main/vector-database/schema'
 
+import { YStack } from 'tamagui'
 import { ChatSidebar } from '../Chat/ChatSidebar'
 
 import SearchComponent from './SearchComponent'
 import { useChatContext } from '@/contexts/ChatContext'
 import FileSidebar from './FileSideBar/FileSidebar'
-import { YStack } from 'tamagui'
 
 export type SidebarAbleToShow = 'files' | 'search' | 'chats'
 

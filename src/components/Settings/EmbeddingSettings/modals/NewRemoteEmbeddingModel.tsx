@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { EmbeddingModelWithRepo } from 'electron/main/electron-store/storeConfig'
 import posthog from 'posthog-js'
 import { Input } from 'tamagui'
+import { NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -13,7 +14,6 @@ import {
   DialogOverlay,
 } from '@/components/ui/dialog'
 import ExternalLink from '../../../Common/ExternalLink'
-import { NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native'
 
 interface NewRemoteEmbeddingModelModalProps {
   isOpen: boolean
@@ -58,7 +58,7 @@ const NewRemoteEmbeddingModelModal: React.FC<NewRemoteEmbeddingModelModalProps> 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogOverlay>
-        <DialogContent className="sm:max-w-[425px] p-4">
+        <DialogContent className="p-4 sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Custom embedding model</DialogTitle>
             <DialogDescription>

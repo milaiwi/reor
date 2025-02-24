@@ -4,7 +4,7 @@ import { DBEntry } from 'electron/main/vector-database/schema'
 import posthog from 'posthog-js'
 import { Card, XStack, ScrollView } from 'tamagui'
 import { useContentContext } from '@/contexts/ContentContext'
-import { Tooltip } from '@/components/Editor/ui/src/tooltip'
+import Tooltip from '@/components/Editor/ui/src/tooltip'
 import MarkdownRenderer from '@/components/Common/MarkdownRenderer'
 import { useThemeManager } from '@/contexts/ThemeContext'
 

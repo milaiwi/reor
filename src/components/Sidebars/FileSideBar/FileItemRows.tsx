@@ -1,15 +1,14 @@
 import React, { useState, useCallback } from 'react'
 import { ListChildComponentProps } from 'react-window'
-import { FaChevronDown, FaChevronRight } from 'react-icons/fa'
 import posthog from 'posthog-js'
 import { isFileNodeDirectory } from '@shared/utils'
+import { YStack, XStack } from 'tamagui'
+import { ChevronRight, ChevronDown } from '@tamagui/lucide-icons'
 import { useFileContext } from '@/contexts/FileContext'
 import { removeFileExtension } from '@/lib/file'
 import { useContentContext } from '@/contexts/ContentContext'
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/ui/context-menu'
 import NewDirectoryComponent from '@/components/File/NewDirectory'
-import { YStack, XStack } from 'tamagui'
-import { ChevronRight, ChevronDown } from '@tamagui/lucide-icons'
 
 const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data }) => {
   const { file, indentation } = data.filesAndIndentations[index]

@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { FileInfoNode, FileInfoTree } from 'electron/main/filesystem/types'
 import { FixedSizeList } from 'react-window'
 import { isFileNodeDirectory } from '@shared/utils'
+import { YStack } from 'tamagui'
 import { useFileContext } from '@/contexts/FileContext'
 import FileItemRows from './FileItemRows'
-import { YStack, Theme } from 'tamagui'
-import { useThemeManager } from '@/contexts/ThemeContext'
 
 const getFilesAndIndentationsForSidebar = (
   files: FileInfoTree,

@@ -5,13 +5,12 @@ import { MdSettings } from 'react-icons/md'
 import { VscNewFolder } from 'react-icons/vsc'
 import { HiOutlinePencilAlt } from 'react-icons/hi'
 
+import { Files, MessageCircle, Search, Moon, SunMoon } from '@tamagui/lucide-icons'
+import { YStack } from 'tamagui'
 import { useModalOpeners } from '../../contexts/ModalContext'
 import { useChatContext } from '@/contexts/ChatContext'
 import { useContentContext } from '@/contexts/ContentContext'
 import { useThemeManager } from '@/contexts/ThemeContext'
-
-import { Files, MessageCircle, Search, Moon, SunMoon } from '@tamagui/lucide-icons'
-import { Button, YStack } from 'tamagui'
 
 export interface IconsSidebarProps {
   getShortcutDescription: (action: string) => string

@@ -3,10 +3,11 @@ import React, { useEffect, useState } from 'react'
 import { Button } from '@material-tailwind/react'
 import posthog from 'posthog-js'
 
+import { Input, H3 } from 'tamagui'
+import { NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native'
 import ReorModal from '../Common/Modal'
 import { getInvalidCharacterInFilePath } from '@/lib/file'
 import { useFileContext } from '@/contexts/FileContext'
-import { Input, H3 } from 'tamagui'
 
 interface NewDirectoryComponentProps {
   isOpen: boolean
@@ -60,8 +61,7 @@ const NewDirectoryComponent: React.FC<NewDirectoryComponentProps> = ({ isOpen, o
     return true
   }
 
-  const handleNameChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newName = e.target.value
+  const handleNameChange = async (newName: string) => {
     await handleValidName(newName)
     setDirectoryRelativePath(newName)
   }
@@ -85,7 +85,6 @@ const NewDirectoryComponent: React.FC<NewDirectoryComponentProps> = ({ isOpen, o
           New Directory
         </H3>
         <Input
-          type="text"
           width="100%"
           height="$3"
           fontSize="$1"
@@ -96,10 +95,9 @@ const NewDirectoryComponent: React.FC<NewDirectoryComponentProps> = ({ isOpen, o
           paddingVertical="$2"
           focusStyle={{ borderColor: '$blue7', outlineStyle: 'none' }}
           value={directoryRelativePath}
-          onChange={handleNameChange}
-          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-            console.log(`Key pressed: ${e.key}`)
-            if (e.key === 'Enter') {
+          onChangeText={handleNameChange}
+          onKeyPress={(e: NativeSyntheticEvent<TextInputKeyPressEventData>) => {
+            if (e.nativeEvent.key === 'Enter') {
               createNewDirectory()
             }
           }}

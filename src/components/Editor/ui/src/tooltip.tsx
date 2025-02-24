@@ -1,10 +1,10 @@
-import { Text, Theme } from '@tamagui/core'
+import { Text } from '@tamagui/core'
 import React from 'react'
+import { ScrollView } from 'tamagui'
 import { Tooltip as TTooltip, TooltipProps } from './TamaguiTooltip'
 import MarkdownRenderer from '@/components/Common/MarkdownRenderer'
-import { ScrollView } from 'tamagui'
 
-export function Tooltip({
+const Tooltip = ({
   children,
   content,
   placement,
@@ -18,7 +18,7 @@ export function Tooltip({
   delay?: number
   open?: boolean
   renderMarkdown?: boolean
-}) {
+}) => {
   return content ? (
     <TTooltip placement={placement} delay={delay} open={open}>
       <TTooltip.Trigger asChild>{children}</TTooltip.Trigger>
@@ -43,7 +43,7 @@ export function Tooltip({
         ]}
       >
         <TTooltip.Arrow />
-        <ScrollView maxHeight="300px" overflowY="auto">
+        <ScrollView maxHeight="300px">
           <Text fontSize="$1" fontFamily="$body" margin={0} padding={0} lineHeight="$1">
             {renderMarkdown ? <MarkdownRenderer content={content as string} /> : content}
           </Text>
@@ -54,3 +54,5 @@ export function Tooltip({
     children
   )
 }
+
+export default Tooltip
