@@ -7,7 +7,6 @@ import ChunkSizeSettings from '../ChunkSizeSettings'
 import EmbeddingModelSelect from './EmbeddingModelSelect'
 import NewRemoteEmbeddingModelModal from './modals/NewRemoteEmbeddingModel'
 import { Button } from '@/components/ui/button'
-import { YStack, XStack, SizableText } from 'tamagui'
 import SettingsSection, { SettingsRow } from '../Shared/SettingsRow'
 
 interface EmbeddingModelManagerProps {

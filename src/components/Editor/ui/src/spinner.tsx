@@ -15,6 +15,7 @@ export type SpinnerProps = Omit<YStackProps, 'children'> & {
 export const Spinner: React.ForwardRefExoticComponent<SpinnerProps & React.RefAttributes<any>> = YStack.styleable(
   themeable(
     React.forwardRef<TamaguiElement>((props: SpinnerProps, ref) => {
+      // eslint-disable-next-line react/prop-types
       const { size, color: colorProp, ...stackProps } = props
       const theme = useTheme()
       let color = colorProp as string

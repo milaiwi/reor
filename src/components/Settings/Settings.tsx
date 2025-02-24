@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { YStack, SizableText, XStack, ScrollView } from 'tamagui'
 import { Dialog, DialogContent, DialogOverlay } from '@/components/ui/dialog'
 
 import AnalyticsSettings from './AnalyticsSettings'
@@ -6,7 +7,6 @@ import EmbeddingModelSettings from './EmbeddingSettings/EmbeddingSettings'
 import EditorSettings from './GeneralSettings'
 
 import LLMSettingsContent from './LLMSettings/LLMSettingsContent'
-import { YStack, SizableText, XStack, ScrollView } from 'tamagui'
 
 interface SettingsModalProps {
   isOpen: boolean

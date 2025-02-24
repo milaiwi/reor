@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
 import { EmbeddingModelWithRepo } from 'electron/main/electron-store/storeConfig'
 import posthog from 'posthog-js'
-import { Button } from '@/components/ui/button'
-// import { Input } from '@/components/ui/input'
 import { Input } from 'tamagui'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -14,6 +13,7 @@ import {
   DialogOverlay,
 } from '@/components/ui/dialog'
 import ExternalLink from '../../../Common/ExternalLink'
+import { NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native'
 
 interface NewRemoteEmbeddingModelModalProps {
   isOpen: boolean
@@ -49,8 +49,8 @@ const NewRemoteEmbeddingModelModal: React.FC<NewRemoteEmbeddingModelModalProps> 
     onClose()
   }
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+  const handleKeyPress = (e: NativeSyntheticEvent<TextInputKeyPressEventData>) => {
+    if (e.nativeEvent.key === 'Enter') {
       saveModelConfigToElectronStore()
     }
   }
@@ -69,8 +69,8 @@ const NewRemoteEmbeddingModelModal: React.FC<NewRemoteEmbeddingModelModalProps> 
           <div className="grid gap-4 py-4">
             <Input
               value={huggingfaceRepo}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setHuggingfaceRepo(e.target.value)}
-              onKeyDown={handleKeyPress}
+              onChangeText={setHuggingfaceRepo}
+              onKeyPress={handleKeyPress}
               placeholder="Xenova/bge-base-en-v1.5"
               size="$1"
               py="$3"

@@ -1,7 +1,8 @@
+import React from 'react'
 import { ListItem, ListItemProps } from '@tamagui/list-item'
 import { SizableText } from '@tamagui/text'
 
-export function MenuItem({ disabled, title, icon, iconAfter, children, ...props }: ListItemProps) {
+const MenuItem = ({ disabled, title, icon, iconAfter, children, ...props }: ListItemProps) => {
   return (
     <ListItem
       hoverTheme
@@ -36,3 +37,5 @@ export function MenuItem({ disabled, title, icon, iconAfter, children, ...props 
     </ListItem>
   )
 }
+
+export default MenuItem

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ReactNode } from 'react'
+import React, { useEffect, useState } from 'react'
 import Switch from '@mui/material/Switch'
 import SettingsSection, { SettingsRow } from './Shared/SettingsRow'
 

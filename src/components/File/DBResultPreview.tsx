@@ -1,8 +1,8 @@
 import React from 'react'
 import { formatDistanceToNow } from 'date-fns'
 import { DBQueryResult } from 'electron/main/vector-database/schema'
-import MarkdownRenderer from '../Common/MarkdownRenderer'
 import { Card, Text, YStack } from 'tamagui'
+import MarkdownRenderer from '../Common/MarkdownRenderer'
 
 const cosineDistanceToPercentage = (similarity: number) => ((1 - similarity) * 100).toFixed(2)
 

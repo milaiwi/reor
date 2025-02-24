@@ -1,6 +1,6 @@
 import { styled, XStack } from 'tamagui'
 
-export const ResizeHandle = styled(XStack, {
+const ResizeHandle = styled(XStack, {
   position: 'absolute',
   width: '8px',
   height: '32px',
@@ -13,3 +13,5 @@ export const ResizeHandle = styled(XStack, {
   borderRadius: '5px',
   cursor: 'ew-resize',
 })
+
+export default ResizeHandle

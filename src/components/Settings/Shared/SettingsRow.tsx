@@ -13,11 +13,10 @@ interface SettingsRowProps {
   description?: string
   control: ReactNode
   divider?: boolean
-  error?: string | ReactNode
 }
 
 const SettingsSection: React.FC<SettingsSectionProps> = ({ title, children, footnote, error }) => (
-  <YStack px="$4" backgroundColor="$gray1" color="$gray13" width="100%" height="100%" justifyContent="space-between">
+  <YStack px="$4" backgroundColor="$gray1" width="100%" height="100%" justifyContent="space-between">
     <YStack>
       <h2 className="mb-2">{title}</h2>
       <XStack className="h-[2px] w-full bg-neutral-700" />

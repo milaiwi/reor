@@ -1,6 +1,6 @@
 /* eslint react/destructuring-assignment: "off" */
 import React, { useEffect, useState } from 'react'
-import { ResizeHandle } from '@/components/Editor/ui/src/resize-handle'
+import ResizeHandle from '@/components/Editor/ui/src/resize-handle'
 import { Block, BlockNoteEditor, defaultProps, createReactBlockSpec } from '@/lib/blocknote'
 import MediaContainer from '../media-container'
 import { DisplayComponentProps, MediaRender, MediaType } from '../media-render'

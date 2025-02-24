@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { ProgressResponse } from 'ollama'
 import posthog from 'posthog-js'
 import { toast } from 'react-toastify'
-import { Button } from '@/components/ui/button'
-// import { Input } from '@/components/ui/input'
 import { Input } from 'tamagui'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -85,7 +84,7 @@ const NewOllamaModelModal: React.FC<NewOllamaModelModalProps> = ({ isOpen, onClo
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogOverlay>
-        <DialogContent className="sm:max-w-[525px] p-4">
+        <DialogContent className="p-4 sm:max-w-[525px]">
           <DialogHeader>
             <DialogTitle>New Local LLM</DialogTitle>
             <DialogDescription>
@@ -96,9 +95,8 @@ const NewOllamaModelModal: React.FC<NewOllamaModelModalProps> = ({ isOpen, onClo
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <Input
-              type="text"
               value={modelNameBeingInputted}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setModelNameBeingInputted(e.target.value)}
+              onChangeText={setModelNameBeingInputted}
               placeholder="llama3.2"
               size="$1"
               py="$3"

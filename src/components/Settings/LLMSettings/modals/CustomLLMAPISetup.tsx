@@ -2,9 +2,8 @@
 import React, { useState } from 'react'
 import { LLMAPIConfig } from 'electron/main/electron-store/storeConfig'
 import posthog from 'posthog-js'
-import { Button } from '@/components/ui/button'
-// import { Input } from '@/components/ui/input'
 import { Input, XStack, YStack } from 'tamagui'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -42,11 +41,10 @@ const ModelNameInput: React.FC<ModelNameInputProps> = ({ modelNames, setModelNam
       <h4 className="mb-1 font-medium">Model Names</h4>
       <XStack flex={1} gap="$2">
         <Input
-          type="text"
           className="mt-0 w-full"
           placeholder="Add model name"
           value={newModelName}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewModelName(e.target.value)}
+          onChangeText={setNewModelName}
           size="$1"
           py="$4"
           px="$2"
@@ -114,7 +112,7 @@ const CustomLLMAPISetupModal: React.FC<RemoteLLMModalProps> = ({ isOpen, onClose
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogOverlay>
-        <DialogContent className="max-h-[60vh] overflow-y-auto sm:max-w-[525px] p-4">
+        <DialogContent className="max-h-[60vh] overflow-y-auto p-4 sm:max-w-[525px]">
           <DialogHeader>
             <DialogTitle>Remote LLM Setup</DialogTitle>
             <DialogDescription>
@@ -132,10 +130,9 @@ const CustomLLMAPISetupModal: React.FC<RemoteLLMModalProps> = ({ isOpen, onClose
               <label htmlFor="apiUrl">API URL</label>
               <Input
                 id="apiUrl"
-                type="text"
                 placeholder="API URL"
                 value={apiURL}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setApiURL(e.target.value)}
+                onChangeText={setApiURL}
                 size="$1"
                 py="$4"
                 px="$2"
@@ -149,10 +146,9 @@ const CustomLLMAPISetupModal: React.FC<RemoteLLMModalProps> = ({ isOpen, onClose
               <label htmlFor="apiName">API Name</label>
               <Input
                 id="apiName"
-                type="text"
                 placeholder="API Name"
                 value={apiName}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setApiName(e.target.value)}
+                onChangeText={setApiName}
                 size="$1"
                 py="$4"
                 px="$2"
@@ -163,10 +159,9 @@ const CustomLLMAPISetupModal: React.FC<RemoteLLMModalProps> = ({ isOpen, onClose
               <label htmlFor="apiKey">Optional API Key</label>
               <Input
                 id="apiKey"
-                type="text"
                 placeholder="API Key"
                 value={apiKey}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setApiKey(e.target.value)}
+                onChangeText={setApiKey}
                 size="$1"
                 py="$4"
                 px="$2"

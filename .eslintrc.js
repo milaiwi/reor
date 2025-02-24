@@ -55,6 +55,7 @@ module.exports = {
       }
     ],
     "react/destructuring-assignment": "off",
+    "no-plusplus": "off",
   },
   ignorePatterns: ['vite.config.ts', '.eslintrc.js'],
   settings: {

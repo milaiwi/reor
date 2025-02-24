@@ -1,15 +1,3 @@
-// should roughly map to button/input etc height at each level
-// fonts should match that height/lineHeight at each stop
-// so these are really non-linear on purpose
-// why?
-//   - at sizes <1, used for fine grained things (borders, smallest paddingY)
-//     - so smallest padY should be roughly 1-4px so it can join with lineHeight
-//   - at sizes >=1, have to consider "pressability" (jumps up)
-//   - after that it should go upwards somewhat naturally
-//   - H1 / headings top out at 10 naturally, so after 10 we can go upwards faster
-//  but also one more wrinkle...
-//  space is used in conjunction with size
-//  i'm setting space to generally just a fixed fraction of size (~1/3-2/3 still fine tuning)
 export const size = {
   $0: 0,
   '$0.25': 2,

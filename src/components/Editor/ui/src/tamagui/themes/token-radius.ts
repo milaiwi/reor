@@ -1,4 +1,4 @@
-export const radius = {
+const radius = {
   0: 0,
   1: 3,
   2: 5,
@@ -50,3 +50,5 @@ export const radius = {
 //   11: 72,
 //   12: 84,
 // }
+
+export default radius

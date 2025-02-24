@@ -12,7 +12,7 @@ interface LLMSelectOrButtonProps {
 
 const LLMSelectOrButton: React.FC<LLMSelectOrButtonProps> = ({ selectedLLM, setSelectedLLM }) => {
   const { llmConfigs } = useLLMConfigs()
-  const { state, actions } = useThemeManager()
+  const { state } = useThemeManager()
   const handleLLMChange = (value: string) => {
     setSelectedLLM(value)
   }

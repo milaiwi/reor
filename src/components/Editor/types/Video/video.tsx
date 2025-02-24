@@ -1,7 +1,8 @@
 /* eslint react/destructuring-assignment: "off" */
 import React, { useEffect, useState } from 'react'
 import { isValidUrl, youtubeParser } from '../utils'
-import { ResizeHandle, XStack } from '@/components/Editor/ui/src'
+import { XStack } from '@/components/Editor/ui/src'
+import ResizeHandle from '@/components/Editor/ui/src/resize-handle'
 import { Block, BlockNoteEditor, defaultProps, createReactBlockSpec } from '@/lib/blocknote'
 import MediaContainer from '../media-container'
 import { DisplayComponentProps, MediaRender, MediaType } from '../media-render'

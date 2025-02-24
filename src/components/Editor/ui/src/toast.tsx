@@ -1,26 +1,27 @@
+/* eslint-disable no-console */
 import { Button } from '@tamagui/button'
 import { styled } from '@tamagui/core'
 import { AlertCircle, CheckCircle2 } from '@tamagui/lucide-icons'
 import { XStack, YStack } from '@tamagui/stacks'
 import { SizableText } from '@tamagui/text'
-import { ComponentProps, ReactElement, useEffect, useReducer, useRef, useState } from 'react'
+import React, { ComponentProps, ReactElement, useEffect, useReducer, useRef, useState } from 'react'
 import { Spinner } from './spinner'
 
-function DecorationIcon({
+const DecorationIcon = ({
   Icon,
   color,
 }: {
   Icon: typeof CheckCircle2
   color: ComponentProps<typeof CheckCircle2>['color']
-}) {
+}) => {
   return <Icon color={color} />
 }
 
-export function SuccessToastDecoration() {
+export const SuccessToastDecoration = () => {
   return <DecorationIcon Icon={CheckCircle2} color="$green9" />
 }
 
-export function ErrorToastDecoration() {
+export const ErrorToastDecoration = () => {
   return <DecorationIcon Icon={AlertCircle} color="$red9" />
 }
 
@@ -29,7 +30,7 @@ const ToastXStack = styled(XStack, {
   ai: 'center',
 })
 
-function ToastView({
+const ToastView = ({
   message,
   decoration,
   onMouseEnter,
@@ -43,7 +44,7 @@ function ToastView({
   onMouseLeave: () => void
   onPress: () => void
   customContent?: ReactElement
-}) {
+}) => {
   const content = customContent || (
     <ToastXStack>
       {/* <AnimatePresence> */}
@@ -160,7 +161,7 @@ type ToastHandler = (message?: string, options?: ToastOptions) => { close: () =>
 
 let handleToast: ToastHandler = fallbackToastHandler
 let toastCounter = 0
-export function Toaster() {
+export const Toaster = () => {
   const hovered = useRef<string | null>(null)
   const hoveredTimeout = useRef<NodeJS.Timeout | undefined>(undefined)
   const [state, dispatch] = useReducer(toastReducer, initToastState)
@@ -278,6 +279,7 @@ type ResolvedState<V> = {
 const loadingState: LoadingState = { state: 'loading' }
 type PromiseToastState<V> = ErrorState | LoadingState | ResolvedState<V>
 
+// eslint-disable-next-line react/function-component-definition
 function PromiseToast<V>({ messages, promise }: { messages: PromiseToastMessages<V>; promise: Promise<V> }) {
   const [state, setState] = useState<PromiseToastState<V>>(loadingState)
   useEffect(() => {
@@ -288,6 +290,7 @@ function PromiseToast<V>({ messages, promise }: { messages: PromiseToastMessages
       .catch((error) => {
         setState({ state: 'error', error })
       })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   if (state.state === 'loading')
     return (

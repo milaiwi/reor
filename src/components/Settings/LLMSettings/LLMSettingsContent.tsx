@@ -3,7 +3,6 @@ import DefaultLLMSelector from './DefaultLLMSelector'
 import useLLMConfigs from '../../../lib/hooks/use-llm-configs'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { YStack, XStack } from 'tamagui'
 
 import DefaultLLMAPISetupModal from './modals/DefaultLLMAPISetupModal'
 import NewOllamaModelModal from './modals/NewOllamaModel'

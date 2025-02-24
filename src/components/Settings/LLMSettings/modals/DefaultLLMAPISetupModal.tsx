@@ -6,9 +6,9 @@ import {
   openAIDefaultAPIName,
   openAIDefaultLLMs,
 } from '@shared/defaultLLMs'
-import { Button } from '@/components/ui/button'
-// import { Input } from '@/components/ui/input'
 import { Input } from 'tamagui'
+import { NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -57,8 +57,8 @@ const DefaultLLMAPISetupModal: React.FC<CloudLLMSetupModalProps> = ({ isOpen, on
     onClose()
   }
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+  const handleKeyPress = (e: NativeSyntheticEvent<TextInputKeyPressEventData>) => {
+    if (e.nativeEvent.key === 'Enter') {
       handleSave()
     }
   }
@@ -66,7 +66,7 @@ const DefaultLLMAPISetupModal: React.FC<CloudLLMSetupModalProps> = ({ isOpen, on
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogOverlay>
-        <DialogContent className="sm:max-w-[425px] p-4">
+        <DialogContent className="p-4 sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>{LLMDisplayName} Setup</DialogTitle>
             <DialogDescription>Enter your {LLMDisplayName} API key below:</DialogDescription>
@@ -74,8 +74,8 @@ const DefaultLLMAPISetupModal: React.FC<CloudLLMSetupModalProps> = ({ isOpen, on
           <div className="grid gap-4 pt-4">
             <Input
               value={apiKey}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAPIKey(e.target.value)}
-              onKeyDown={handleKeyPress}
+              onChangeText={setAPIKey}
+              onKeyPress={handleKeyPress}
               placeholder={`${LLMDisplayName} API Key`}
               size="$1"
               py="$3"

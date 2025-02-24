@@ -2,11 +2,10 @@
 import React, { useState, useEffect } from 'react'
 
 import { EmbeddingModelConfig } from 'electron/main/electron-store/storeConfig'
+import { XStack, YStack, SizableText } from 'tamagui'
 
 import NewRemoteEmbeddingModelModal from './modals/NewRemoteEmbeddingModel'
 import EmbeddingModelSelect from './EmbeddingModelSelect'
-import { XStack, YStack, SizableText } from 'tamagui'
-import { SettingsRow } from '../Shared/SettingsRow'
 
 interface InitialEmbeddingModelSettingsProps {
   setErrorMsg: (msg: string) => void

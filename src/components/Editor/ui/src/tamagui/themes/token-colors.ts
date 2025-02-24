@@ -85,11 +85,6 @@ export const lightColors = {
   ...colorTokens.light.brand,
 }
 
-export const color = {
-  ...postfixObjKeys(lightColors, 'Light'),
-  ...postfixObjKeys(darkColors, 'Dark'),
-}
-
 function postfixObjKeys<A extends { [key: string]: Variable<string> | string }, B extends string>(
   obj: A,
   postfix: B,
@@ -97,4 +92,9 @@ function postfixObjKeys<A extends { [key: string]: Variable<string> | string }, 
   [Key in `${keyof A extends string ? keyof A : never}${B}`]: Variable<string> | string
 } {
   return Object.fromEntries(Object.entries(obj).map(([k, v]) => [`${k}${postfix}`, v])) as never
+}
+
+export const color = {
+  ...postfixObjKeys(lightColors, 'Light'),
+  ...postfixObjKeys(darkColors, 'Dark'),
 }
