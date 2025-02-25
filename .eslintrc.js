@@ -56,6 +56,9 @@ module.exports = {
     ],
     "react/destructuring-assignment": "off",
     "no-plusplus": "off",
+    "no-restricted-syntax": "off",
+    "no-param-reassign": 'off',
+    "prefer-destructuring": 'off',
   },
   ignorePatterns: ['vite.config.ts', '.eslintrc.js'],
   settings: {

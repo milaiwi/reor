@@ -23,13 +23,13 @@ const nodeAttributes: Record<string, string> = {
  *
  * Solution: When attributes change on a node, this plugin sets a data-* attribute with the "previous" value. This way we can still use CSS transitions. (See block.module.css)
  */
-export const PreviousBlockTypePlugin = () => {
+const PreviousBlockTypePlugin = () => {
   let timeout: any
   return new Plugin({
     key: PLUGIN_KEY,
-    view(_editorView) {
+    view() {
       return {
-        update: async (view, _prevState) => {
+        update: async (view) => {
           if (this.key?.getState(view.state).updatedBlocks.size > 0) {
             // use setTimeout 0 to clear the decorations so that at least
             // for one DOM-render the decorations have been applied
@@ -184,7 +184,7 @@ export const PreviousBlockTypePlugin = () => {
           const decorationAttrs: any = {}
 
           for (const [nodeAttr, val] of Object.entries(prevAttrs)) {
-            decorationAttrs['data-prev-' + nodeAttributes[nodeAttr]] = val || 'none'
+            decorationAttrs[`data-prev-${nodeAttributes[nodeAttr]}`] = val || 'none'
           }
 
           // for debugging:
@@ -205,3 +205,5 @@ export const PreviousBlockTypePlugin = () => {
     },
   })
 }
+
+export default PreviousBlockTypePlugin

@@ -1,22 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import React, { createContext, useContext, ReactNode, useEffect, useState } from 'react'
-import { MathExtension } from '@aarkue/tiptap-math-extension'
-import Document from '@tiptap/extension-document'
-import Paragraph from '@tiptap/extension-paragraph'
-import Table from '@tiptap/extension-table'
-import TableCell from '@tiptap/extension-table-cell'
-import TableHeader from '@tiptap/extension-table-header'
-import TableRow from '@tiptap/extension-table-row'
-import TaskItem from '@tiptap/extension-task-item'
-import TaskList from '@tiptap/extension-task-list'
-import Text from '@tiptap/extension-text'
-import TextStyle from '@tiptap/extension-text-style'
-import { Editor, useEditor } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import CharacterCount from '@tiptap/extension-character-count'
 import { toast } from 'react-toastify'
-import { Markdown } from 'tiptap-markdown'
 import { useDebounce } from 'use-debounce'
 import { FileInfo, FileInfoTree } from 'electron/main/filesystem/types'
 import {
@@ -29,11 +14,8 @@ import {
   sortFilesAndDirectories,
 } from '@/lib/file'
 import { SuggestionsState } from '@/components/Editor/BacklinkSuggestionsDisplay'
-import HighlightExtension, { HighlightData } from '@/components/Editor/HighlightExtension'
-import { RichTextLink } from '@/components/Editor/RichTextLink'
+import { HighlightData } from '@/components/Editor/HighlightExtension'
 import '@/styles/tiptap.scss'
-import SearchAndReplace from '@/components/Editor/Search/SearchAndReplaceExtension'
-import getMarkdown from '@/components/Editor/utils'
 import useOrderedSet from '../lib/hooks/use-ordered-set'
 import welcomeNote from '@/lib/welcome-note'
 import { BlockNoteEditor, useBlockNote } from '@/lib/blocknote'
@@ -91,6 +73,8 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [noteToBeRenamed, setNoteToBeRenamed] = useState<string>('')
   const [fileDirToBeRenamed, setFileDirToBeRenamed] = useState<string>('')
   const [currentlyChangingFilePath, setCurrentlyChangingFilePath] = useState(false)
+  // TODO: Add highlighting data on search
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [highlightData, setHighlightData] = useState<HighlightData>({
     text: '',
     position: null,
@@ -158,7 +142,7 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   const editor = useBlockNote<typeof hmBlockSchema>({
-    onEditorContentChange(editor: BlockNoteEditor) {
+    onEditorContentChange() {
       setNeedToWriteEditorContentToDisk(true)
       setNeedToIndexEditorContent(true)
     },

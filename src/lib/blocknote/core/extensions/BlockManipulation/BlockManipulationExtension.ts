@@ -4,11 +4,11 @@ import { EditorView } from '@tiptap/pm/view'
 import { Node } from 'prosemirror-model'
 import { NodeSelection, Plugin, PluginKey, TextSelection } from 'prosemirror-state'
 import { findNextBlock, findPreviousBlock } from '../../../../utils/block-utils'
-import { getBlockInfoFromPos } from '../Blocks/helpers/getBlockInfoFromPos'
+import { BlockInfo, getBlockInfoFromPos } from '../Blocks/helpers/getBlockInfoFromPos'
 
 const selectableNodeTypes = ['image', 'file', 'embed', 'video', 'web-embed', 'math', 'button', 'query']
 
-export const BlockManipulationExtension = Extension.create({
+const BlockManipulationExtension = Extension.create({
   name: 'BlockManupulation',
 
   addKeyboardShortcuts() {
@@ -76,6 +76,7 @@ export const BlockManipulationExtension = Extension.create({
         props: {
           handleKeyDown(view, event) {
             const { state } = view
+            let blockInfo: BlockInfo | undefined
             if (event.key === 'Delete') {
               const { doc, selection, tr } = state
               if (selection.empty) {
@@ -128,13 +129,12 @@ export const BlockManipulationExtension = Extension.create({
               }
             } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
               let hasHardBreak = false
-              const blockInfo = getBlockInfoFromPos(state.doc, state.selection.from)!
+              blockInfo = getBlockInfoFromPos(state.doc, state.selection.from)!
               // Find if the selected node has break line and check if the selection's from position is before or after the hard break
               blockInfo.contentNode.content.descendants((node, pos) => {
                 if (node.type.name === 'hardBreak') {
-                  if (blockInfo.startPos + pos + 1 < state.selection.from) {
+                  if (blockInfo && blockInfo.startPos + pos + 1 < state.selection.from) {
                     hasHardBreak = true
-                    return
                   }
                 }
               })
@@ -163,7 +163,7 @@ export const BlockManipulationExtension = Extension.create({
                   return true
                 }
                 if (event.key === 'ArrowLeft') {
-                  const blockInfo = getBlockInfoFromPos(state.doc, state.selection.from)!
+                  blockInfo = getBlockInfoFromPos(state.doc, state.selection.from)!
                   if (
                     state.selection.$anchor.parentOffset !== 0 &&
                     !selectableNodeTypes.includes(blockInfo.contentType.name)
@@ -180,9 +180,9 @@ export const BlockManipulationExtension = Extension.create({
                 }
               } else {
                 if (event.shiftKey) return false
-                const blockInfo = getBlockInfoFromPos(state.doc, state.selection.from)!
+                blockInfo = getBlockInfoFromPos(state.doc, state.selection.from)!
                 if (selectableNodeTypes.includes(blockInfo.contentType.name)) {
-                  const newBlock = state.schema.nodes['blockContainer'].createAndFill()!
+                  const newBlock = state.schema.nodes.blockContainer.createAndFill()!
                   let tr = state.tr.insert(1, newBlock)
                   view.dispatch(tr)
 
@@ -195,10 +195,10 @@ export const BlockManipulationExtension = Extension.create({
               return false
             } else if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
               let lastHardBreakPos: number | null = null
-              const blockInfo = getBlockInfoFromPos(state.doc, state.selection.from)!
+              blockInfo = getBlockInfoFromPos(state.doc, state.selection.from)!
               // Find the position of last hard break in node content, if any
               blockInfo.contentNode.content.descendants((node, pos) => {
-                if (node.type.name === 'hardBreak') {
+                if (blockInfo && node.type.name === 'hardBreak') {
                   lastHardBreakPos = blockInfo.startPos + pos + 1
                 }
               })
@@ -206,7 +206,7 @@ export const BlockManipulationExtension = Extension.create({
               if (lastHardBreakPos && state.selection.to <= lastHardBreakPos) return false
               const nextBlockInfo = findNextBlock(view, state.selection.from)
               if (nextBlockInfo) {
-                const blockInfo = getBlockInfoFromPos(state.doc, state.selection.from)!
+                blockInfo = getBlockInfoFromPos(state.doc, state.selection.from)!
                 if (event.shiftKey) {
                   const blockInfoAfterSelection = findNextBlock(view, state.selection.to)
                   if (event.key === 'ArrowRight') {
@@ -227,7 +227,8 @@ export const BlockManipulationExtension = Extension.create({
                       tr = tr.scrollIntoView()
                       view.dispatch(tr)
                       return true
-                    } else return false
+                    }
+                    return false
                   }
                   return false
                 }
@@ -258,3 +259,5 @@ export const BlockManipulationExtension = Extension.create({
     ]
   },
 })
+
+export default BlockManipulationExtension

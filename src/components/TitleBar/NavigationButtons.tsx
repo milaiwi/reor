@@ -2,12 +2,11 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import posthog from 'posthog-js'
 import { IoMdArrowRoundBack, IoMdArrowRoundForward } from 'react-icons/io'
-
+import { YStack, XStack, View, Text } from 'tamagui'
 import { removeFileExtension } from '@/lib/file'
 import '../../styles/history.scss'
 import { useFileContext } from '@/contexts/FileContext'
 import { useContentContext } from '@/contexts/ContentContext'
-import { YStack, XStack, View, Text } from 'tamagui'
 
 const NavigationButtons: React.FC = () => {
   const [showMenu, setShowMenu] = useState<string>('')

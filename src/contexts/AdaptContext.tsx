@@ -1,22 +1,22 @@
-import React from 'react';
+import React from 'react'
 
 type AdaptContextType = {
-  when: boolean;
-  AdaptProvider: React.FC<{ children: React.ReactNode }>;
-};
+  when: boolean
+  AdaptProvider: React.FC<{ children: React.ReactNode }>
+}
 
-const AdaptContext = React.createContext<AdaptContextType | null>(null);
+const AdaptContext = React.createContext<AdaptContextType | null>(null)
 
 export const useAdapt = () => {
-  const context = React.useContext(AdaptContext);
+  const context = React.useContext(AdaptContext)
   if (!context) {
-    throw new Error('useAdapt must be used within an AdaptProvider');
+    throw new Error('useAdapt must be used within an AdaptProvider')
   }
-  return context;
-};
+  return context
+}
 
 export const useAdaptParent = (contents: React.ReactNode) => {
-  const [when, setWhen] = React.useState(false);
+  const [when] = React.useState(false)
 
   const AdaptProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return (
@@ -24,8 +24,8 @@ export const useAdaptParent = (contents: React.ReactNode) => {
         {children}
         {when && contents}
       </AdaptContext.Provider>
-    );
-  };
+    )
+  }
 
-  return { when, AdaptProvider };
-};
+  return { when, AdaptProvider }
+}

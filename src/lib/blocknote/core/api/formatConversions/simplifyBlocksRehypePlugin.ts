@@ -15,7 +15,7 @@ type SimplifyBlocksOptions = {
  * with HTML list structure.
  * @param options Options for specifying which block types represent ordered and unordered list items.
  */
-export function simplifyBlocks(options: SimplifyBlocksOptions) {
+const simplifyBlocks = (options: SimplifyBlocksOptions) => {
   const listItemBlockTypes = new Set<string>([
     ...options.orderedListItemBlockTypes,
     ...options.unorderedListItemBlockTypes,
@@ -31,13 +31,13 @@ export function simplifyBlocks(options: SimplifyBlocksOptions) {
       const blockContent = blockContainer.children[0] as HASTElement
       const blockGroup = blockContainer.children.length === 2 ? (blockContainer.children[1] as HASTElement) : null
 
-      const isListItemBlock = listItemBlockTypes.has(blockContent.properties!['dataContentType'] as string)
-
-      const listItemBlockType = isListItemBlock
-        ? options.orderedListItemBlockTypes.has(blockContent.properties!['dataContentType'] as string)
+      const isListItemBlock = listItemBlockTypes.has(blockContent.properties!.dataContentType as string)
+      let listItemBlockType = null
+      if (isListItemBlock) {
+        listItemBlockType = options.orderedListItemBlockTypes.has(blockContent.properties!.dataContentType as string)
           ? 'ol'
           : 'ul'
-        : null
+      }
 
       // Plugin runs recursively to process nested blocks.
       if (blockGroup !== null) {
@@ -104,3 +104,5 @@ export function simplifyBlocks(options: SimplifyBlocksOptions) {
 
   return simplifyBlocksHelper
 }
+
+export default simplifyBlocks

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, PropsWithChildren, FC } from 'react'
+import React, { createContext, useContext, useEffect, useState, PropsWithChildren, FC } from 'react'
 import type { TamaguiThemeTypes } from 'electron/main/electron-store/storeConfig'
 import { TamaguiProvider } from 'tamagui'
 import config from '../../tamagui.config'
@@ -18,6 +18,7 @@ const ThemeContext = createContext<ThemeContextValue | null>(null)
 
 export class ThemeManager {
   private state: TamaguiThemeTypes
+
   private setState: (theme: TamaguiThemeTypes) => void
 
   constructor(initialTheme: TamaguiThemeTypes, setState: (theme: TamaguiThemeTypes) => void) {
@@ -61,7 +62,6 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     const initTheme = async () => {
       const savedTheme = await window.electronStore.getTamaguiTheme()
-      console.log(`Fetched theme from store: ${savedTheme}`)
       setTheme(savedTheme || 'light')
       setManager(new ThemeManager(savedTheme || 'light', setTheme))
     }
@@ -72,7 +72,7 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
   if (!manager) return null // Prevent rendering before the theme is set
   return (
     <ThemeContext.Provider value={manager.getContextValue()}>
-      <TamaguiProvider config={config} defaultTheme={theme} >
+      <TamaguiProvider config={config} defaultTheme={theme}>
         {children}
       </TamaguiProvider>
     </ThemeContext.Provider>

@@ -1,3 +1,5 @@
+/* eslint-disable import/no-cycle */
+/* eslint no-param-reassign: ["error", { "props": false }] */
 import { Editor, EditorOptions, Extension } from '@tiptap/core'
 import { Node } from 'prosemirror-model'
 // import "./blocknote.css";
@@ -12,7 +14,7 @@ import {
   markdownToBlocks,
 } from './api/formatConversions/formatConversions'
 import { blockToNode, nodeToBlock } from './api/nodeConversions/nodeConversions'
-import { getNodeById } from './api/util/nodeUtil'
+import getNodeById from './api/util/nodeUtil'
 import styles from './editor.module.css'
 import {
   Block,
@@ -133,16 +135,23 @@ const blockNoteTipTapOptions = {
 
 export class BlockNoteEditor<BSchema extends BlockSchema = HMBlockSchema> {
   public readonly _tiptapEditor: TiptapEditor & { contentComponent: any }
+
   public blockCache = new WeakMap<Node, Block<BSchema>>()
+
   public readonly schema: BSchema
+
   public ready = false
 
   public inlineEmbedOptions = []
 
   public readonly sideMenu: SideMenuProsemirrorPlugin<BSchema>
+
   public readonly formattingToolbar: FormattingToolbarProsemirrorPlugin<BSchema>
+
   public readonly slashMenu: SlashMenuProsemirrorPlugin<BSchema, any>
+
   public readonly hyperlinkToolbar: HyperlinkToolbarProsemirrorPlugin<BSchema>
+
   public readonly linkMenu: LinkMenuProsemirrorPlugin<BSchema, any>
 
   constructor(private readonly options: Partial<BlockNoteEditorOptions<BSchema>> = {}) {
@@ -196,6 +205,7 @@ export class BlockNoteEditor<BSchema extends BlockSchema = HMBlockSchema> {
     this.schema = newOptions.blockSchema
 
     if (newOptions.collaboration && newOptions.initialContent) {
+      // eslint-disable-next-line no-console
       console.warn(
         'When using Collaboration, initialContent might cause conflicts, because changes should come from the collaboration provider',
       )
@@ -231,7 +241,7 @@ export class BlockNoteEditor<BSchema extends BlockSchema = HMBlockSchema> {
         }
         // we have to set the initial content here, because now we can use the editor schema
         // which has been created at this point
-        const schema = editor.editor.schema
+        const { schema } = editor.editor
 
         const ic = initialContent.map((block) => blockToNode(block, schema))
         const root = schema.node('doc', undefined, schema.node('blockGroup', undefined, ic))
@@ -336,7 +346,7 @@ export class BlockNoteEditor<BSchema extends BlockSchema = HMBlockSchema> {
   public getBlock(blockIdentifier: BlockIdentifier): Block<BSchema> | undefined {
     if (!blockIdentifier) return undefined
     const id = typeof blockIdentifier === 'string' ? blockIdentifier : blockIdentifier.id
-    let newBlock: Block<BSchema> | undefined = undefined
+    let newBlock: Block<BSchema> | undefined
 
     this._tiptapEditor.state.doc.firstChild!.descendants((node) => {
       if (typeof newBlock !== 'undefined') {
@@ -418,13 +428,13 @@ export class BlockNoteEditor<BSchema extends BlockSchema = HMBlockSchema> {
     const numNodes = this._tiptapEditor.state.doc.resolve(endPos + 1).node().childCount
 
     // Gets previous blockContainer node at the same nesting level, if the current node isn't the first child.
-    let prevNode: Node | undefined = undefined
+    let prevNode: Node | undefined
     if (nodeIndex > 0) {
       prevNode = this._tiptapEditor.state.doc.resolve(startPos - 2).node()
     }
 
     // Gets next blockContainer node at the same nesting level, if the current node isn't the last child.
-    let nextNode: Node | undefined = undefined
+    let nextNode: Node | undefined
     if (nodeIndex < numNodes - 1) {
       nextNode = this._tiptapEditor.state.doc.resolve(endPos + 2).node()
     }
@@ -551,7 +561,7 @@ export class BlockNoteEditor<BSchema extends BlockSchema = HMBlockSchema> {
    * Gets the active text styles at the text cursor position or at the end of the current selection if it's active.
    */
   public getActiveStyles() {
-    const styles: Styles = {}
+    const tempStyles: Styles = {}
     const marks = this._tiptapEditor.state.selection.$to.marks()
 
     const toggleStyles = new Set<ToggledStyle>(['bold', 'italic', 'underline', 'strike', 'code'])
@@ -559,26 +569,26 @@ export class BlockNoteEditor<BSchema extends BlockSchema = HMBlockSchema> {
 
     for (const mark of marks) {
       if (toggleStyles.has(mark.type.name as ToggledStyle)) {
-        styles[mark.type.name as ToggledStyle] = true
+        tempStyles[mark.type.name as ToggledStyle] = true
       } else if (colorStyles.has(mark.type.name as ColorStyle)) {
-        styles[mark.type.name as ColorStyle] = mark.attrs.color
+        tempStyles[mark.type.name as ColorStyle] = mark.attrs.color
       }
     }
 
-    return styles
+    return tempStyles
   }
 
   /**
    * Adds styles to the currently selected content.
    * @param styles The styles to add.
    */
-  public addStyles(styles: Styles) {
+  public addStyles(tempStyles: Styles) {
     const toggleStyles = new Set<ToggledStyle>(['bold', 'italic', 'underline', 'strike', 'code'])
     const colorStyles = new Set<ColorStyle>(['textColor', 'backgroundColor'])
 
     this._tiptapEditor.view.focus()
 
-    for (const [style, value] of Object.entries(styles)) {
+    for (const [style, value] of Object.entries(tempStyles)) {
       if (toggleStyles.has(style as ToggledStyle)) {
         this._tiptapEditor.commands.setMark(style)
       } else if (colorStyles.has(style as ColorStyle)) {
@@ -591,10 +601,10 @@ export class BlockNoteEditor<BSchema extends BlockSchema = HMBlockSchema> {
    * Removes styles from the currently selected content.
    * @param styles The styles to remove.
    */
-  public removeStyles(styles: Styles) {
+  public removeStyles(tempStyles: Styles) {
     this._tiptapEditor.view.focus()
 
-    for (const style of Object.keys(styles)) {
+    for (const style of Object.keys(tempStyles)) {
       this._tiptapEditor.commands.unsetMark(style)
     }
   }
@@ -603,13 +613,13 @@ export class BlockNoteEditor<BSchema extends BlockSchema = HMBlockSchema> {
    * Toggles styles on the currently selected content.
    * @param styles The styles to toggle.
    */
-  public toggleStyles(styles: Styles) {
+  public toggleStyles(tempStyles: Styles) {
     const toggleStyles = new Set<ToggledStyle>(['bold', 'italic', 'underline', 'strike', 'code'])
     const colorStyles = new Set<ColorStyle>(['textColor', 'backgroundColor'])
 
     this._tiptapEditor.view.focus()
 
-    for (const [style, value] of Object.entries(styles)) {
+    for (const [style, value] of Object.entries(tempStyles)) {
       if (toggleStyles.has(style as ToggledStyle)) {
         this._tiptapEditor.commands.toggleMark(style)
       } else if (colorStyles.has(style as ColorStyle)) {
@@ -641,20 +651,18 @@ export class BlockNoteEditor<BSchema extends BlockSchema = HMBlockSchema> {
    * @param text The text to display the link with.
    */
   public createLink(url: string, text?: string) {
-    if (url === '') {
+    if (url === '' || !text) {
       return
     }
 
     const { from, to } = this._tiptapEditor.state.selection
 
-    if (!text) {
-      text = this._tiptapEditor.state.doc.textBetween(from, to)
-    }
+    const tempText = this._tiptapEditor.state.doc.textBetween(from, to)
 
     const mark = this._tiptapEditor.schema.mark('link', { href: url })
 
     this._tiptapEditor.view.dispatch(
-      this._tiptapEditor.view.state.tr.insertText(text, from, to).addMark(from, from + text.length, mark),
+      this._tiptapEditor.view.state.tr.insertText(tempText, from, to).addMark(from, from + tempText.length, mark),
     )
   }
 

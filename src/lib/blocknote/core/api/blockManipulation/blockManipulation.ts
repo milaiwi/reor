@@ -2,7 +2,7 @@ import { Editor } from '@tiptap/core'
 import { Node } from 'prosemirror-model'
 import { BlockIdentifier, BlockSchema, PartialBlock } from '../../extensions/Blocks/api/blockTypes'
 import { blockToNode } from '../nodeConversions/nodeConversions'
-import { getNodeById } from '../util/nodeUtil'
+import getNodeById from '../util/nodeUtil'
 
 export function insertBlocks<BSchema extends BlockSchema>(
   blocksToInsert: PartialBlock<BSchema>[],

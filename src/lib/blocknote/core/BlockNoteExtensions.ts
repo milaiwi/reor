@@ -1,8 +1,6 @@
 import { Extensions, extensions } from '@tiptap/core'
 // import {HMBlockSchema} from '../../schema'
 
-import { BlockNoteEditor } from './BlockNoteEditor'
-
 // import {LocalMediaPastePlugin} from '@/editor/handle-local-media-paste-plugin'
 // import {debugPlugin} from '@/editor/prosemirror-debugger'
 import { Bold } from '@tiptap/extension-bold'
@@ -18,10 +16,11 @@ import { Strike } from '@tiptap/extension-strike'
 import { Text } from '@tiptap/extension-text'
 import { Underline } from '@tiptap/extension-underline'
 import * as Y from 'yjs'
+import { BlockNoteEditor } from './BlockNoteEditor'
 // import {createInlineEmbedNode} from '../../mentions-plugin'
 import Link from '../../tiptap-extension-link'
 import styles from './editor.module.css'
-import { BlockManipulationExtension } from './extensions/BlockManipulation/BlockManipulationExtension'
+import BlockManipulationExtension from './extensions/BlockManipulation/BlockManipulationExtension'
 import { BlockContainer, BlockGroup, Doc } from './extensions/Blocks'
 import { BlockNoteDOMAttributes } from './extensions/Blocks/api/blockTypes'
 import { CustomBlockSerializerExtension } from './extensions/Blocks/api/serialization'
@@ -97,8 +96,6 @@ export const getBlockNoteExtensions = <BSchema extends HMBlockSchema>(opts: {
     Link.configure(opts.linkExtensionOptions),
     // TextColorMark,
     // TextColorExtension,
-    // BackgroundColorMark,
-    // BackgroundColorExtension,
     // TextAlignmentExtension,
     // LocalMediaPastePlugin,
     DiffExtension,

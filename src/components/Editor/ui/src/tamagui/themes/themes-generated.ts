@@ -451,7 +451,6 @@ export const colors = [
 
 function t(a: [number, number][]) {
   const res: Record<string, string> = {}
-  // eslint-disable-next-line no-restricted-syntax
   for (const [ki, vi] of a) {
     res[ks[ki] as string] = colors[vi] as string
   }

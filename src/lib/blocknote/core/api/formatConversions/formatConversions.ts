@@ -7,12 +7,12 @@ import remarkParse from 'remark-parse'
 import remarkRehype, { defaultHandlers } from 'remark-rehype'
 import remarkStringify from 'remark-stringify'
 import { unified } from 'unified'
+import { Styles } from '@lib/blocknote/core/extensions/Blocks/api/inlineContentTypes'
 import { Block, BlockSchema } from '../../extensions/Blocks/api/blockTypes'
 
 import { blockToNode, nodeToBlock } from '../nodeConversions/nodeConversions'
-import { simplifyBlocks } from './simplifyBlocksRehypePlugin'
+import simplifyBlocks from './simplifyBlocksRehypePlugin'
 import { removeSingleSpace, preserveEmptyParagraphs, code, videos } from './customRehypePlugins'
-import { Styles, InlineContent } from '@lib/blocknote/core/extensions/Blocks/api/inlineContentTypes'
 
 /**
  * Converts our blocks to HTML:
@@ -31,7 +31,7 @@ export async function blocksToHTML<BSchema extends BlockSchema>(
   const serializer = DOMSerializer.fromSchema(schema)
 
   for (const block of blocks) {
-    let node = blockToNode(block, schema)
+    const node = blockToNode(block, schema)
     const htmlNode = serializer.serializeNode(node)
     htmlParentElement.appendChild(htmlNode)
   }
@@ -69,7 +69,7 @@ export async function HTMLToBlocks<BSchema extends BlockSchema>(
   htmlNode.innerHTML = transformedHTML.trim()
 
   const parser = DOMParser.fromSchema(schema)
-  const parentNode = parser.parse(htmlNode) //, { preserveWhitespace: "full" });
+  const parentNode = parser.parse(htmlNode) // , { preserveWhitespace: "full" });
   const blocks: Block<BSchema>[] = []
 
   for (let i = 0; i < parentNode.firstChild!.childCount; i++) {
@@ -101,6 +101,7 @@ async function replaceLocalUrls(html: string) {
         result = result.replace(fullImg, newImg)
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Failed to load image:', fileName, error)
     }
   }
@@ -139,11 +140,10 @@ const convertContentItemToHtml = (contentItem: any) => {
 
   if (contentItem.type === 'link') {
     const linkText = applyStyles(contentItem.content[0].text, contentItem.content[0].styles || {})
-    let docPath = contentItem.href
+    const docPath = contentItem.href
     return `<a href="${docPath}">${linkText}</a>`
-  } else {
-    return text
   }
+  return text
 }
 
 /**
@@ -192,10 +192,9 @@ function convertBlockToHtml<BSchema extends BlockSchema>(block: Block<BSchema>, 
   if (isListItem) {
     // Wrap the block content in <li> if it's a list item
     return `<li>${blockHtml}${childrenHtml}</li>`
-  } else {
-    // Return the block content and any children it may have
-    return `${blockHtml}\n${childrenHtml}`
   }
+  // Return the block content and any children it may have
+  return `${blockHtml}\n${childrenHtml}`
 }
 
 /**
@@ -218,7 +217,6 @@ function convertBlocksToHtml<BSchema extends BlockSchema>(blocks: Block<BSchema>
  */
 export async function blocksToMarkdown<BSchema extends BlockSchema>(
   blocks: Block<BSchema>[],
-  schema: Schema,
 ): Promise<string> {
   const tmpMarkdownString = await unified()
     // @ts-expect-error

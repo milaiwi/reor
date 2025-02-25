@@ -73,9 +73,8 @@ const ChatSources: React.FC<ChatSourcesProps> = ({ contextItems }) => {
                   shadowRadius: '$4',
                 }}
                 onPress={() => handleOpenContent(getItemPath(contextItem))}
-                color="$gray13"
               >
-                <ScrollView overflowY="auto" maxHeight="100px">
+                <ScrollView maxHeight="100px">
                   <MarkdownRenderer content={truncateName(getItemName(contextItem), 20)} />
                 </ScrollView>
               </Card>

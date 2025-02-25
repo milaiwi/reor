@@ -17,7 +17,7 @@ const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
 >(({ className, children, ...props }, ref) => {
-  const { state, actions } = useThemeManager()
+  const { state } = useThemeManager()
   const textColor = state === 'dark' ? 'text-white' : 'text-black' // Temporary fix: should change this to a tamagui component!
   return (
     <SelectPrimitive.Trigger
