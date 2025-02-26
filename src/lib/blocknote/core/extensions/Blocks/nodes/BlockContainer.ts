@@ -2,13 +2,12 @@ import { mergeAttributes, Node } from '@tiptap/core'
 import { Fragment, Node as PMNode, Slice } from 'prosemirror-model'
 import { EditorState, NodeSelection, Plugin, PluginKey, TextSelection } from 'prosemirror-state'
 import { Decoration, DecorationSet } from 'prosemirror-view'
-import { blockToNode, inlineContentToNodes } from '../../../api/nodeConversions/nodeConversions'
-
-import { BlockChildrenType } from '../api/blockTypes'
 import { ResolvedPos } from '@tiptap/pm/model'
 import { EditorView } from '@tiptap/pm/view'
+import { blockToNode, inlineContentToNodes } from '../../../api/nodeConversions/nodeConversions'
+
+import { BlockChildrenType, BlockNoteDOMAttributes, BlockSchema, PartialBlock } from '../api/blockTypes'
 import { mergeCSSClasses } from '../../../shared/utils'
-import { BlockNoteDOMAttributes, BlockSchema, PartialBlock } from '../api/blockTypes'
 import { getBlockInfoFromPos } from '../helpers/getBlockInfoFromPos'
 import { getGroupInfoFromPos } from '../helpers/getGroupInfoFromPos'
 import styles from './Block.module.css'
@@ -48,7 +47,7 @@ const ClickSelectionPlugin = new Plugin({
             left: editorBoundingBox.left + editorBoundingBox.width / 2, // take middle of editor
             top: event.clientY,
           }
-          let pos = view.posAtCoords(coords)
+          const pos = view.posAtCoords(coords)
           if (!pos) {
             return undefined
           }
@@ -100,58 +99,6 @@ const PastePlugin = new Plugin({
   },
 })
 
-const headingLinePlugin = new Plugin({
-  key: headingLinePluginKey,
-  view(editorView) {
-    return new HeadingLinePlugin(editorView)
-  },
-})
-
-class HeadingLinePlugin {
-  private line: HTMLElement
-  constructor(view: EditorView) {
-    this.line = document.createElement('div')
-    this.line.style.transition = 'all 0.15s ease-in-out'
-    this.line.style.pointerEvents = 'none'
-    this.line.style.display = ''
-    this.line.style.opacity = '0'
-    view.dom.parentNode?.appendChild(this.line)
-
-    this.update(view, null)
-  }
-
-  update(view: EditorView, lastState: EditorState | null) {
-    let state = view.state
-    // Don't do anything if the document/selection didn't change
-    if (lastState && lastState.doc.eq(state.doc) && lastState.selection.eq(state.selection)) return
-
-    let res = getNearestHeadingFromPos(state, state.selection.from)
-
-    if (res && res.heading?.type.name === 'heading') {
-      let { node } = view.domAtPos(res.groupStartPos)
-
-      let rect = (node as HTMLElement).getBoundingClientRect()
-      let editorRect = view.dom.getBoundingClientRect()
-      let groupPadding = 10
-      let editorPaddingTop = 40
-      this.line.style.position = 'absolute'
-      this.line.style.top = `${rect.top + editorPaddingTop + groupPadding - editorRect.top}px`
-      this.line.style.left = `${rect.left - editorRect.left + groupPadding}px`
-      this.line.style.width = `2.5px`
-      this.line.style.height = `${rect.height - groupPadding * 2}px`
-      this.line.style.backgroundColor = 'var(--brand5)'
-      this.line.style.opacity = '0.4'
-    } else {
-      this.line.style.opacity = '0'
-      return
-    }
-  }
-
-  destroy() {
-    this.line.remove()
-  }
-}
-
 function getNearestHeadingFromPos(state: EditorState, pos: number) {
   const $pos = state.doc.resolve(pos)
   const maxDepth = $pos.depth
@@ -182,8 +129,60 @@ function getNearestHeadingFromPos(state: EditorState, pos: number) {
     }
   }
 
-  return
+  return null
 }
+
+class HeadingLinePlugin {
+  private line: HTMLElement
+
+  constructor(view: EditorView) {
+    this.line = document.createElement('div')
+    this.line.style.transition = 'all 0.15s ease-in-out'
+    this.line.style.pointerEvents = 'none'
+    this.line.style.display = ''
+    this.line.style.opacity = '0'
+    view.dom.parentNode?.appendChild(this.line)
+
+    this.update(view, null)
+  }
+
+  update(view: EditorView, lastState: EditorState | null) {
+    const state = view.state
+    // Don't do anything if the document/selection didn't change
+    if (lastState && lastState.doc.eq(state.doc) && lastState.selection.eq(state.selection)) return
+
+    const res = getNearestHeadingFromPos(state, state.selection.from)
+
+    if (res && res.heading?.type.name === 'heading') {
+      const { node } = view.domAtPos(res.groupStartPos)
+
+      const rect = (node as HTMLElement).getBoundingClientRect()
+      const editorRect = view.dom.getBoundingClientRect()
+      const groupPadding = 10
+      const editorPaddingTop = 40
+      this.line.style.position = 'absolute'
+      this.line.style.top = `${rect.top + editorPaddingTop + groupPadding - editorRect.top}px`
+      this.line.style.left = `${rect.left - editorRect.left + groupPadding}px`
+      this.line.style.width = `2.5px`
+      this.line.style.height = `${rect.height - groupPadding * 2}px`
+      this.line.style.backgroundColor = 'var(--brand5)'
+      this.line.style.opacity = '0.4'
+    } else {
+      this.line.style.opacity = '0'
+    }
+  }
+
+  destroy() {
+    this.line.remove()
+  }
+}
+
+const headingLinePlugin = new Plugin({
+  key: headingLinePluginKey,
+  view(editorView) {
+    return new HeadingLinePlugin(editorView)
+  },
+})
 
 export function getParentBlockFromPos(state: EditorState, pos: number) {
   const $pos = state.doc.resolve(pos)
@@ -191,9 +190,9 @@ export function getParentBlockFromPos(state: EditorState, pos: number) {
 
   // if (depth > 3 && container.type.name == 'blockContainer') {
   if (depth > 3) {
-    let parent = $pos.node(depth - 3)
-    let parentGroup = $pos.node(depth - 2)
-    let parentPos = $pos.start(depth - 3)
+    const parent = $pos.node(depth - 3)
+    const parentGroup = $pos.node(depth - 2)
+    const parentPos = $pos.start(depth - 3)
     return {
       parentGroup,
       parentBlock: parent.firstChild,
@@ -203,7 +202,7 @@ export function getParentBlockFromPos(state: EditorState, pos: number) {
     }
   }
 
-  return
+  return null
 }
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -307,7 +306,7 @@ export const BlockContainer = Node.create<{
       BNCreateBlock:
         (pos) =>
         ({ state, dispatch }) => {
-          const newBlock = state.schema.nodes['blockContainer'].createAndFill()!
+          const newBlock = state.schema.nodes.blockContainer.createAndFill()!
 
           if (dispatch) {
             state.tr.insert(pos, newBlock)
@@ -363,10 +362,7 @@ export const BlockContainer = Node.create<{
                 )
               } else {
                 // Inserts a new blockGroup containing the child nodes created earlier.
-                state.tr.insert(
-                  startPos + contentNode.nodeSize,
-                  state.schema.nodes['blockGroup'].create({}, childNodes),
-                )
+                state.tr.insert(startPos + contentNode.nodeSize, state.schema.nodes.blockGroup.create({}, childNodes))
               }
             }
 
@@ -401,7 +397,7 @@ export const BlockContainer = Node.create<{
 
             // Adds all provided props as attributes to the parent blockContainer node too, and also preserves existing
             // attributes.
-            let providedProps = {
+            const providedProps = {
               ...node.attrs,
               ...block.props,
             }
@@ -496,7 +492,7 @@ export const BlockContainer = Node.create<{
           const originalBlockContent = state.doc.cut(startPos + 1, posInBlock)
           const newBlockContent = state.doc.cut(posInBlock, endPos - 1)
 
-          const newBlock = state.schema.nodes['blockContainer'].createAndFill()!
+          const newBlock = state.schema.nodes.blockContainer.createAndFill()!
 
           const newBlockInsertionPos = endPos + 1
           const newBlockContentPos = newBlockInsertionPos + 2
@@ -552,7 +548,7 @@ export const BlockContainer = Node.create<{
           if (blockInfo === undefined) {
             return false
           }
-          let { node, startPos, contentNode, depth } = blockInfo
+          const { node, startPos, contentNode, depth } = blockInfo
           if (node.childCount === 1) {
             setTimeout(() => {
               this.editor
@@ -565,8 +561,8 @@ export const BlockContainer = Node.create<{
             })
           } else {
             const originalBlockContent = state.doc.cut(startPos + 1, state.selection.from)
-            let newBlockContent = state.doc.cut(state.selection.from, startPos + contentNode.nodeSize - 1)
-            const newBlock = state.schema.nodes['blockContainer'].createAndFill()!
+            const newBlockContent = state.doc.cut(state.selection.from, startPos + contentNode.nodeSize - 1)
+            const newBlock = state.schema.nodes.blockContainer.createAndFill()!
             const newBlockInsertionPos = startPos + contentNode.nodeSize + 1
             const newBlockContentPos = newBlockInsertionPos + 2
 
@@ -651,6 +647,7 @@ export const BlockContainer = Node.create<{
             setTimeout(() => {
               this.editor
                 .chain()
+                // eslint-disable-next-line @typescript-eslint/no-shadow
                 .command(({ state, dispatch }) => {
                   if (dispatch) {
                     // setTimeout(() => {
@@ -768,17 +765,17 @@ export const BlockContainer = Node.create<{
         // Undoes an input rule if one was triggered in the last editor state change.
         () => commands.undoInputRule(),
         () =>
-          commands.command(({ state, dispatch, chain }) => {
+          commands.command(({ state, dispatch }) => {
             const selectionAtBlockStart = state.selection.$anchor.parentOffset === 0
             const blockInfo = getBlockInfoFromPos(state.doc, state.selection.from)!
 
             const isParagraph = blockInfo.contentType.name === 'paragraph'
-            let parentInfo = getParentBlockFromPos(state, state.selection.from)
+            const parentInfo = getParentBlockFromPos(state, state.selection.from)
 
             if (selectionAtBlockStart && isParagraph && parentInfo) {
-              let { parentBlock, parentGroup, parentPos } = parentInfo
-              let isFirstChild = blockInfo.node.attrs.id === parentGroup.firstChild?.attrs.id
-              let isParentBlockHeading = parentBlock?.type.name === 'heading'
+              const { parentBlock, parentGroup, parentPos } = parentInfo
+              const isFirstChild = blockInfo.node.attrs.id === parentGroup.firstChild?.attrs.id
+              const isParentBlockHeading = parentBlock?.type.name === 'heading'
 
               if (
                 // is the first child of the parent group
@@ -789,9 +786,6 @@ export const BlockContainer = Node.create<{
                 parentBlock
               ) {
                 const { startPos, node, depth, endPos, contentNode } = blockInfo
-
-                // the position in which we are inserting the current block content
-                const parentInsertPos = parentPos + parentBlock?.nodeSize - 1
 
                 // lift any children of current block (if any)
                 if (node.childCount === 2) {
@@ -804,6 +798,12 @@ export const BlockContainer = Node.create<{
                   if (dispatch) {
                     state.tr.lift(childBlocksRange!, depth - 1)
                   }
+                }
+
+                // the position in which we are inserting the current block content
+                let parentInsertPos: number = 0
+                if (parentBlock) {
+                  parentInsertPos = parentPos + parentBlock.nodeSize - 1
                 }
 
                 if (dispatch) {
@@ -902,8 +902,8 @@ export const BlockContainer = Node.create<{
             const groupData = getGroupInfoFromPos(state.selection.from!, state)
             const selectionAtBlockStart = state.selection.$anchor.parentOffset === 0
 
-            let prevBlockEndPos = blockData.startPos - 2
-            let prevBlockInfo = getBlockInfoFromPos(state.doc, prevBlockEndPos)
+            const prevBlockEndPos = blockData.startPos - 2
+            const prevBlockInfo = getBlockInfoFromPos(state.doc, prevBlockEndPos)
 
             if (
               // selection is at the start of the block
@@ -925,13 +925,13 @@ export const BlockContainer = Node.create<{
           }),
         // Merge blocks if a block is in the middle of a list
         () =>
-          commands.command(({ state, chain }) => {
+          commands.command(({ state }) => {
             const blockData = getBlockInfoFromPos(state.doc, state.selection.from)!
             const groupData = getGroupInfoFromPos(state.selection.from!, state)
             const selectionAtBlockStart = state.selection.$anchor.parentOffset === 0
 
-            let prevBlockEndPos = blockData.startPos - 2
-            let prevBlockInfo = getBlockInfoFromPos(state.doc, prevBlockEndPos)
+            const prevBlockEndPos = blockData.startPos - 2
+            const prevBlockInfo = getBlockInfoFromPos(state.doc, prevBlockEndPos)
 
             if (
               // selection is at the start of the block

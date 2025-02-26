@@ -3,7 +3,7 @@ import { mergeCSSClasses } from '../../../shared/utils'
 import { BlockNoteDOMAttributes } from '../api/blockTypes'
 import styles from './Block.module.css'
 
-export const BlockGroup = Node.create<{
+const BlockGroup = Node.create<{
   domAttributes?: BlockNoteDOMAttributes
 }>({
   name: 'blockGroup',
@@ -34,12 +34,13 @@ export const BlockGroup = Node.create<{
         default: undefined,
         renderHTML: (attributes) => {
           if (attributes.listType === 'ol' && attributes.start) {
-            const offset = 0.65 * attributes.start.toString().length
+            // const offset = 0.65 * attributes.start.toString().length
             return {
               start: attributes.start,
               // style: `margin-left: calc(1em + ${offset}em);`,
             }
           }
+          return null
         },
       },
     }
@@ -49,7 +50,7 @@ export const BlockGroup = Node.create<{
     return [
       // Creates an unordered list when starting with "-", "+", or "*".
       new InputRule({
-        find: new RegExp(`^[-+*]\\s$`),
+        find: /^[-+*]\s$/,
         handler: ({ state, chain, range }) => {
           chain()
             .UpdateGroup(state.selection.from, 'ul', false)
@@ -59,7 +60,7 @@ export const BlockGroup = Node.create<{
       }),
       new InputRule({
         // ^\d+\.\s
-        find: new RegExp(/^\d+\.\s/),
+        find: /^\d+\.\s/,
         handler: ({ state, chain, range }) => {
           chain()
             .UpdateGroup(state.selection.from, 'ol', false, this.editor.state.doc.textBetween(range.from, range.to - 1))
@@ -129,3 +130,5 @@ export const BlockGroup = Node.create<{
     ]
   },
 })
+
+export default BlockGroup

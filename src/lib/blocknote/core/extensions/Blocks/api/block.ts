@@ -6,7 +6,7 @@ import styles from '../nodes/Block.module.css'
 import { BlockConfig, BlockSchema, BlockSpec, PropSchema, TipTapNode, TipTapNodeConfig } from './blockTypes'
 
 export function camelToDataKebab(str: string): string {
-  return 'data-' + str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
+  return `data-${str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()}`
 }
 
 // Function that uses the 'propSchema' of a blockConfig to create a TipTap
@@ -57,7 +57,7 @@ export function parse<
     })
   }
   rules.push({
-    tag: 'div[data-content-type=' + blockConfig.type + ']',
+    tag: `div[data-content-type=${blockConfig.type}]`,
     priority: 999,
   })
   return rules
@@ -103,6 +103,25 @@ export function render<
     : {
         dom: blockContent,
       }
+}
+
+export function createTipTapBlock<
+  Type extends string,
+  Options extends {
+    domAttributes?: BlockNoteDOMAttributes
+  } = {
+    domAttributes?: BlockNoteDOMAttributes
+  },
+  Storage = any,
+>(config: TipTapNodeConfig<Type, Options, Storage>): TipTapNode<Type, Options, Storage> {
+  // Type cast is needed as Node.name is mutable, though there is basically no
+  // reason to change it after creation. Alternative is to wrap Node in a new
+  // class, which I don't think is worth it since we'd only be changing 1
+  // attribute to be read only.
+  return Node.create<Options, Storage>({
+    ...config,
+    group: 'blockContent',
+  }) as TipTapNode<Type, Options, Storage>
 }
 
 // A function to create custom block for API consumers
@@ -214,23 +233,4 @@ export function createBlockSpec<
     node: node as TipTapNode<BType>,
     propSchema: blockConfig.propSchema,
   }
-}
-
-export function createTipTapBlock<
-  Type extends string,
-  Options extends {
-    domAttributes?: BlockNoteDOMAttributes
-  } = {
-    domAttributes?: BlockNoteDOMAttributes
-  },
-  Storage = any,
->(config: TipTapNodeConfig<Type, Options, Storage>): TipTapNode<Type, Options, Storage> {
-  // Type cast is needed as Node.name is mutable, though there is basically no
-  // reason to change it after creation. Alternative is to wrap Node in a new
-  // class, which I don't think is worth it since we'd only be changing 1
-  // attribute to be read only.
-  return Node.create<Options, Storage>({
-    ...config,
-    group: 'blockContent',
-  }) as TipTapNode<Type, Options, Storage>
 }

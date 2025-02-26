@@ -29,7 +29,7 @@ function getDraggableBlockFromCoords(coords: { left: number; top: number }, view
     return undefined
   }
 
-  let pos = view.posAtCoords(coords)
+  const pos = view.posAtCoords(coords)
   if (!pos) {
     return undefined
   }
@@ -41,7 +41,7 @@ function getDraggableBlockFromCoords(coords: { left: number; top: number }, view
   }
 
   if (node.parentNode === null) {
-    let parentNode = view.domAtPos(pos.inside).node as HTMLElement
+    const parentNode = view.domAtPos(pos.inside).node as HTMLElement
     if (parentNode.getAttribute('data-id') !== null) {
       node = parentNode
     } else return undefined
@@ -57,12 +57,12 @@ function getDraggableBlockFromCoords(coords: { left: number; top: number }, view
 }
 
 function blockPositionFromCoords(coords: { left: number; top: number }, view: EditorView) {
-  let block = getDraggableBlockFromCoords(coords, view)
+  const block = getDraggableBlockFromCoords(coords, view)
 
   if (block && block.node.nodeType === 1) {
     // TODO: this uses undocumented PM APIs? do we need this / let's add docs?
     const docView = (view as any).docView
-    let desc = docView.nearestDesc(block.node, true)
+    const desc = docView.nearestDesc(block.node, true)
     if (!desc || desc === docView) {
       return null
     }
@@ -105,6 +105,13 @@ function blockPositionsFromSelection(selection: Selection, doc: Node) {
   }
 
   return { from: beforeFirstBlockPos, to: afterLastBlockPos }
+}
+
+function unsetDragImage() {
+  if (dragImageElement !== undefined) {
+    document.body.removeChild(dragImageElement)
+    dragImageElement = undefined
+  }
 }
 
 function setDragImage(view: EditorView, from: number, to = from) {
@@ -150,16 +157,9 @@ function setDragImage(view: EditorView, from: number, to = from) {
     )
     .join(' ')
 
-  dragImageElement.className = dragImageElement.className + ' ' + styles.dragPreview + ' ' + inheritedClasses
+  dragImageElement.className = `${dragImageElement.className} ${styles.dragPreview} ${inheritedClasses}`
 
   document.body.appendChild(dragImageElement)
-}
-
-function unsetDragImage() {
-  if (dragImageElement !== undefined) {
-    document.body.removeChild(dragImageElement)
-    dragImageElement = undefined
-  }
 }
 
 function dragStart(e: DragEvent, view: EditorView) {
@@ -169,12 +169,12 @@ function dragStart(e: DragEvent, view: EditorView) {
 
   const editorBoundingBox = view.dom.getBoundingClientRect()
 
-  let coords = {
+  const coords = {
     left: editorBoundingBox.left + editorBoundingBox.width / 2, // take middle of editor
     top: e.clientY,
   }
 
-  let pos = blockPositionFromCoords(coords, view)
+  const pos = blockPositionFromCoords(coords, view)
   if (pos != null) {
     const selection = view.state.selection
     const doc = view.state.doc
@@ -193,8 +193,8 @@ function dragStart(e: DragEvent, view: EditorView) {
       setDragImage(view, pos)
     }
 
-    let slice = view.state.selection.content()
-    let { dom, text } = serializeForClipboard(view, slice)
+    const slice = view.state.selection.content()
+    const { dom, text } = serializeForClipboard(view, slice)
 
     e.dataTransfer.clearData()
     e.dataTransfer.setData('text/html', dom.innerHTML)
@@ -214,6 +214,7 @@ export type BlockMenuViewProps<BSchema extends BlockSchema> = {
 
 export class BlockMenuView<BSchema extends BlockSchema> {
   editor: BlockNoteEditor<BSchema>
+
   private ttEditor: Editor
 
   // When true, the drag handle with be anchored at the same level as root elements
@@ -228,7 +229,9 @@ export class BlockMenuView<BSchema extends BlockSchema> {
 
   // Used to check if currently dragged content comes from this editor instance.
   isDragging = false
+
   menuOpen = false
+
   menuFrozen = false
 
   private lastPosition: DOMRect | undefined
@@ -270,7 +273,7 @@ export class BlockMenuView<BSchema extends BlockSchema> {
     if ((event as any).synthetic || !this.isDragging) {
       return
     }
-    let pos = this.ttEditor.view.posAtCoords({
+    const pos = this.ttEditor.view.posAtCoords({
       left: event.clientX,
       top: event.clientY,
     })
@@ -299,7 +302,7 @@ export class BlockMenuView<BSchema extends BlockSchema> {
     if ((event as any).synthetic || !this.isDragging) {
       return
     }
-    let pos = this.ttEditor.view.posAtCoords({
+    const pos = this.ttEditor.view.posAtCoords({
       left: event.clientX,
       top: event.clientY,
     })
@@ -317,7 +320,7 @@ export class BlockMenuView<BSchema extends BlockSchema> {
     }
   }
 
-  onKeyDown = (_event: KeyboardEvent) => {
+  onKeyDown = () => {
     if (this.menuOpen) {
       this.menuOpen = false
       this.blockMenu.hide()

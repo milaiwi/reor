@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import { Decoration, DecorationSet } from '@tiptap/pm/view'
 import { EditorState, Plugin, PluginKey } from 'prosemirror-state'
 import { EditorView } from 'prosemirror-view'
@@ -43,7 +44,9 @@ function getDefaultPluginState<LinkMenuItem>(): LinkPluginState<LinkMenuItem> {
 
 export class LinkMenuView<LinkMenuItem, BSchema extends BlockSchema> {
   private linkMenuState?: LinkMenuState<LinkMenuItem>
+
   public updateLinkMenu: () => void
+
   pluginState: LinkPluginState<LinkMenuItem>
 
   constructor(
@@ -117,32 +120,6 @@ export class LinkMenuView<LinkMenuItem, BSchema extends BlockSchema> {
 
   destroy() {
     document.removeEventListener('scroll', this.handleScroll)
-  }
-}
-
-export class LinkMenuProsemirrorPlugin<
-  BSchema extends BlockSchema,
-  MenuItem extends LinkMenuItem<BSchema>,
-> extends EventEmitter<any> {
-  // private linkMenuView: LinkMenuView<BSchema> | undefined
-  public readonly plugin: Plugin
-  public readonly itemCallback: (item: MenuItem, link: string) => void
-
-  constructor(editor: BlockNoteEditor<BSchema>) {
-    super()
-    const links = setupLinkMenu<MenuItem, BSchema>(
-      editor,
-      (state) => {
-        this.emit('update', state)
-      },
-      linkMenuPluginKey,
-    )
-    this.plugin = links.plugin
-    this.itemCallback = links.itemCallback
-  }
-
-  public onUpdate(callback: (state: LinkMenuState<BSchema>) => void) {
-    return this.on('update', callback)
   }
 }
 
@@ -314,6 +291,7 @@ export const setupLinkMenu = <MenuItem extends LinkMenuItem<BSchema>, BSchema ex
               }),
             ])
           }
+          return undefined
         },
       },
     }),
@@ -323,5 +301,32 @@ export const setupLinkMenu = <MenuItem extends LinkMenuItem<BSchema>, BSchema ex
 
       item.execute(editor, link)
     },
+  }
+}
+
+export class LinkMenuProsemirrorPlugin<
+  BSchema extends BlockSchema,
+  MenuItem extends LinkMenuItem<BSchema>,
+> extends EventEmitter<any> {
+  // private linkMenuView: LinkMenuView<BSchema> | undefined
+  public readonly plugin: Plugin
+
+  public readonly itemCallback: (item: MenuItem, link: string) => void
+
+  constructor(editor: BlockNoteEditor<BSchema>) {
+    super()
+    const links = setupLinkMenu<MenuItem, BSchema>(
+      editor,
+      (state) => {
+        this.emit('update', state)
+      },
+      linkMenuPluginKey,
+    )
+    this.plugin = links.plugin
+    this.itemCallback = links.itemCallback
+  }
+
+  public onUpdate(callback: (state: LinkMenuState<BSchema>) => void) {
+    return this.on('update', callback)
   }
 }

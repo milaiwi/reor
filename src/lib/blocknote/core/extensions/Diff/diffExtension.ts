@@ -9,6 +9,7 @@ declare module '@tiptap/core' {
   }
 }
 
+// eslint-disable-next-line import/prefer-default-export
 export const DiffExtension = Extension.create({
   name: 'diff',
 
@@ -57,8 +58,8 @@ export const DiffExtension = Extension.create({
           }
 
           // Sets text alignment for all blockContent nodes that the current selection is in.
-          for (const pos of positionsBeforeSelectedContent) {
-            state.tr.setNodeAttribute(pos, 'diff', diff)
+          for (const newPos of positionsBeforeSelectedContent) {
+            state.tr.setNodeAttribute(newPos, 'diff', diff)
           }
 
           return true
@@ -66,11 +67,3 @@ export const DiffExtension = Extension.create({
     }
   },
 })
-
-/**
- * @type {ResolveDiffs}
- * - need to get all the diffs
- */
-class ResolveDiffs {
-  constructor() {}
-}

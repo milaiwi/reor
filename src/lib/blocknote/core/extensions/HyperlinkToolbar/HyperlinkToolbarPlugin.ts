@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import { getMarkRange, posToDOMRect, Range } from '@tiptap/core'
 import { EditorView } from '@tiptap/pm/view'
 import { Mark, Node as PMNode } from 'prosemirror-model'
@@ -19,19 +20,25 @@ export type HyperlinkToolbarState = BaseUiElementState & {
 
 class HyperlinkToolbarView<BSchema extends BlockSchema> {
   private hyperlinkToolbarState?: HyperlinkToolbarState
+
   public updateHyperlinkToolbar: () => void
 
   menuUpdateTimer: ReturnType<typeof setTimeout> | undefined
+
   startMenuUpdateTimer: () => void
+
   stopMenuUpdateTimer: () => void
 
   mouseHoveredHyperlinkMark: Mark | PMNode | undefined
+
   mouseHoveredHyperlinkMarkRange: Range | undefined
 
   keyboardHoveredHyperlinkMark: Mark | PMNode | undefined
+
   keyboardHoveredHyperlinkMarkRange: Range | undefined
 
   hyperlinkMark: Mark | PMNode | undefined
+
   hyperlinkMarkRange: Range | undefined
 
   constructor(
@@ -67,7 +74,7 @@ class HyperlinkToolbarView<BSchema extends BlockSchema> {
     document.addEventListener('scroll', this.scrollHandler)
   }
 
-  mouseOverHandler = (event: MouseEvent) => {
+  mouseOverHandler = () => {
     // Resets the hyperlink mark currently hovered by the mouse cursor.
     this.mouseHoveredHyperlinkMark = undefined
     this.mouseHoveredHyperlinkMarkRange = undefined
@@ -182,6 +189,7 @@ class HyperlinkToolbarView<BSchema extends BlockSchema> {
       }
     }
   }
+
   // the latest param here is to change the latest HM param without closing the link modal.
   // it should be TRUE if you DON't want to close the modal when called.
   editHyperlink(url: string, text: string) {
@@ -231,8 +239,6 @@ class HyperlinkToolbarView<BSchema extends BlockSchema> {
     this.pmView.dispatch(tr)
   }
 
-  highlightHyperlink() {}
-
   resetHyperlink() {
     // @ts-ignore
     this.hyperlinkToolbarState = {
@@ -259,9 +265,9 @@ class HyperlinkToolbarView<BSchema extends BlockSchema> {
       const pos = this.hyperlinkMarkRange ? this.hyperlinkMarkRange.from : this.pmView.state.selection.from
       const $pos = state.doc.resolve(pos)
       let offset = 0
-      $pos.parent.descendants((node, pos) => {
+      $pos.parent.descendants((node, position) => {
         if (node.type.name === 'inline-embed' && node.attrs.link === this.hyperlinkToolbarState!.url) {
-          offset = pos
+          offset = position
         }
       })
       tr = tr.replaceRangeWith(
@@ -288,7 +294,6 @@ class HyperlinkToolbarView<BSchema extends BlockSchema> {
 
     // Saves the currently hovered hyperlink mark before it's updated.
     const prevHyperlinkMark = this.hyperlinkMark
-    const prevHyperlinkMarkRange = this.hyperlinkMarkRange
 
     // Resets the currently hovered hyperlink mark.
     this.hyperlinkMark = undefined
@@ -370,8 +375,6 @@ class HyperlinkToolbarView<BSchema extends BlockSchema> {
       this.hyperlinkToolbarState.show = false
 
       this.updateHyperlinkToolbar()
-
-      return
     }
   }
 
@@ -386,6 +389,7 @@ export const hyperlinkToolbarPluginKey = new PluginKey('HyperlinkToolbarPlugin')
 
 export class HyperlinkToolbarProsemirrorPlugin<BSchema extends BlockSchema> extends EventEmitter<any> {
   private view: HyperlinkToolbarView<BSchema> | undefined
+
   public readonly plugin: Plugin
 
   constructor(editor: BlockNoteEditor<BSchema>) {
@@ -445,8 +449,6 @@ export class HyperlinkToolbarProsemirrorPlugin<BSchema extends BlockSchema> exte
   public stopHideTimer = () => {
     this.view!.stopMenuUpdateTimer()
   }
-
-  public highlightHyperlink() {}
 
   public resetHyperlink = () => {
     this.view!.resetHyperlink()

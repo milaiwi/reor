@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import { isNodeSelection, isTextSelection, posToDOMRect } from '@tiptap/core'
 import { EditorState, Plugin, PluginKey } from 'prosemirror-state'
 import { EditorView } from 'prosemirror-view'
@@ -10,13 +11,16 @@ export type FormattingToolbarState = BaseUiElementState
 
 export class FormattingToolbarView<BSchema extends BlockSchema> {
   private formattingToolbarState?: FormattingToolbarState
+
   public updateFormattingToolbar: () => void
 
   public preventHide = false
+
   public preventShow = false
+
   public prevWasEditable: boolean | null = null
 
-  public shouldShow: (props: { view: EditorView; state: EditorState; from: number; to: number }) => boolean = ({
+  public static shouldShow: (props: { view: EditorView; state: EditorState; from: number; to: number }) => boolean = ({
     view,
     state,
     from,
@@ -134,7 +138,7 @@ export class FormattingToolbarView<BSchema extends BlockSchema> {
     const from = Math.min(...ranges.map((range) => range.$from.pos))
     const to = Math.max(...ranges.map((range) => range.$to.pos))
 
-    const shouldShow = this.shouldShow?.({
+    const shouldShow = FormattingToolbarView.shouldShow?.({
       view,
       state,
       from,
@@ -161,8 +165,6 @@ export class FormattingToolbarView<BSchema extends BlockSchema> {
     ) {
       this.formattingToolbarState.show = false
       this.updateFormattingToolbar()
-
-      return
     }
   }
 
@@ -202,6 +204,7 @@ export const formattingToolbarPluginKey = new PluginKey('FormattingToolbarPlugin
 
 export class FormattingToolbarProsemirrorPlugin<BSchema extends BlockSchema> extends EventEmitter<any> {
   private view: FormattingToolbarView<BSchema> | undefined
+
   public readonly plugin: Plugin
 
   constructor(editor: BlockNoteEditor<BSchema>) {
