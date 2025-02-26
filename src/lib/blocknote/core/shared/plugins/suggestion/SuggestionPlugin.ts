@@ -13,8 +13,21 @@ export type SuggestionsMenuState<T extends SuggestionItem> = BaseUiElementState 
   keyboardHoveredItemIndex: number
 }
 
+function getDefaultPluginState<T extends SuggestionItem>(): SuggestionPluginState<T> {
+  return {
+    active: false,
+    triggerCharacter: undefined,
+    queryStartPos: undefined,
+    items: [] as T[],
+    keyboardHoveredItemIndex: undefined,
+    notFoundCount: 0,
+    decorationId: undefined,
+  }
+}
+
 class SuggestionsMenuView<T extends SuggestionItem, BSchema extends BlockSchema> {
   private suggestionsMenuState?: SuggestionsMenuState<T>
+
   public updateSuggestionsMenu: () => void
 
   pluginState: SuggestionPluginState<T>
@@ -110,18 +123,6 @@ type SuggestionPluginState<T extends SuggestionItem> = {
   decorationId: string | undefined
 }
 
-function getDefaultPluginState<T extends SuggestionItem>(): SuggestionPluginState<T> {
-  return {
-    active: false,
-    triggerCharacter: undefined,
-    queryStartPos: undefined,
-    items: [] as T[],
-    keyboardHoveredItemIndex: undefined,
-    notFoundCount: 0,
-    decorationId: undefined,
-  }
-}
-
 /**
  * A ProseMirror plugin for suggestions, designed to make '/'-commands possible as well as mentions.
  *
@@ -135,7 +136,6 @@ function getDefaultPluginState<T extends SuggestionItem>(): SuggestionPluginStat
 export const setupSuggestionsMenu = <T extends SuggestionItem, BSchema extends BlockSchema>(
   editor: BlockNoteEditor<BSchema>,
   updateSuggestionsMenu: (suggestionsMenuState: SuggestionsMenuState<T>) => void,
-
   pluginKey: PluginKey,
   defaultTriggerCharacter: string,
   items: (query: string) => T[] = () => [],
@@ -279,6 +279,7 @@ export const setupSuggestionsMenu = <T extends SuggestionItem, BSchema extends B
           }
 
           // Handles keystrokes for navigating the menu.
+          // eslint-disable-next-line @typescript-eslint/no-shadow
           const { triggerCharacter, queryStartPos, items, keyboardHoveredItemIndex } = pluginKey.getState(view.state)
 
           // Moves the keyboard selection to the previous item.

@@ -59,6 +59,8 @@ module.exports = {
     "no-restricted-syntax": "off",
     "no-param-reassign": 'off',
     "prefer-destructuring": 'off',
+    "no-return-assign": 'off',
+    "no-cond-assign": 'off',
   },
   ignorePatterns: ['vite.config.ts', '.eslintrc.js'],
   settings: {

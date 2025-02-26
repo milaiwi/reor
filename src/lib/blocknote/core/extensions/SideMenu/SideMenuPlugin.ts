@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import { PluginView } from '@tiptap/pm/state'
 import { Node } from 'prosemirror-model'
 import { NodeSelection, Plugin, PluginKey, Selection } from 'prosemirror-state'
@@ -21,6 +22,13 @@ export type SideMenuState<BSchema extends BlockSchema> = BaseUiElementState & {
   // The block that the side menu is attached to.
   block: Block<BSchema>
   lineHeight: string
+}
+
+function unsetDragImage() {
+  if (dragImageElement !== undefined) {
+    document.body.removeChild(dragImageElement)
+    dragImageElement = undefined
+  }
 }
 
 function getDraggableBlockFromCoords(coords: { left: number; top: number }, view: EditorView) {
@@ -148,16 +156,9 @@ function setDragImage(view: EditorView, from: number, to = from) {
     )
     .join(' ')
 
-  dragImageElement.className = dragImageElement.className + ' ' + styles.dragPreview + ' ' + inheritedClasses
+  dragImageElement.className = `${dragImageElement.className} ${styles.dragPreview} ${inheritedClasses}`
 
   document.body.appendChild(dragImageElement)
-}
-
-function unsetDragImage() {
-  if (dragImageElement !== undefined) {
-    document.body.removeChild(dragImageElement)
-    dragImageElement = undefined
-  }
 }
 
 function dragStart(e: { dataTransfer: DataTransfer | null; clientY: number }, view: EditorView) {
@@ -210,6 +211,7 @@ export class SideMenuView<BSchema extends BlockSchema> implements PluginView {
   // When false, the drag handle with be just to the left of the element
   // TODO: Is there any case where we want this to be false?
   private horizontalPosAnchoredAtRoot: boolean
+
   private horizontalPosAnchor: number
 
   private hoveredBlock: HTMLElement | undefined
@@ -313,7 +315,7 @@ export class SideMenuView<BSchema extends BlockSchema> implements PluginView {
     }
   }
 
-  onKeyDown = (_event: KeyboardEvent) => {
+  onKeyDown = () => {
     if (this.sideMenuState?.show) {
       this.sideMenuState.show = false
       this.updateSideMenu(this.sideMenuState)
@@ -391,7 +393,7 @@ export class SideMenuView<BSchema extends BlockSchema> implements PluginView {
 
     if (
       !block.node?.hasAttribute('data-node-type') &&
-      !block.node?.getAttribute('data-node-type') == 'blockContainer'
+      !block.node?.getAttribute('data-node-type') === 'blockContainer'
     ) {
       return
     }
@@ -512,6 +514,7 @@ export const sideMenuPluginKey = new PluginKey('SideMenuPlugin')
 
 export class SideMenuProsemirrorPlugin<BSchema extends BlockSchema> extends EventEmitter<any> {
   private sideMenuView: SideMenuView<BSchema> | undefined
+
   public readonly plugin: Plugin
 
   constructor(private readonly editor: BlockNoteEditor<BSchema>) {
@@ -548,13 +551,16 @@ export class SideMenuProsemirrorPlugin<BSchema extends BlockSchema> extends Even
   /**
    * Handles drag & drop events for blocks.
    */
+  // eslint-disable-next-line class-methods-use-this
   blockDragEnd = () => unsetDragImage()
+
   /**
    * Freezes the side menu. When frozen, the side menu will stay
    * attached to the same block regardless of which block is hovered by the
    * mouse cursor.
    */
   freezeMenu = () => (this.sideMenuView!.menuFrozen = true)
+
   /**
    * Unfreezes the side menu. When frozen, the side menu will stay
    * attached to the same block regardless of which block is hovered by the

@@ -8,7 +8,7 @@ declare module '@tiptap/core' {
   }
 }
 
-export const TextColorMark = Mark.create({
+const TextColorMark = Mark.create({
   name: 'textColor',
 
   addAttributes() {
@@ -60,3 +60,5 @@ export const TextColorMark = Mark.create({
     }
   },
 })
+
+export default TextColorMark

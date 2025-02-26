@@ -35,7 +35,7 @@ import { SideMenuProsemirrorPlugin } from './extensions/SideMenu/SideMenuPlugin'
 import { BaseSlashMenuItem } from './extensions/SlashMenu/BaseSlashMenuItem'
 import { SlashMenuProsemirrorPlugin } from './extensions/SlashMenu/SlashMenuPlugin'
 import { getDefaultSlashMenuItems } from './extensions/SlashMenu/defaultSlashMenuItems'
-import { UniqueID } from './extensions/UniqueID/UniqueID'
+import UniqueID from './extensions/UniqueID/UniqueID'
 import { mergeCSSClasses } from './shared/utils'
 import { HMBlockSchema, hmBlockSchema } from '@/components/Editor/schema'
 

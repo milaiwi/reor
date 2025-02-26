@@ -4,7 +4,7 @@ import { Fragment, Slice } from 'prosemirror-model'
 import { Plugin, PluginKey } from 'prosemirror-state'
 
 function createId() {
-  let id = nanoid(8)
+  const id = nanoid(8)
   return id
 }
 
@@ -123,13 +123,15 @@ const UniqueID = Extension.create({
           const filterTransactions =
             this.options.filterTransaction &&
             transactions.some((tr) => {
-              let _a, _b
-              return !((_b = (_a = this.options).filterTransaction) === null || _b === void 0
-                ? void 0
-                : _b.call(_a, tr))
+              let options
+              let filteredOptions
+              return !((filteredOptions = (options = this.options).filterTransaction) === null ||
+              filteredOptions === undefined
+                ? undefined
+                : filteredOptions.call(options, tr))
             })
           if (!docChanges || filterTransactions) {
-            return
+            return undefined
           }
           const { tr } = newState
           const { types, attributeName, generateID } = this.options
@@ -145,18 +147,21 @@ const UniqueID = Extension.create({
             const newIds = newNodes.map(({ node }) => node.attrs[attributeName]).filter((id) => id !== null)
             const duplicatedNewIds = findDuplicates(newIds)
             newNodes.forEach(({ node, pos }) => {
-              let _a
+              let options
               // instead of checking `node.attrs[attributeName]` directly
               // we look at the current state of the node within `tr.doc`.
               // this helps to prevent adding new ids to the same node
               // if the node changed multiple times within one transaction
-              const id = (_a = tr.doc.nodeAt(pos)) === null || _a === void 0 ? void 0 : _a.attrs[attributeName]
+              const id =
+                (options = tr.doc.nodeAt(pos)) === null || options === undefined
+                  ? undefined
+                  : options.attrs[attributeName]
               if (id === null) {
                 tr.setNodeMarkup(pos, undefined, {
                   ...node.attrs,
                   [attributeName]: generateID(),
                 })
-                return
+                return undefined
               }
               // check if the node doesn’t exist in the old state
               const { deleted } = mapping.invert().mapResult(pos)
@@ -167,19 +172,22 @@ const UniqueID = Extension.create({
                   [attributeName]: generateID(),
                 })
               }
+              return undefined
             })
           })
           if (!tr.steps.length) {
-            return
+            return undefined
           }
           return tr
         },
         // we register a global drag handler to track the current drag source element
         view(view) {
           const handleDragstart = (event: any) => {
-            let _a
+            let options
             dragSourceElement = (
-              (_a = view.dom.parentElement) === null || _a === void 0 ? void 0 : _a.contains(event.target)
+              (options = view.dom.parentElement) === null || options === undefined
+                ? undefined
+                : options.contains(event.target)
             )
               ? view.dom.parentElement
               : null
@@ -198,10 +206,12 @@ const UniqueID = Extension.create({
             // only create new ids for dropped content while holding `alt`
             // or content is dragged from another editor
             drop: (view, event: any) => {
-              let _a
+              let options
               if (
                 dragSourceElement !== view.dom.parentElement ||
-                ((_a = event.dataTransfer) === null || _a === void 0 ? void 0 : _a.effectAllowed) === 'copy'
+                ((options = event.dataTransfer) === null || options === undefined
+                  ? undefined
+                  : options.effectAllowed) === 'copy'
               ) {
                 dragSourceElement = null
                 transformPasted = true
@@ -257,5 +267,4 @@ const UniqueID = Extension.create({
   },
 })
 
-export { UniqueID as default, UniqueID }
-//# sourceMappingURL=tiptap-extension-unique-id.esm.js.map
+export default UniqueID

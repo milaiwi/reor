@@ -9,7 +9,7 @@ declare module '@tiptap/core' {
   }
 }
 
-export const TextAlignmentExtension = Extension.create({
+const TextAlignmentExtension = Extension.create({
   name: 'textAlignment',
 
   addGlobalAttributes() {
@@ -57,8 +57,8 @@ export const TextAlignmentExtension = Extension.create({
           }
 
           // Sets text alignment for all blockContent nodes that the current selection is in.
-          for (const pos of positionsBeforeSelectedContent) {
-            state.tr.setNodeAttribute(pos, 'textAlignment', textAlignment)
+          for (const position of positionsBeforeSelectedContent) {
+            state.tr.setNodeAttribute(position, 'textAlignment', textAlignment)
           }
 
           return true
@@ -66,3 +66,5 @@ export const TextAlignmentExtension = Extension.create({
     }
   },
 })
+
+export default TextAlignmentExtension

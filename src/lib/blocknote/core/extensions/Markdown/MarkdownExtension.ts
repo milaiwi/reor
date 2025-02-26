@@ -1,12 +1,13 @@
-import { BlockNoteEditor } from '../../BlockNoteEditor'
-import { getBlockInfoFromPos } from '@/lib/utils'
-import * as BlockUtils from '@/lib/utils/block-utils'
 import { Editor, Extension } from '@tiptap/core'
 import { Fragment, Node } from '@tiptap/pm/model'
 import { Plugin } from 'prosemirror-state'
+import { BlockNoteEditor } from '../../BlockNoteEditor'
+import { getBlockInfoFromPos } from '@/lib/utils'
+import * as BlockUtils from '@/lib/utils/block-utils'
 
 function containsMarkdownSymbols(pastedText: string) {
   // Regex to detect unique Markdown symbols at the start of a line
+  // eslint-disable-next-line no-useless-backreference
   const markdownUniqueSymbols = new RegExp(
     [
       '^#{1,6} ', // Headers
@@ -36,7 +37,7 @@ function getPastedNodes(parent: Node | Fragment, editor: Editor) {
     if (node.type.name === 'blockGroup') {
       const prevContainer = nodes.pop()
       if (prevContainer) {
-        const container = editor.schema.nodes['blockContainer'].create(
+        const container = editor.schema.nodes.blockContainer.create(
           prevContainer.attrs,
           prevContainer.content.addToEnd(node),
         )
@@ -47,14 +48,14 @@ function getPastedNodes(parent: Node | Fragment, editor: Editor) {
       if (node.type.name === 'text') {
         nodeToInsert = editor.schema.nodes.paragraph.create({}, node)
       }
-      const container = editor.schema.nodes['blockContainer'].create(null, nodeToInsert)
+      const container = editor.schema.nodes.blockContainer.create(null, nodeToInsert)
       nodes.push(container)
     } else nodes.push(node)
   })
   return nodes
 }
 
-export const createMarkdownExtension = (bnEditor: BlockNoteEditor) => {
+const createMarkdownExtension = (bnEditor: BlockNoteEditor) => {
   const MarkdownExtension = Extension.create({
     name: 'MarkdownPasteHandler',
     priority: 900,
@@ -64,7 +65,6 @@ export const createMarkdownExtension = (bnEditor: BlockNoteEditor) => {
         new Plugin({
           props: {
             handlePaste: (view, event, slice) => {
-              console.log('== PASTE MarkdownExtension PLUGIN', view.state.selection)
               const selectedNode = view.state.selection.$from.parent
               // Don't proceed if pasting into code block
               if (selectedNode.type.name === 'code-block' || selectedNode.firstChild?.type.name === 'code-block') {
@@ -86,7 +86,7 @@ export const createMarkdownExtension = (bnEditor: BlockNoteEditor) => {
                     firstBlockGroup ? slice.content.firstChild : slice.content,
                     this.editor,
                   )
-                  const root = this.editor.schema.nodes['blockGroup'].create({}, nodes)
+                  const root = this.editor.schema.nodes.blockGroup.create({}, nodes)
                   let tr = state.tr
                   tr = tr.replaceRangeWith(
                     selection.from,
@@ -109,11 +109,9 @@ export const createMarkdownExtension = (bnEditor: BlockNoteEditor) => {
                   organizedBlocks,
                 )
                 BlockUtils.setGroupTypes(bnEditor._tiptapEditor, organizedBlocks)
-
-                return
               })
 
-              // return true
+              return true
             },
           },
         }),
@@ -123,3 +121,5 @@ export const createMarkdownExtension = (bnEditor: BlockNoteEditor) => {
 
   return MarkdownExtension
 }
+
+export default createMarkdownExtension

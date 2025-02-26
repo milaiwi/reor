@@ -25,13 +25,14 @@ import { BlockContainer, BlockGroup, Doc } from './extensions/Blocks'
 import { BlockNoteDOMAttributes } from './extensions/Blocks/api/blockTypes'
 import { CustomBlockSerializerExtension } from './extensions/Blocks/api/serialization'
 import blockStyles from './extensions/Blocks/nodes/Block.module.css'
-import { createMarkdownExtension } from './extensions/Markdown/MarkdownExtension'
+import createMarkdownExtension from './extensions/Markdown/MarkdownExtension'
 import { Placeholder } from './extensions/Placeholder/PlaceholderExtension'
 import { TrailingNode } from './extensions/TrailingNode/TrailingNodeExtension'
-import { UniqueID } from './extensions/UniqueID/UniqueID'
+import UniqueID from './extensions/UniqueID/UniqueID'
 import { HMBlockSchema } from '@/components/Editor/schema'
 import { DiffExtension } from './extensions/Diff/diffExtension'
 import SearchAndReplace from '@/components/Editor/Search/SearchAndReplaceExtension'
+import TextAlignmentExtension from './extensions/TextAlignment/TextAlignmentExtension'
 
 /**
  * Get all the Tiptap extensions BlockNote is configured with by default
@@ -96,7 +97,7 @@ export const getBlockNoteExtensions = <BSchema extends HMBlockSchema>(opts: {
     Link.configure(opts.linkExtensionOptions),
     // TextColorMark,
     // TextColorExtension,
-    // TextAlignmentExtension,
+    TextAlignmentExtension,
     // LocalMediaPastePlugin,
     DiffExtension,
     // nodes

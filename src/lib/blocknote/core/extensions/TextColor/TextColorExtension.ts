@@ -9,7 +9,7 @@ declare module '@tiptap/core' {
   }
 }
 
-export const TextColorExtension = Extension.create({
+const TextColorExtension = Extension.create({
   name: 'blockTextColor',
 
   addGlobalAttributes() {
@@ -50,3 +50,5 @@ export const TextColorExtension = Extension.create({
     }
   },
 })
+
+export default TextColorExtension

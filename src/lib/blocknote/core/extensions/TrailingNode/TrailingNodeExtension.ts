@@ -32,16 +32,14 @@ export const TrailingNode = Extension.create<TrailingNodeOptions>({
           const { doc, tr, schema } = state
           const shouldInsertNodeAtEnd = plugin.getState(state)
           const endPosition = doc.content.size - 2
-          const type = schema.nodes['blockContainer']
-          const contentType = schema.nodes['paragraph']
-          if (!shouldInsertNodeAtEnd) {
-            return
-          }
+          const type = schema.nodes.blockContainer
+          const contentType = schema.nodes.paragraph
+          if (!shouldInsertNodeAtEnd) return undefined
 
           return tr.insert(endPosition, type.create(undefined, contentType.create()))
         },
         state: {
-          init: (_, _state) => {
+          init: () => {
             // (maybe fix): use same logic as apply() here
             // so it works when initializing
           },
