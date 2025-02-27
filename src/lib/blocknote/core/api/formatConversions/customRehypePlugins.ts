@@ -23,7 +23,7 @@ export function preserveEmptyParagraphs() {
 // modefied version of https://github.com/syntax-tree/mdast-util-to-hast/blob/main/lib/handlers/code.js
 // that outputs a data-language attribute instead of a CSS class (e.g.: language-typescript)
 export function code(state: any, node: any) {
-  const value = node.value ? node.value + '\n' : ''
+  const value = node.value ? `${node.value}\n` : ''
   /** @type {Properties} */
   const properties: any = {}
 

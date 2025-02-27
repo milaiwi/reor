@@ -7,7 +7,7 @@ export type ToolbarDropdownProps = {
   isDisabled?: boolean
 }
 
-export function ToolbarDropdown(props: ToolbarDropdownProps) {
+export const ToolbarDropdown = (props: ToolbarDropdownProps) => {
   const selectedItem = props.items.filter((p) => p.isSelected)[0]
 
   if (!selectedItem) {

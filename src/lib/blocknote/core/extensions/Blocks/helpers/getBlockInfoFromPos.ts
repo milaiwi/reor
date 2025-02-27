@@ -20,7 +20,7 @@ export type BlockInfo = BlockInfoWithoutPositions & {
  * @param blockContainer The blockContainer node to retrieve info for.
  */
 export function getBlockInfo(blockContainer: Node): BlockInfoWithoutPositions {
-  const id = blockContainer.attrs['id']
+  const id = blockContainer.attrs.id
   const contentNode = blockContainer.firstChild!
   const contentType = contentNode.type
   const numChildBlocks = blockContainer.childCount === 2 ? blockContainer.lastChild!.childCount : 0

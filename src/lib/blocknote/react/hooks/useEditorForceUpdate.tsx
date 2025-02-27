@@ -9,7 +9,7 @@ function useForceUpdate() {
 
 // This is a component that is similar to https://github.com/ueberdosis/tiptap/blob/main/packages/react/src/useEditor.ts
 // Use it to rerender a component whenever a transaction happens in the editor
-export const useEditorForceUpdate = (editor: Editor) => {
+const useEditorForceUpdate = (editor: Editor) => {
   const forceUpdate = useForceUpdate()
 
   useEffect(() => {
@@ -28,3 +28,5 @@ export const useEditorForceUpdate = (editor: Editor) => {
     // eslint-disable-next-line
   }, [editor])
 }
+
+export default useEditorForceUpdate

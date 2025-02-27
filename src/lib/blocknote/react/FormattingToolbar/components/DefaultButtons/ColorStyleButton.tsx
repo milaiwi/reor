@@ -1,11 +1,11 @@
-import { BlockNoteEditor, BlockSchema } from '@/editor/blocknote/core'
 import { Menu } from '@mantine/core'
 import { useCallback, useState } from 'react'
+import { BlockNoteEditor, BlockSchema } from '@/lib/blocknote/core'
 import { ColorIcon } from '../../../SharedComponents/ColorPicker/components/ColorIcon'
 import { ColorPicker } from '../../../SharedComponents/ColorPicker/components/ColorPicker'
 import { ToolbarButton } from '../../../SharedComponents/Toolbar/components/ToolbarButton'
-import { useEditorContentChange } from '../../../hooks/useEditorContentChange'
-import { useEditorSelectionChange } from '../../../hooks/useEditorSelectionChange'
+import useEditorContentChange from '../../../hooks/useEditorContentChange'
+import useEditorSelectionChange from '../../../hooks/useEditorSelectionChange'
 
 export const ColorStyleButton = <BSchema extends BlockSchema>(props: { editor: BlockNoteEditor<BSchema> }) => {
   const [currentTextColor, setCurrentTextColor] = useState<string>(
@@ -49,7 +49,7 @@ export const ColorStyleButton = <BSchema extends BlockSchema>(props: { editor: B
     <Menu>
       <Menu.Target>
         <ToolbarButton
-          mainTooltip={'Colors'}
+          mainTooltip="Colors"
           icon={() => <ColorIcon textColor={currentTextColor} backgroundColor={currentBackgroundColor} size={20} />}
         />
       </Menu.Target>

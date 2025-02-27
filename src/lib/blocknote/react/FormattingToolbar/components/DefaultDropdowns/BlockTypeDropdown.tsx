@@ -1,12 +1,12 @@
-import { updateGroup } from '@/lib/utils'
-import { BlockNoteEditor, BlockSchema } from '@/lib/blocknote/core'
 import { useMemo, useState } from 'react'
 import { IconType } from 'react-icons'
 import { RiH2, RiListOrdered, RiListUnordered, RiText } from 'react-icons/ri'
+import { BlockNoteEditor, BlockSchema } from '@/lib/blocknote/core'
+import { updateGroup } from '@/lib/utils'
 import { ToolbarDropdown } from '../../../SharedComponents/Toolbar/components/ToolbarDropdown'
 import { ToolbarDropdownItemProps } from '../../../SharedComponents/Toolbar/components/ToolbarDropdownItem'
-import { useEditorContentChange } from '../../../hooks/useEditorContentChange'
-import { useEditorSelectionChange } from '../../../hooks/useEditorSelectionChange'
+import useEditorContentChange from '../../../hooks/useEditorContentChange'
+import useEditorSelectionChange from '../../../hooks/useEditorSelectionChange'
 
 export type BlockTypeDropdownItem = {
   name: string

@@ -1,9 +1,9 @@
-import { BlockNoteEditor, BlockSchema } from '@/editor/blocknote/core'
 import { useCallback, useState } from 'react'
 import { RiIndentDecrease, RiIndentIncrease } from 'react-icons/ri'
+import { BlockNoteEditor, BlockSchema } from '@/lib/blocknote/core'
 import { ToolbarButton } from '../../../SharedComponents/Toolbar/components/ToolbarButton'
-import { useEditorContentChange } from '../../../hooks/useEditorContentChange'
-import { useEditorSelectionChange } from '../../../hooks/useEditorSelectionChange'
+import useEditorContentChange from '../../../hooks/useEditorContentChange'
+import useEditorSelectionChange from '../../../hooks/useEditorSelectionChange'
 import { formatKeyboardShortcut } from '../../../utils'
 
 export const NestBlockButton = <BSchema extends BlockSchema>(props: { editor: BlockNoteEditor<BSchema> }) => {

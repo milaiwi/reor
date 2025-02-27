@@ -215,9 +215,7 @@ function convertBlocksToHtml<BSchema extends BlockSchema>(blocks: Block<BSchema>
  * @param schema the schema of our editor
  * @returns
  */
-export async function blocksToMarkdown<BSchema extends BlockSchema>(
-  blocks: Block<BSchema>[],
-): Promise<string> {
+export async function blocksToMarkdown<BSchema extends BlockSchema>(blocks: Block<BSchema>[]): Promise<string> {
   const tmpMarkdownString = await unified()
     // @ts-expect-error
     .use(rehypeParse, { fragment: true })

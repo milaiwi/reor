@@ -1,6 +1,6 @@
+import { Link, XStack, useDocContentContext } from '@shm/ui'
 import { BlockSchema } from '@/editor/blocknote/core'
 
-import { Link, XStack, useDocContentContext } from '@shm/ui'
 import { DragHandleMenuProps } from '../DragHandleMenu'
 import { DragHandleMenuItem } from '../DragHandleMenuItem'
 

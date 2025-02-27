@@ -8,8 +8,8 @@ export const TooltipContent = (props: { mainTooltip: string; secondaryTooltip?: 
 
   return (
     <Stack spacing={0} className={classes.root}>
-      <Text size={'sm'}>{props.mainTooltip}</Text>
-      {props.secondaryTooltip && <Text size={'xs'}>{props.secondaryTooltip}</Text>}
+      <Text size="sm">{props.mainTooltip}</Text>
+      {props.secondaryTooltip && <Text size="xs">{props.secondaryTooltip}</Text>}
     </Stack>
   )
 }

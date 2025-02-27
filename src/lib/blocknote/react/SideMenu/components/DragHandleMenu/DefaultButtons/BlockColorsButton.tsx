@@ -1,7 +1,7 @@
-import { BlockSchema, PartialBlock } from '@/editor/blocknote/core'
 import { Box, Menu } from '@mantine/core'
 import { ReactNode, useCallback, useRef, useState } from 'react'
 import { HiChevronRight } from 'react-icons/hi'
+import { BlockSchema, PartialBlock } from '@/editor/blocknote/core'
 
 import { ColorPicker } from '../../../../SharedComponents/ColorPicker/components/ColorPicker'
 import { DragHandleMenuProps } from '../DragHandleMenu'
@@ -36,7 +36,7 @@ export const BlockColorsButton = <BSchema extends BlockSchema>(
 
   return (
     <DragHandleMenuItem onMouseLeave={startMenuCloseTimer} onMouseOver={stopMenuCloseTimer}>
-      <Menu opened={opened} position={'right'}>
+      <Menu opened={opened} position="right">
         <Menu.Target>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <div style={{ flex: 1 }}>{props.children}</div>

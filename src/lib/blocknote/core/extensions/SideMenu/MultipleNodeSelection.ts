@@ -29,7 +29,6 @@ export class MultipleNodeSelection extends Selection {
         this.nodes.push(node)
         return false
       }
-      return
     })
   }
 

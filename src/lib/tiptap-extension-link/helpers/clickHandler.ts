@@ -7,7 +7,7 @@ type ClickHandlerOptions = {
   openUrl?: any
 }
 
-export function clickHandler(options: ClickHandlerOptions): Plugin {
+function clickHandler(options: ClickHandlerOptions): Plugin {
   return new Plugin({
     key: new PluginKey('handleClickLink'),
     props: {
@@ -22,7 +22,7 @@ export function clickHandler(options: ClickHandlerOptions): Plugin {
         const href = link?.href ?? attrs.href
 
         if (link && href) {
-          let newWindow = false // todo, check for meta key
+          const newWindow = false // todo, check for meta key
           options.openUrl(href, newWindow)
           return true
         }
@@ -32,3 +32,5 @@ export function clickHandler(options: ClickHandlerOptions): Plugin {
     },
   })
 }
+
+export default clickHandler

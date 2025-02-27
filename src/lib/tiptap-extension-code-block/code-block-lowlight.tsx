@@ -1,10 +1,12 @@
-import styles from '../blocknote/core/extensions/Blocks/nodes/Block.module.css'
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react/no-this-in-sfc */
 import { NodeViewProps, NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react'
-import { FC } from 'react'
+import React, { FC } from 'react'
+import styles from '../blocknote/core/extensions/Blocks/nodes/Block.module.css'
 import { mergeCSSClasses } from '../blocknote'
 import { CodeBlock, CodeBlockOptions } from './code-block'
-import { CodeBlockView } from './code-block-view'
-import { LowlightPlugin } from './lowlight-plugin'
+import CodeBlockView from './code-block-view'
+import LowlightPlugin from './lowlight-plugin'
 
 export interface CodeBlockLowlightOptions extends CodeBlockOptions {
   lowlight: any

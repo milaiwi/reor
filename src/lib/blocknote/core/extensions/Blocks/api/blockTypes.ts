@@ -1,4 +1,4 @@
-/** Define the main block types **/
+/** Define the main block types * */
 import { Node, NodeConfig } from '@tiptap/core'
 import { ParseRule } from '@tiptap/pm/model'
 import { BlockNoteEditor } from '../../../BlockNoteEditor'

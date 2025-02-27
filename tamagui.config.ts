@@ -1,4 +1,4 @@
-import config from './src/components/Editor/ui/src/tamagui/tamagui.config'
+import config from '@/components/Editor/ui/src/tamagui/tamagui.config'
 
 type Conf = typeof config
 

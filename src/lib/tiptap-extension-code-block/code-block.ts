@@ -1,7 +1,7 @@
-import styles from '@/lib/blocknote/core/extensions/Blocks/nodes/Block.module.css'
 import { Editor, mergeAttributes, Node, textblockTypeInputRule } from '@tiptap/core'
 import { Fragment, Slice } from '@tiptap/pm/model'
 import { Plugin, PluginKey, TextSelection } from '@tiptap/pm/state'
+import styles from '@/lib/blocknote/core/extensions/Blocks/nodes/Block.module.css'
 import { BlockNoteDOMAttributes, getBlockInfoFromPos, mergeCSSClasses } from '../blocknote'
 import { getGroupInfoFromPos } from '../blocknote/core/extensions/Blocks/helpers/getGroupInfoFromPos'
 
@@ -148,7 +148,7 @@ export const CodeBlock = Node.create<CodeBlockOptions>({
       const originalBlockContent = state.doc.cut(codePos.start(), codePos.pos)
       const newBlockContent = state.doc.cut(codePos.pos, codePos.end())
 
-      const newBlock = state.schema.nodes['blockContainer'].createAndFill()!
+      const newBlock = state.schema.nodes.blockContainer.createAndFill()!
       const nextBlockPos = codePos.end() + 2
       const nextBlockContentPos = nextBlockPos + 2
 
@@ -169,7 +169,9 @@ export const CodeBlock = Node.create<CodeBlockOptions>({
 
       editor.view.dispatch(tr)
 
-      editor.commands.setTextSelection(nextBlockContentPos - newBlockContent.textContent?.length)
+      let blockContentLength = 0
+      if (newBlockContent.textContent) blockContentLength = newBlockContent.textContent.length
+      editor.commands.setTextSelection(nextBlockContentPos - blockContentLength)
 
       return true
     }
@@ -222,7 +224,7 @@ export const CodeBlock = Node.create<CodeBlockOptions>({
           currentPosInBlock--
 
           currentChar = codeBlock.textBetween(currentPosInBlock, currentPosInBlock + 1)
-        } while (currentChar !== '\n' && currentPosInBlock != -1)
+        } while (currentChar !== '\n' && currentPosInBlock !== -1)
 
         if (currentPosInBlock + 2 >= codePos.end() - codePos.start()) return true
 
@@ -239,7 +241,7 @@ export const CodeBlock = Node.create<CodeBlockOptions>({
 
         if (!empty) {
           let currentPos = $from.pos - codePos.start()
-          let currentChar: string = ''
+          currentChar = ''
           while (currentPos !== $to.pos - codePos.start()) {
             currentChar = codeBlock.textBetween(currentPos, currentPos + 1)
 
@@ -260,14 +262,13 @@ export const CodeBlock = Node.create<CodeBlockOptions>({
         }
         if (breakLinePositions.length > 0) {
           breakLinePositions.forEach((pos, index) => {
-            let startPos = pos + codePos.start()
-            let endPos = pos + codePos.start() + 2
+            const startPos = pos + codePos.start()
+            const endPos = pos + codePos.start() + 2
             if (shouldDispatch) {
               tr = tr.deleteRange(startPos - (index + 1) * 2, endPos - (index + 1) * 2)
             } else {
               tr = tr.deleteRange(startPos - index * 2, endPos - index * 2)
             }
-            return
           })
           shouldDispatch = true
         }
@@ -298,7 +299,7 @@ export const CodeBlock = Node.create<CodeBlockOptions>({
         let currentPosInBlock = codePos.pos - codePos.start()
         let currentChar: string = ''
 
-        while (currentChar !== '\n' && currentPosInBlock != -1) {
+        while (currentChar !== '\n' && currentPosInBlock !== -1) {
           currentPosInBlock--
 
           currentChar = codeBlock.textBetween(currentPosInBlock, currentPosInBlock + 1)
@@ -308,7 +309,7 @@ export const CodeBlock = Node.create<CodeBlockOptions>({
 
         if (!empty) {
           let currentPos = $from.pos - codePos.start()
-          let currentChar: string = ''
+          currentChar = ''
           while (currentPos !== $to.pos - codePos.start()) {
             currentChar = codeBlock.textBetween(currentPos, currentPos + 1)
 
@@ -325,7 +326,6 @@ export const CodeBlock = Node.create<CodeBlockOptions>({
         if (breakLinePositions.length > 0) {
           breakLinePositions.forEach((pos, index) => {
             tr = tr.insert(pos + codePos.start() + 1 + (index + 1) * 2, state.schema.text(tabSpace))
-            return
           })
         }
         view.dispatch(tr)
@@ -356,20 +356,17 @@ export const CodeBlock = Node.create<CodeBlockOptions>({
                 if (group.child(group.childCount - 1).childCount > 1) {
                   const groupContent = group.content
                   const lastBlockContent = groupContent.lastChild!.lastChild!
-                  const newBlockContent = [state.schema.nodes['paragraph'].createAndFill()!, lastBlockContent]
-                  const newContainer = state.schema.nodes['blockContainer'].createAndFill(null, newBlockContent)!
-                  const replaceContainer = state.schema.nodes['blockContainer'].createAndFill(
-                    container?.attrs,
-                    codeBlock,
-                  )!
+                  const newBlockContent = [state.schema.nodes.paragraph.createAndFill()!, lastBlockContent]
+                  const newContainer = state.schema.nodes.blockContainer.createAndFill(null, newBlockContent)!
+                  const replaceContainer = state.schema.nodes.blockContainer.createAndFill(container?.attrs, codeBlock)!
                   const newGroupContent = group.content
                     .replaceChild(group.childCount - 1, replaceContainer)
                     .addToEnd(newContainer)
-                  const newGroup = state.schema.nodes['blockGroup'].createAndFill(group.attrs, newGroupContent)!
+                  const newGroup = state.schema.nodes.blockGroup.createAndFill(group.attrs, newGroupContent)!
                   const groupPos = state.doc.resolve($pos.after(depth + 1))
                   tr.replaceRangeWith(groupPos.start(), groupPos.end(), newGroup)
                 } else {
-                  const newContainer = state.schema.nodes['blockContainer'].createAndFill()!
+                  const newContainer = state.schema.nodes.blockContainer.createAndFill()!
                   tr.insert(nextBlockPos, newContainer)
                 }
                 return false
@@ -381,18 +378,17 @@ export const CodeBlock = Node.create<CodeBlockOptions>({
               })
               .run()
             return true
-          } else {
-            editor
-              .chain()
-              .focus(nextBlockPos)
-              .command(({ tr }) => {
-                tr.delete($from.pos - 1, $from.pos)
-                return true
-              })
-              .run()
-
-            return true
           }
+          editor
+            .chain()
+            .focus(nextBlockPos)
+            .command(({ tr }) => {
+              tr.delete($from.pos - 1, $from.pos)
+              return true
+            })
+            .run()
+
+          return true
         }
         let tr = state.tr
         tr = tr.replaceSelectionWith(state.schema.text('\n'))

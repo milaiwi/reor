@@ -13,6 +13,7 @@ export class SlashMenuProsemirrorPlugin<
   SlashMenuItem extends BaseSlashMenuItem<BSchema>,
 > extends EventEmitter<any> {
   public readonly plugin: Plugin
+
   public readonly itemCallback: (item: SlashMenuItem) => void
 
   constructor(editor: BlockNoteEditor<BSchema>, items: SlashMenuItem[]) {

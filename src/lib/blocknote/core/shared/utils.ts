@@ -4,9 +4,8 @@ export const isAppleOS = () =>
 export function formatKeyboardShortcut(shortcut: string) {
   if (isAppleOS()) {
     return shortcut.replace('Mod', '⌘')
-  } else {
-    return shortcut.replace('Mod', 'Ctrl')
   }
+  return shortcut.replace('Mod', 'Ctrl')
 }
 
 export function mergeCSSClasses(...classes: string[]) {

@@ -1,3 +1,6 @@
+import React from 'react'
+import { MdPreview } from 'react-icons/md'
+import { RiChatQuoteLine, RiCodeLine, RiFolder2Line, RiH1, RiPlayCircleLine, RiText } from 'react-icons/ri'
 import {
   BaseSlashMenuItem,
   BlockSchema,
@@ -5,8 +8,6 @@ import {
   DefaultBlockSchema,
   getDefaultSlashMenuItems,
 } from '../../core'
-import { MdPreview } from 'react-icons/md'
-import { RiChatQuoteLine, RiCodeLine, RiFolder2Line, RiH1, RiPlayCircleLine, RiText } from 'react-icons/ri'
 import { ReactSlashMenuItem } from './ReactSlashMenuItem'
 
 const extraFields: Record<
@@ -82,7 +83,7 @@ const extraFields: Record<
   },
 }
 
-export function getDefaultReactSlashMenuItems<BSchema extends BlockSchema>(
+function getDefaultReactSlashMenuItems<BSchema extends BlockSchema>(
   // This type casting is weird, but it's the best way of doing it, as it allows
   // the schema type to be automatically inferred if it is defined, or be
   // inferred as any if it is not defined. I don't think it's possible to make it
@@ -96,3 +97,5 @@ export function getDefaultReactSlashMenuItems<BSchema extends BlockSchema>(
     ...extraFields[item.name],
   }))
 }
+
+export default getDefaultReactSlashMenuItems

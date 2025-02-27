@@ -1,7 +1,7 @@
-import { BlockSchema } from '@/lib/blocknote/core'
 import { ReactNode } from 'react'
 
 import { Delete, XStack } from '@shm/ui'
+import { BlockSchema } from '@/lib/blocknote/core'
 import { DragHandleMenuProps } from '../DragHandleMenu'
 import { DragHandleMenuItem } from '../DragHandleMenuItem'
 

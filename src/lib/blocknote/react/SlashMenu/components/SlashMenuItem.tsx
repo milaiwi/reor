@@ -1,8 +1,8 @@
 import { Badge, Menu, Stack, Text } from '@mantine/core'
 import { createStyles } from '@mantine/styles'
-import { JSX, useEffect, useRef } from 'react'
+import React, { JSX, useEffect, useRef } from 'react'
 
-const MIN_LEFT_MARGIN = 5
+// const MIN_LEFT_MARGIN = 5
 
 export type SlashMenuItemProps = {
   name: string
@@ -13,7 +13,7 @@ export type SlashMenuItemProps = {
   set: () => void
 }
 
-export function SlashMenuItem(props: SlashMenuItemProps) {
+export const SlashMenuItem = (props: SlashMenuItemProps) => {
   const itemRef = useRef<HTMLButtonElement>(null)
   const { classes } = createStyles({ root: {} })(undefined, {
     name: 'SuggestionListItem',
@@ -30,9 +30,11 @@ export function SlashMenuItem(props: SlashMenuItemProps) {
   // Updates HTML "data-hovered" attribute which Mantine uses to set mouse hover styles.
   // Allows users to "hover" menu items when navigating using the keyboard.
   function updateSelection() {
-    isSelected()
-      ? itemRef.current?.setAttribute('data-hovered', 'true')
-      : itemRef.current?.removeAttribute('data-hovered')
+    if (isSelected()) {
+      itemRef.current?.setAttribute('data-hovered', 'true')
+    } else {
+      itemRef.current?.removeAttribute('data-hovered')
+    }
   }
 
   useEffect(() => {
@@ -67,7 +69,7 @@ export function SlashMenuItem(props: SlashMenuItemProps) {
         }, 1)
       }}
       ref={itemRef}
-      rightSection={props.shortcut && <Badge size={'xs'}>{props.shortcut}</Badge>}
+      rightSection={props.shortcut && <Badge size="xs">{props.shortcut}</Badge>}
     >
       <Stack>
         <Text size={14} weight={500}>

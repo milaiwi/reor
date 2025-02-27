@@ -1,3 +1,6 @@
+import { TagParseRule } from '@tiptap/pm/model'
+import { NodeViewContent, NodeViewProps, NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react'
+import { createContext, ElementType, FC, HTMLProps, useContext } from 'react'
 import {
   BlockConfig,
   BlockNoteDOMAttributes,
@@ -13,9 +16,6 @@ import {
   render,
   createTipTapBlock,
 } from '../core'
-import { TagParseRule } from '@tiptap/pm/model'
-import { NodeViewContent, NodeViewProps, NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react'
-import { createContext, ElementType, FC, HTMLProps, useContext } from 'react'
 
 // extend BlockConfig but use a React render function
 export type ReactBlockConfig<

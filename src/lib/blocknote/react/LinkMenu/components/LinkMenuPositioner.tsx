@@ -1,3 +1,5 @@
+import Tippy from '@tippyjs/react'
+import { FC, useEffect, useMemo, useRef, useState } from 'react'
 import {
   BlockNoteEditor,
   BlockSchema,
@@ -5,8 +7,6 @@ import {
   LinkMenuProsemirrorPlugin,
   LinkMenuState,
 } from '@/editor/blocknote/core'
-import Tippy from '@tippyjs/react'
-import { FC, useEffect, useMemo, useRef, useState } from 'react'
 
 import { LinkMenuItem } from '@/editor/blocknote/core/extensions/LinkMenu/LinkMenuItem'
 import { DefaultLinkMenu } from './DefaultLinkMenu'
@@ -108,9 +108,9 @@ export const LinkMenuPositioner = <BSchema extends BlockSchema = DefaultBlockSch
       appendTo={scroller.current ?? document.body}
       content={linkMenuElement}
       getReferenceClientRect={getReferenceClientRect}
-      interactive={true}
+      interactive
       visible={show}
-      animation={'fade'}
+      animation="fade"
       // @ts-ignore
       placement={placement}
     />

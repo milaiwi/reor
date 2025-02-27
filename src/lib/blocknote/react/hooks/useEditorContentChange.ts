@@ -1,10 +1,7 @@
-import { BlockNoteEditor, BlockSchema } from '@/editor/blocknote/core'
 import { useEffect } from 'react'
+import { BlockNoteEditor, BlockSchema } from '../../core'
 
-export function useEditorContentChange<BSchema extends BlockSchema>(
-  editor: BlockNoteEditor<BSchema>,
-  callback: () => void,
-) {
+function useEditorContentChange<BSchema extends BlockSchema>(editor: BlockNoteEditor<BSchema>, callback: () => void) {
   useEffect(() => {
     editor._tiptapEditor.on('update', callback)
 
@@ -13,3 +10,5 @@ export function useEditorContentChange<BSchema extends BlockSchema>(
     }
   }, [callback, editor._tiptapEditor])
 }
+
+export default useEditorContentChange

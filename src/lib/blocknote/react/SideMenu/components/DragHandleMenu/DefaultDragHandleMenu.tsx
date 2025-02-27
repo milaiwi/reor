@@ -1,5 +1,4 @@
 import { Block, BlockNoteEditor } from '@lib/blocknote'
-import { updateGroup } from '@/lib/utils'
 import { Box, Menu } from '@mantine/core'
 import { Forward, RefreshCcw, XStack } from '@shm/ui'
 import * as _ from 'lodash'
@@ -13,6 +12,7 @@ import {
   RiMenuLine,
   RiText,
 } from 'react-icons/ri'
+import { updateGroup } from '@/lib/utils'
 import { RemoveBlockButton } from './DefaultButtons/RemoveBlockButton'
 import { DragHandleMenu, DragHandleMenuProps } from './DragHandleMenu'
 import { DragHandleMenuItem } from './DragHandleMenuItem'
@@ -25,7 +25,7 @@ export const DefaultDragHandleMenu = <BSchema extends HMBlockSchema>(props: Drag
   </DragHandleMenu>
 )
 
-function TurnIntoMenu(props: DragHandleMenuProps<HMBlockSchema>) {
+const TurnIntoMenu = (props: DragHandleMenuProps<HMBlockSchema>) => {
   const [opened, setOpened] = useState(false)
 
   const menuCloseTimer = useRef<NodeJS.Timeout | null>(null)

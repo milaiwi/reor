@@ -1,3 +1,4 @@
+import React from 'react'
 import ReactDOM from 'react-dom/client'
 // import * as Sentry from '@sentry/electron/renderer'
 import * as Sentry from '@sentry/react'
@@ -8,7 +9,6 @@ import './styles/global.css'
 import errorToStringRendererProcess from './lib/error'
 
 if (process.env.NODE_ENV === 'production') {
-  console.log(`setting up sentry `)
   Sentry.init({
     integrations: [],
   })

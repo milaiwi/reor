@@ -1,7 +1,7 @@
-import { Block, BlockNoteEditor, BlockSchema } from '@/editor/blocknote/core'
 import { Menu } from '@mantine/core'
 import { createStyles } from '@mantine/styles'
 import { ReactNode } from 'react'
+import { Block, BlockNoteEditor, BlockSchema } from '@/editor/blocknote/core'
 
 export type DragHandleMenuProps<BSchema extends BlockSchema> = {
   editor: BlockNoteEditor<BSchema>

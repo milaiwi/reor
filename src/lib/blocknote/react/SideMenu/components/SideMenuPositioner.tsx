@@ -1,10 +1,29 @@
+import Tippy from '@tippyjs/react'
+import React, { FC, useEffect, useMemo, useRef, useState } from 'react'
+import { Node as TipTapNode } from '@tiptap/pm/model'
 import { Block, BlockNoteEditor, BlockSchema, DefaultBlockSchema, SideMenuProsemirrorPlugin } from '@/lib/blocknote'
 import { getGroupInfoFromPos } from '@/lib/blocknote/core/extensions/Blocks/helpers/getGroupInfoFromPos'
 // import {scrollEvents} from '@/editor/editor-on-scroll-stream'
-import Tippy from '@tippyjs/react'
-import { FC, useEffect, useMemo, useRef, useState } from 'react'
 import { DefaultSideMenu } from './DefaultSideMenu'
 import { DragHandleMenuProps } from './DragHandleMenu/DragHandleMenu'
+
+const popperOptions = {
+  modifiers: [
+    {
+      name: 'flip',
+      options: {
+        fallbackPlacements: [],
+      },
+    },
+    {
+      name: 'preventOverflow',
+      options: {
+        mainAxis: false,
+        altAxis: false,
+      },
+    },
+  ],
+}
 
 export type SideMenuProps<BSchema extends BlockSchema = DefaultBlockSchema> = Pick<
   SideMenuProsemirrorPlugin<BSchema>,
@@ -77,69 +96,51 @@ export const SideMenuPositioner = <BSchema extends BlockSchema = DefaultBlockSch
     )
   }, [block, props.editor, props.sideMenu])
 
-  let topOffset = useMemo(() => {
+  const topOffset = useMemo(() => {
     if (block && referencePos.current) {
-      let lhValue = parseInt(lh, 10)
+      const lhValue = parseInt(lh, 10)
 
       switch (block.type) {
         case 'paragraph':
         case 'heading':
-          return (referencePos?.current?.height / 2) * -1 + lhValue
+          return (referencePos.current.height / 2) * -1 + lhValue
         default:
           return 8
       }
     } else {
       return 8
     }
-  }, [referencePos.current])
+  }, [block, lh])
 
   // Add right offset if the node is inside a list or blockquote
-  let rightOffset = useMemo(() => {
+  const rightOffset = useMemo(() => {
     let offset = 8
     if (block && referencePos.current) {
       const ttEditor = props.editor._tiptapEditor
       const { view } = ttEditor
       const { state } = view
-      state.doc.descendants((node, pos) => {
+      state.doc.descendants((node: TipTapNode, pos: number) => {
         if (node.attrs.id === block.id) {
           const { group } = getGroupInfoFromPos(pos, state)
 
           offset = group.attrs.listType !== 'Group' ? 20 : 8
-          return
         }
       })
     }
     return offset
-  }, [referencePos.current])
+  }, [block, props.editor._tiptapEditor])
 
   return (
     <Tippy
       appendTo={props.editor.domElement.parentElement ?? document.body}
       content={sideMenuElement}
       getReferenceClientRect={getReferenceClientRect}
-      interactive={true}
+      interactive
       visible={show}
-      animation={'fade'}
+      animation="fade"
       offset={[topOffset, rightOffset]}
       placement={props.placement}
       popperOptions={popperOptions}
     />
   )
-}
-const popperOptions = {
-  modifiers: [
-    {
-      name: 'flip',
-      options: {
-        fallbackPlacements: [],
-      },
-    },
-    {
-      name: 'preventOverflow',
-      options: {
-        mainAxis: false,
-        altAxis: false,
-      },
-    },
-  ],
 }

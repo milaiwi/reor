@@ -17,8 +17,8 @@ export const ToolbarDropdownTarget = forwardRef<HTMLButtonElement, ToolbarDropdo
       <Button
         leftIcon={TargetIcon && <TargetIcon size={16} />}
         rightIcon={<HiChevronDown />}
-        size={'xs'}
-        variant={'subtle'}
+        size="xs"
+        variant="subtle"
         disabled={props.isDisabled}
         onClick={props.onClick}
         ref={ref}

@@ -37,15 +37,9 @@ const TitleBar: React.FC = () => {
         </ExternalLink>
         <XStack onPress={() => setShowChatbot((show) => !show)}>
           {showChatbot ? (
-            <MessageSquareOff
-              size={19}
-              title="Hide Similar Files"
-            />
+            <MessageSquareOff size={19} title="Hide Similar Files" />
           ) : (
-            <MessageSquareMore
-              size={22}
-              title="Show Chatbot"
-            />
+            <MessageSquareMore size={22} title="Show Chatbot" />
           )}
         </XStack>
       </div>

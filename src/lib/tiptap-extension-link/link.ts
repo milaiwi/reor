@@ -1,11 +1,10 @@
-import { isHypermediaScheme } from '../utils'
 import { Mark, mergeAttributes } from '@tiptap/core'
 import { Plugin } from '@tiptap/pm/state'
 import { registerCustomProtocol, reset } from 'linkifyjs'
+import { isHypermediaScheme } from '../utils'
 
-import { autolink } from './helpers/autolink'
-import { clickHandler } from './helpers/clickHandler'
-// import {pasteHandler} from './helpers/pasteHandler'
+import autolink from './helpers/autolink'
+import clickHandler from './helpers/clickHandler'
 
 export interface LinkProtocolOptions {
   scheme: string
@@ -184,17 +183,6 @@ export const Link = Mark.create<LinkOptions>({
         }),
       )
     }
-    // plugins.push(
-    //   pasteHandler({
-    //     client: (this.options as any).queryClient,
-    //     grpcClient: (this.options as any).grpcClient,
-    //     gwUrl: (this.options as any).gwUrl,
-    //     editor: this.editor,
-    //     type: this.type,
-    //     linkOnPaste: this.options.linkOnPaste,
-    //     checkWebUrl: this.options.checkWebUrl,
-    //   }),
-    // )
 
     return plugins
   },

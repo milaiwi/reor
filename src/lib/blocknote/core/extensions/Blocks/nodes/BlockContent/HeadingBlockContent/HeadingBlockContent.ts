@@ -85,7 +85,7 @@ export const HeadingBlockContent = createTipTapBlock<'heading'>({
         'data-content-type': this.name,
       }),
       [
-        'h' + node.attrs.level,
+        `h${node.attrs.level}`,
         {
           class: mergeCSSClasses(styles.inlineContent, inlineContentDOMAttributes.class),
         },

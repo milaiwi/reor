@@ -42,7 +42,7 @@ export const NumberedListIndexingPlugin = () => {
               const isPrevBlockOrderedListItem = prevBlockContentType.name === 'numberedListItem'
 
               if (isPrevBlockOrderedListItem) {
-                const prevBlockIndex = prevBlockContentNode.attrs['index']
+                const prevBlockIndex = prevBlockContentNode.attrs.index
 
                 newIndex = (parseInt(prevBlockIndex) + 1).toString()
               }
@@ -50,7 +50,7 @@ export const NumberedListIndexingPlugin = () => {
           }
 
           const contentNode = blockInfo.contentNode
-          const index = contentNode.attrs['index']
+          const index = contentNode.attrs.index
 
           if (index !== newIndex) {
             modified = true

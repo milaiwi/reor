@@ -12,7 +12,7 @@ export type ToolbarDropdownItemProps = {
   isDisabled?: boolean
 }
 
-export function ToolbarDropdownItem(props: ToolbarDropdownItemProps) {
+export const ToolbarDropdownItem = (props: ToolbarDropdownItemProps) => {
   const ItemIcon = props.icon
 
   return (

@@ -1,7 +1,7 @@
-import { BlockSchema, DefaultBlockSchema, BlockNoteEditor } from '@/lib/blocknote/core'
 import Tippy from '@tippyjs/react'
 import { FC, useEffect, useMemo, useRef, useState } from 'react'
 import { sticky } from 'tippy.js'
+import { BlockSchema, DefaultBlockSchema, BlockNoteEditor } from '@/lib/blocknote/core'
 
 import { DefaultFormattingToolbar } from './DefaultFormattingToolbar'
 
@@ -46,11 +46,11 @@ export const FormattingToolbarPositioner = <BSchema extends BlockSchema = Defaul
       appendTo={props.editor.domElement.parentElement ?? document.body}
       content={formattingToolbarElement}
       getReferenceClientRect={getReferenceClientRect}
-      interactive={true}
+      interactive
       visible={show}
-      animation={'fade'}
-      placement={'top-start'}
-      sticky={true}
+      animation="fade"
+      placement="top-start"
+      sticky
       plugins={tippyPlugins}
     />
   )

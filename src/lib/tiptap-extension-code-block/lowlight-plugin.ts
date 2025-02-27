@@ -75,7 +75,7 @@ function isFunction(param: Function) {
   return typeof param === 'function'
 }
 
-export function LowlightPlugin({
+function LowlightPlugin({
   name,
   lowlight,
   defaultLanguage,
@@ -155,3 +155,5 @@ export function LowlightPlugin({
 
   return lowlightPlugin
 }
+
+export default LowlightPlugin

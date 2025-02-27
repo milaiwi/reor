@@ -23,15 +23,15 @@ export const ToolbarButton = forwardRef((props: ToolbarButtonProps, ref: Forward
   return (
     <Tippy
       content={<TooltipContent mainTooltip={props.mainTooltip} secondaryTooltip={props.secondaryTooltip} />}
-      trigger={'mouseenter'}
+      trigger="mouseenter"
     >
-      {/*Creates an ActionIcon instead of a Button if only an icon is provided as content.*/}
+      {/* Creates an ActionIcon instead of a Button if only an icon is provided as content. */}
       {props.children ? (
         <Button
           onClick={props.onClick}
           data-selected={props.isSelected ? 'true' : undefined}
           data-test={props.mainTooltip.slice(0, 1).toLowerCase() + props.mainTooltip.replace(/\s+/g, '').slice(1)}
-          size={'xs'}
+          size="xs"
           disabled={props.isDisabled || false}
           ref={ref}
         >

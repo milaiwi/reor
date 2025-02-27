@@ -1,7 +1,7 @@
-import { bnBlockStyles } from '../core'
 import { MantineThemeOverride } from '@mantine/core'
 import { CSSObject } from '@mantine/styles'
 import _ from 'lodash'
+import { bnBlockStyles } from '../core'
 
 export type CombinedColor = {
   text: string

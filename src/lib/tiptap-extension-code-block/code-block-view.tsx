@@ -1,9 +1,10 @@
+/* eslint-disable react/prop-types */
 import { Check, ChevronDown, ChevronUp, Select, XStack, YStack } from '@shm/ui'
 import { NodeViewProps } from '@tiptap/core'
 import { NodeViewContent } from '@tiptap/react'
-import { useState } from 'react'
+import React, { useState } from 'react'
 
-export const CodeBlockView = ({ props, languages }: { props: NodeViewProps; languages: string[] }) => {
+const CodeBlockView = ({ props, languages }: { props: NodeViewProps; languages: string[] }) => {
   const { node, updateAttributes } = props
   const [hovered, setHovered] = useState(false)
   const [language, setLanguage] = useState(node.attrs.language ? node.attrs.language : 'plaintext')
@@ -46,7 +47,7 @@ export const CodeBlockView = ({ props, languages }: { props: NodeViewProps; lang
                 </YStack>
               </Select.ScrollUpButton>
               <Select.Viewport minWidth={200}>
-                <Select.Group maxHeight={'60vh'}>
+                <Select.Group maxHeight="60vh">
                   {languages.map((item, i) => {
                     return (
                       <Select.Item index={i} key={item} value={item}>
@@ -82,3 +83,5 @@ export const CodeBlockView = ({ props, languages }: { props: NodeViewProps; lang
     </YStack>
   )
 }
+
+export default CodeBlockView

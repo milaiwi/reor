@@ -1,12 +1,13 @@
+import React from 'react'
 import { Menu } from '@mantine/core'
 import { createStyles } from '@mantine/styles'
 import * as _ from 'lodash'
 
-import { BlockSchema } from '@/editor/blocknote/core'
+import { BlockSchema } from '@/lib/blocknote/core'
 import { SlashMenuItem } from './SlashMenuItem'
 import { SlashMenuProps } from './SlashMenuPositioner'
 
-export function DefaultSlashMenu<BSchema extends BlockSchema>(props: SlashMenuProps<BSchema>) {
+const DefaultSlashMenu = <BSchema extends BlockSchema>(props: SlashMenuProps<BSchema>) => {
   const { classes } = createStyles({ root: {} })(undefined, {
     name: 'SlashMenu',
   })
@@ -45,8 +46,8 @@ export function DefaultSlashMenu<BSchema extends BlockSchema>(props: SlashMenuPr
        * practically indefinitely, as normally hovering off it would cause it to
        * close due to trigger="hover".
        */
-      defaultOpened={true}
-      trigger={'hover'}
+      defaultOpened
+      trigger="hover"
       closeDelay={10000000}
     >
       <Menu.Dropdown
@@ -59,3 +60,5 @@ export function DefaultSlashMenu<BSchema extends BlockSchema>(props: SlashMenuPr
     </Menu>
   )
 }
+
+export default DefaultSlashMenu

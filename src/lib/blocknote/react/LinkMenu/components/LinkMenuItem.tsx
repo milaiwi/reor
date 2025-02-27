@@ -13,7 +13,7 @@ export type LinkMenuItemProps = {
   set: () => void
 }
 
-export function LinkMenuItem(props: LinkMenuItemProps) {
+export const LinkMenuItem = (props: LinkMenuItemProps) => {
   const itemRef = useRef<HTMLButtonElement>(null)
   const { classes } = createStyles({ root: {} })(undefined, {
     name: 'SuggestionListItem',
@@ -72,7 +72,7 @@ export function LinkMenuItem(props: LinkMenuItemProps) {
       //   }
     >
       {/* <Stack> */}
-      {/*Might need separate classes.*/}
+      {/* Might need separate classes. */}
       <Box w={400}>
         <Text size={14} weight={500} truncate="end">
           {props.name}

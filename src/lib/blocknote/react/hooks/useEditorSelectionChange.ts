@@ -1,10 +1,7 @@
-import { BlockNoteEditor, BlockSchema } from '../../core'
 import { useEffect } from 'react'
+import { BlockNoteEditor, BlockSchema } from '../../core'
 
-export function useEditorSelectionChange<BSchema extends BlockSchema>(
-  editor: BlockNoteEditor<BSchema>,
-  callback: () => void,
-) {
+function useEditorSelectionChange<BSchema extends BlockSchema>(editor: BlockNoteEditor<BSchema>, callback: () => void) {
   useEffect(() => {
     editor._tiptapEditor.on('selectionUpdate', callback)
 
@@ -13,3 +10,5 @@ export function useEditorSelectionChange<BSchema extends BlockSchema>(
     }
   }, [callback, editor._tiptapEditor])
 }
+
+export default useEditorSelectionChange

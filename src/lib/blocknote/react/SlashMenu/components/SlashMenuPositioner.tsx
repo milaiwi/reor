@@ -1,15 +1,16 @@
-import {
+import Tippy from '@tippyjs/react'
+import React, { FC, useEffect, useMemo, useRef, useState } from 'react'
+
+import { 
   BlockNoteEditor,
   BlockSchema,
   DefaultBlockSchema,
   SlashMenuProsemirrorPlugin,
-  SuggestionsMenuState,
-} from '@/editor/blocknote/core'
-import Tippy from '@tippyjs/react'
-import { FC, useEffect, useMemo, useRef, useState } from 'react'
+  SuggestionsMenuState
+} from '@/lib/blocknote/core'
 
 import { ReactSlashMenuItem } from '../ReactSlashMenuItem'
-import { DefaultSlashMenu } from './DefaultSlashMenu'
+import DefaultSlashMenu from './DefaultSlashMenu'
 
 export type SlashMenuProps<BSchema extends BlockSchema = DefaultBlockSchema> = Pick<
   SlashMenuProsemirrorPlugin<BSchema, any>,
@@ -88,10 +89,10 @@ export const SlashMenuPositioner = <BSchema extends BlockSchema = DefaultBlockSc
       appendTo={scroller.current ?? document.body}
       content={slashMenuElement}
       getReferenceClientRect={getReferenceClientRect}
-      interactive={true}
+      interactive
       visible={show}
-      animation={'fade'}
-      placement={'auto'}
+      animation="fade"
+      placement="auto"
     />
   )
 }

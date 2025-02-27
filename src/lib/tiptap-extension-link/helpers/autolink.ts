@@ -15,7 +15,7 @@ type AutolinkOptions = {
   validate?: (url: string) => boolean
 }
 
-export function autolink(options: AutolinkOptions): Plugin {
+function autolink(options: AutolinkOptions): Plugin {
   return new Plugin({
     key: new PluginKey('autolink'),
     appendTransaction: (transactions, oldState, newState) => {
@@ -23,7 +23,7 @@ export function autolink(options: AutolinkOptions): Plugin {
       const preventAutolink = transactions.some((transaction) => transaction.getMeta('preventAutolink'))
 
       if (!docChanges || preventAutolink) {
-        return
+        return undefined
       }
 
       const { tr } = newState
@@ -121,7 +121,7 @@ export function autolink(options: AutolinkOptions): Plugin {
               if (getMarksBetween(link.from, link.to, newState.doc).some((item) => item.mark.type === options.type)) {
                 return
               }
-              let id = nanoid(8)
+              const id = nanoid(8)
               tr.setMeta('hmPlugin:uncheckedLink', id)
               tr.addMark(
                 link.from,
@@ -133,13 +133,16 @@ export function autolink(options: AutolinkOptions): Plugin {
               )
             })
         }
+        return true
       })
 
       if (!tr.steps.length) {
-        return
+        return undefined
       }
 
       return tr
     },
   })
 }
+
+export default autolink

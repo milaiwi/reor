@@ -34,7 +34,7 @@ export function insertBlocks<BSchema extends BlockSchema>(
     if (node.childCount < 2) {
       insertionPos = posBeforeNode + node.firstChild!.nodeSize + 1
 
-      const blockGroupNode = editor.state.schema.nodes['blockGroup'].create({}, nodesToInsert)
+      const blockGroupNode = editor.state.schema.nodes.blockGroup.create({}, nodesToInsert)
 
       editor.view.dispatch(editor.state.tr.insert(insertionPos, blockGroupNode))
 
@@ -90,7 +90,7 @@ export function removeBlocks(blocksToRemove: BlockIdentifier[], editor: Editor) 
   if (idsOfBlocksToRemove.size > 0) {
     const notFoundIds = [...idsOfBlocksToRemove].join('\n')
 
-    throw Error('Blocks with the following IDs could not be found in the editor: ' + notFoundIds)
+    throw Error(`Blocks with the following IDs could not be found in the editor: ${notFoundIds}`)
   }
 }
 

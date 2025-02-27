@@ -4,7 +4,7 @@ import { BlockSchema } from '@/editor/blocknote/core'
 import { LinkMenuItem } from './LinkMenuItem'
 import { LinkMenuProps } from './LinkMenuPositioner'
 
-export function DefaultLinkMenu<BSchema extends BlockSchema>(props: LinkMenuProps<BSchema>) {
+export const DefaultLinkMenu = <BSchema extends BlockSchema>(props: LinkMenuProps<BSchema>) => {
   const { classes } = createStyles({ root: {} })(undefined, {
     name: 'LinkMenu',
   })
@@ -38,8 +38,8 @@ export function DefaultLinkMenu<BSchema extends BlockSchema>(props: LinkMenuProp
        * practically indefinitely, as normally hovering off it would cause it to
        * close due to trigger="hover".
        */
-      defaultOpened={true}
-      trigger={'hover'}
+      defaultOpened
+      trigger="hover"
       closeDelay={10000000}
     >
       <Menu.Dropdown

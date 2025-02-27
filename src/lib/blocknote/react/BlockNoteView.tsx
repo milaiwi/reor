@@ -1,19 +1,19 @@
-import { BlockNoteEditor, BlockSchema, mergeCSSClasses } from '../core'
 import { MantineProvider } from '@mantine/core'
 import { createStyles } from '@mantine/styles'
 import { EditorContent } from '@tiptap/react'
 import { HTMLAttributes, ReactNode, useMemo } from 'react'
 import { usePrefersColorScheme } from 'use-prefers-color-scheme'
+import { BlockNoteEditor, BlockSchema, mergeCSSClasses } from '../core'
 import { Theme, blockNoteToMantineTheme } from './BlockNoteTheme'
 import { darkDefaultTheme, lightDefaultTheme } from './defaultThemes'
 
 // Renders the editor as well as all menus & toolbars using default styles.
-function BaseBlockNoteView<BSchema extends BlockSchema>(
+const BaseBlockNoteView = <BSchema extends BlockSchema>(
   props: {
     editor: BlockNoteEditor<BSchema>
     children?: ReactNode
   } & HTMLAttributes<HTMLDivElement>,
-) {
+) => {
   const { classes } = createStyles({ root: {} })(undefined, {
     name: 'Editor',
   })
@@ -38,7 +38,7 @@ function BaseBlockNoteView<BSchema extends BlockSchema>(
   )
 }
 
-export function BlockNoteView<BSchema extends BlockSchema>(
+export const BlockNoteView = <BSchema extends BlockSchema>(
   props: {
     editor: BlockNoteEditor<BSchema>
     theme?:
@@ -51,7 +51,7 @@ export function BlockNoteView<BSchema extends BlockSchema>(
         }
     children?: ReactNode
   } & HTMLAttributes<HTMLDivElement>,
-) {
+) => {
   const { theme = { light: lightDefaultTheme, dark: darkDefaultTheme }, ...rest } = props
 
   const preferredTheme = usePrefersColorScheme()

@@ -118,7 +118,7 @@ type Theme = {
 }
 
 function t(a) {
-  let res: Record<string, string> = {}
+  const res: Record<string, string> = {}
   for (const [ki, vi] of a) {
     // @ts-ignore
     res[ks[ki]] = vs[vi]
