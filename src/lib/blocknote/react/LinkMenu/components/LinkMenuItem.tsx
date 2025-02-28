@@ -1,12 +1,13 @@
 import { Box, Menu, Text } from '@mantine/core'
 import { createStyles } from '@mantine/styles'
-import { useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 
-const MIN_LEFT_MARGIN = 5
+// const MIN_LEFT_MARGIN = 5
 
 export type LinkMenuItemProps = {
   name: string
   icon?: JSX.Element
+  // eslint-disable-next-line react/no-unused-prop-types
   hint?: string
   disabled: boolean
   isSelected: boolean
@@ -30,9 +31,11 @@ export const LinkMenuItem = (props: LinkMenuItemProps) => {
   // Updates HTML "data-hovered" attribute which Mantine uses to set mouse hover styles.
   // Allows users to "hover" menu items when navigating using the keyboard.
   function updateSelection() {
-    isSelected()
-      ? itemRef.current?.setAttribute('data-hovered', 'true')
-      : itemRef.current?.removeAttribute('data-hovered')
+    if (isSelected()) {
+      itemRef.current?.setAttribute('data-hovered', 'true')
+    } else {
+      itemRef.current?.removeAttribute('data-hovered')
+    }
   }
 
   useEffect(() => {

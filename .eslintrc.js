@@ -13,8 +13,6 @@ module.exports = {
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
     project: './tsconfig.json',
   },
   plugins: ['@typescript-eslint', 'react', 'import', 'jsx-a11y', 'unused-imports', 'prettier', 'tailwindcss'],

@@ -7,7 +7,6 @@ import { BlockNoteEditor } from '../../BlockNoteEditor'
 import styles from '../../editor.module.css'
 import { BlockSchema } from '../Blocks/api/blockTypes'
 import { getBlockInfoFromPos } from '../Blocks/helpers/getBlockInfoFromPos'
-import { SlashMenuPluginKey } from '../SlashMenu/SlashMenuExtension'
 import {
   BlockSideMenu,
   BlockSideMenuDynamicParams,
@@ -15,7 +14,7 @@ import {
   BlockSideMenuStaticParams,
 } from './BlockSideMenuFactoryTypes'
 import { DraggableBlocksOptions } from './DraggableBlocksExtension'
-import { MultipleNodeSelection } from './MultipleNodeSelection'
+import MultipleNodeSelection from './MultipleNodeSelection'
 
 const serializeForClipboard = (pv as any).__serializeForClipboard
 // code based on https://github.com/ueberdosis/tiptap/issues/323#issuecomment-506637799
@@ -526,13 +525,6 @@ export class BlockMenuView<BSchema extends BlockSchema> {
 
     // Focuses and activates the suggestion menu.
     this.ttEditor.view.focus()
-    this.ttEditor.view.dispatch(
-      this.ttEditor.view.state.tr.scrollIntoView().setMeta(SlashMenuPluginKey, {
-        // TODO import suggestion plugin key
-        activate: true,
-        type: 'drag',
-      }),
-    )
   }
 
   getStaticParams(): BlockSideMenuStaticParams<BSchema> {

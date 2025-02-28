@@ -1,6 +1,7 @@
+/* eslint-disable react/no-this-in-sfc */
 import { TagParseRule } from '@tiptap/pm/model'
 import { NodeViewContent, NodeViewProps, NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react'
-import { createContext, ElementType, FC, HTMLProps, useContext } from 'react'
+import React, { createContext, ElementType, FC, HTMLProps, useContext, useMemo } from 'react'
 import {
   BlockConfig,
   BlockNoteDOMAttributes,
@@ -88,7 +89,8 @@ export function createReactBlockSpec<
     addNodeView() {
       const BlockContent: FC<NodeViewProps> = (props: NodeViewProps) => {
         const Content = blockConfig.render
-
+        const { domAttributes: rawDomAttributes } = this.options
+        const domAttributes = useMemo(() => ({ ...rawDomAttributes }), [rawDomAttributes])
         // Add custom HTML attributes
         const blockContentDOMAttributes = this.options.domAttributes?.blockContent || {}
 
@@ -127,7 +129,7 @@ export function createReactBlockSpec<
             data-content-type={blockConfig.type}
             {...htmlAttributes}
           >
-            <BlockNoteDOMAttributesContext.Provider value={this.options.domAttributes || {}}>
+            <BlockNoteDOMAttributesContext.Provider value={domAttributes}>
               <Content block={block as any} editor={editor} />
             </BlockNoteDOMAttributesContext.Provider>
           </NodeViewWrapper>

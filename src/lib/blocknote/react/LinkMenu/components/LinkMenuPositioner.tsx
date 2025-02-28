@@ -1,15 +1,15 @@
 import Tippy from '@tippyjs/react'
-import { FC, useEffect, useMemo, useRef, useState } from 'react'
+import React, { FC, useEffect, useMemo, useRef, useState } from 'react'
 import {
   BlockNoteEditor,
   BlockSchema,
   DefaultBlockSchema,
   LinkMenuProsemirrorPlugin,
   LinkMenuState,
-} from '@/editor/blocknote/core'
+  LinkMenuItem,
+} from '@/lib/blocknote/core'
 
-import { LinkMenuItem } from '@/editor/blocknote/core/extensions/LinkMenu/LinkMenuItem'
-import { DefaultLinkMenu } from './DefaultLinkMenu'
+import DefaultLinkMenu from './DefaultLinkMenu'
 
 export type LinkMenuProps<BSchema extends BlockSchema = DefaultBlockSchema> = Pick<
   LinkMenuProsemirrorPlugin<BSchema, any>,

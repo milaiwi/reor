@@ -5,7 +5,7 @@ import { Mark, Node as PMNode } from 'prosemirror-model'
 import { Plugin, PluginKey } from 'prosemirror-state'
 import type { BlockNoteEditor } from '../../BlockNoteEditor'
 import { BaseUiElementState } from '../../shared/BaseUiElementTypes'
-import { EventEmitter } from '../../shared/EventEmitter'
+import EventEmitter from '../../shared/EventEmitter'
 import { BlockSchema } from '../Blocks/api/blockTypes'
 import { getGroupInfoFromPos } from '../Blocks/helpers/getGroupInfoFromPos'
 

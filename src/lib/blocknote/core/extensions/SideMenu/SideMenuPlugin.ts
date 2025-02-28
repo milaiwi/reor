@@ -7,11 +7,11 @@ import { EditorView } from 'prosemirror-view'
 import { BlockNoteEditor } from '../../BlockNoteEditor'
 import styles from '../../editor.module.css'
 import { BaseUiElementState } from '../../shared/BaseUiElementTypes'
-import { EventEmitter } from '../../shared/EventEmitter'
+import EventEmitter from '../../shared/EventEmitter'
 import { Block, BlockSchema } from '../Blocks/api/blockTypes'
 import { getBlockInfoFromPos } from '../Blocks/helpers/getBlockInfoFromPos'
 import { slashMenuPluginKey } from '../SlashMenu/SlashMenuPlugin'
-import { MultipleNodeSelection } from './MultipleNodeSelection'
+import MultipleNodeSelection from './MultipleNodeSelection'
 
 const serializeForClipboard = (pv as any).__serializeForClipboard
 // code based on https://github.com/ueberdosis/tiptap/issues/323#issuecomment-506637799

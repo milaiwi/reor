@@ -1,13 +1,19 @@
 import Tippy from '@tippyjs/react'
-import { FC, useEffect, useMemo, useRef, useState } from 'react'
+import React, { FC, useEffect, useMemo, useRef, useState } from 'react'
 import { sticky } from 'tippy.js'
 import { BlockSchema, DefaultBlockSchema, BlockNoteEditor } from '@/lib/blocknote/core'
 
-import { DefaultFormattingToolbar } from './DefaultFormattingToolbar'
+import DefaultFormattingToolbar from './DefaultFormattingToolbar'
 
 export type FormattingToolbarProps<BSchema extends BlockSchema = DefaultBlockSchema> = {
   editor: BlockNoteEditor<BSchema>
 }
+
+// We want Tippy to call `getReferenceClientRect` whenever the reference
+// DOMRect's position changes. This happens automatically on scroll, but we need
+// the `sticky` plugin to make it happen in all cases. This is most evident
+// when changing the text alignment using the formatting toolbar.
+const tippyPlugins = [sticky]
 
 export const FormattingToolbarPositioner = <BSchema extends BlockSchema = DefaultBlockSchema>(props: {
   editor: BlockNoteEditor<BSchema>
@@ -55,9 +61,3 @@ export const FormattingToolbarPositioner = <BSchema extends BlockSchema = Defaul
     />
   )
 }
-
-// We want Tippy to call `getReferenceClientRect` whenever the reference
-// DOMRect's position changes. This happens automatically on scroll, but we need
-// the `sticky` plugin to make it happen in all cases. This is most evident
-// when changing the text alignment using the formatting toolbar.
-const tippyPlugins = [sticky]

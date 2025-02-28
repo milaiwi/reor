@@ -1,7 +1,7 @@
 import { MantineProvider } from '@mantine/core'
 import { createStyles } from '@mantine/styles'
 import { EditorContent } from '@tiptap/react'
-import { HTMLAttributes, ReactNode, useMemo } from 'react'
+import React, { HTMLAttributes, ReactNode, useMemo } from 'react'
 import { usePrefersColorScheme } from 'use-prefers-color-scheme'
 import { BlockNoteEditor, BlockSchema, mergeCSSClasses } from '../core'
 import { Theme, blockNoteToMantineTheme } from './BlockNoteTheme'
@@ -31,6 +31,7 @@ const BaseBlockNoteView = <BSchema extends BlockSchema>(
   )
 }
 
+// eslint-disable-next-line import/prefer-default-export
 export const BlockNoteView = <BSchema extends BlockSchema>(
   props: {
     editor: BlockNoteEditor<BSchema>

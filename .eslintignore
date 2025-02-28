@@ -1,0 +1,11 @@
+# electron setup
+dist-electron/
+dist/
+
+# scripts and config
+scripts/
+postcss.config.js
+tailwind.config.js
+
+# generated files
+src/components/Editor/ui/src/generated-themes.ts

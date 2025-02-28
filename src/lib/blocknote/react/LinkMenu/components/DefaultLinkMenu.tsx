@@ -1,10 +1,11 @@
+import React from 'react'
 import { Menu } from '@mantine/core'
 import { createStyles } from '@mantine/styles'
-import { BlockSchema } from '@/editor/blocknote/core'
+import { BlockSchema } from '@/lib/blocknote/core'
 import { LinkMenuItem } from './LinkMenuItem'
 import { LinkMenuProps } from './LinkMenuPositioner'
 
-export const DefaultLinkMenu = <BSchema extends BlockSchema>(props: LinkMenuProps<BSchema>) => {
+const DefaultLinkMenu = <BSchema extends BlockSchema>(props: LinkMenuProps<BSchema>) => {
   const { classes } = createStyles({ root: {} })(undefined, {
     name: 'LinkMenu',
   })
@@ -52,3 +53,5 @@ export const DefaultLinkMenu = <BSchema extends BlockSchema>(props: LinkMenuProp
     </Menu>
   )
 }
+
+export default DefaultLinkMenu

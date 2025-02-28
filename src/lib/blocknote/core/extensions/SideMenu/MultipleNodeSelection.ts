@@ -14,7 +14,7 @@ import { Mappable } from 'prosemirror-transform'
  * 2. Already expects the selection to start just before the first target node and ends just after the last, while a
  * NodeSelection automatically sets both anchor and head to just before the single target node.
  */
-export class MultipleNodeSelection extends Selection {
+class MultipleNodeSelection extends Selection {
   nodes: Array<Node>
 
   constructor($anchor: ResolvedPos, $head: ResolvedPos) {
@@ -29,6 +29,7 @@ export class MultipleNodeSelection extends Selection {
         this.nodes.push(node)
         return false
       }
+      return undefined
     })
   }
 
@@ -81,3 +82,5 @@ export class MultipleNodeSelection extends Selection {
     return { type: 'node', anchor: this.anchor, head: this.head }
   }
 }
+
+export default MultipleNodeSelection

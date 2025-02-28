@@ -1,10 +1,8 @@
-// TODO: review directories
 export * from './BlockNoteTheme'
 export * from './BlockNoteView'
 export * from './defaultThemes'
 
 export * from './FormattingToolbar/components/DefaultButtons/ColorStyleButton'
-export * from './FormattingToolbar/components/DefaultButtons/CreateLinkButton'
 export * from './FormattingToolbar/components/DefaultButtons/NestBlockButtons'
 export * from './FormattingToolbar/components/DefaultButtons/TextAlignButton'
 export * from './FormattingToolbar/components/DefaultButtons/ToggledStyleButton'

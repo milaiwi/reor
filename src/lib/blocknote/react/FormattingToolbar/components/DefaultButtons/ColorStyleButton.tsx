@@ -1,13 +1,17 @@
-import { BlockNoteEditor, BlockSchema } from '@/lib/blocknote/core'
 import { Menu } from '@mantine/core'
-import { useCallback, useState } from 'react'
+import React, { useCallback, useState } from 'react'
+import { BlockNoteEditor, BlockSchema } from '@/lib/blocknote/core'
 import { ColorIcon } from '../../../SharedComponents/ColorPicker/components/ColorIcon'
 import { ColorPicker } from '../../../SharedComponents/ColorPicker/components/ColorPicker'
 import { ToolbarButton } from '../../../SharedComponents/Toolbar/components/ToolbarButton'
 import useEditorContentChange from '../../../hooks/useEditorContentChange'
 import useEditorSelectionChange from '../../../hooks/useEditorSelectionChange'
 
-export const ColorStyleButton = <BSchema extends BlockSchema>(props: { editor: BlockNoteEditor<BSchema> }) => {
+const createColorIcon = (currentTextColor?: string | undefined, currentBackgroundColor?: string | undefined) => {
+  return <ColorIcon textColor={currentTextColor} backgroundColor={currentBackgroundColor} size={20} />
+}
+
+const ColorStyleButton = <BSchema extends BlockSchema>(props: { editor: BlockNoteEditor<BSchema> }) => {
   const [currentTextColor, setCurrentTextColor] = useState<string>(
     props.editor.getActiveStyles().textColor || 'default',
   )
@@ -28,9 +32,11 @@ export const ColorStyleButton = <BSchema extends BlockSchema>(props: { editor: B
   const setTextColor = useCallback(
     (color: string) => {
       props.editor.focus()
-      color === 'default'
-        ? props.editor.removeStyles({ textColor: color })
-        : props.editor.addStyles({ textColor: color })
+      if (color === 'default') {
+        props.editor.removeStyles({ textColor: color })
+      } else {
+        props.editor.addStyles({ textColor: color })
+      }
     },
     [props.editor],
   )
@@ -38,20 +44,21 @@ export const ColorStyleButton = <BSchema extends BlockSchema>(props: { editor: B
   const setBackgroundColor = useCallback(
     (color: string) => {
       props.editor.focus()
-      color === 'default'
-        ? props.editor.removeStyles({ backgroundColor: color })
-        : props.editor.addStyles({ backgroundColor: color })
+      if (color === 'default') {
+        props.editor.removeStyles({ backgroundColor: color })
+      } else {
+        props.editor.addStyles({ backgroundColor: color })
+      }
     },
     [props.editor],
   )
 
+  const ColorIconComponent = createColorIcon(currentTextColor, currentBackgroundColor)
+
   return (
     <Menu>
       <Menu.Target>
-        <ToolbarButton
-          mainTooltip={'Colors'}
-          icon={() => <ColorIcon textColor={currentTextColor} backgroundColor={currentBackgroundColor} size={20} />}
-        />
+        <ToolbarButton mainTooltip="Colors" icon={() => ColorIconComponent} />
       </Menu.Target>
       <Menu.Dropdown>
         <ColorPicker
@@ -64,3 +71,5 @@ export const ColorStyleButton = <BSchema extends BlockSchema>(props: { editor: B
     </Menu>
   )
 }
+
+export default ColorStyleButton

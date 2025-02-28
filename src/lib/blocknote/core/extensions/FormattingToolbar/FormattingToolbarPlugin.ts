@@ -3,7 +3,7 @@ import { isNodeSelection, isTextSelection, posToDOMRect } from '@tiptap/core'
 import { EditorState, Plugin, PluginKey } from 'prosemirror-state'
 import { EditorView } from 'prosemirror-view'
 import { BaseUiElementCallbacks, BaseUiElementState, BlockNoteEditor, BlockSchema } from '../..'
-import { EventEmitter } from '../../shared/EventEmitter'
+import EventEmitter from '../../shared/EventEmitter'
 
 export type FormattingToolbarCallbacks = BaseUiElementCallbacks
 

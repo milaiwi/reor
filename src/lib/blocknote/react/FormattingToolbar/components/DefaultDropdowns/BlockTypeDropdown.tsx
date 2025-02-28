@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { IconType } from 'react-icons'
 import { RiH2, RiListOrdered, RiListUnordered, RiText } from 'react-icons/ri'
 import { BlockNoteEditor, BlockSchema } from '@/lib/blocknote/core'

@@ -8,7 +8,7 @@ type CallbackFunction<T extends Record<string, any>, EventName extends StringKey
   ...props: CallbackType<T, EventName>
 ) => any
 
-export class EventEmitter<T extends Record<string, any>> {
+class EventEmitter<T extends Record<string, any>> {
   // eslint-disable-next-line
   private callbacks: { [key: string]: Function[] } = {}
 
@@ -46,3 +46,5 @@ export class EventEmitter<T extends Record<string, any>> {
     this.callbacks = {}
   }
 }
+
+export default EventEmitter

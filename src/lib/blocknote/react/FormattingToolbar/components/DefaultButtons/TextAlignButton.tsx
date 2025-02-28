@@ -1,7 +1,7 @@
-import { BlockNoteEditor, BlockSchema, DefaultProps, PartialBlock } from '@/lib/blocknote/core'
-import { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { IconType } from 'react-icons'
 import { RiAlignCenter, RiAlignJustify, RiAlignLeft, RiAlignRight } from 'react-icons/ri'
+import { BlockNoteEditor, BlockSchema, DefaultProps, PartialBlock } from '@/lib/blocknote/core'
 import { ToolbarButton } from '../../../SharedComponents/Toolbar/components/ToolbarButton'
 import useEditorContentChange from '../../../hooks/useEditorContentChange'
 import useEditorSelectionChange from '../../../hooks/useEditorSelectionChange'
@@ -15,7 +15,7 @@ const icons: Record<TextAlignment, IconType> = {
   justify: RiAlignJustify,
 }
 
-export const TextAlignButton = <BSchema extends BlockSchema>(props: {
+const TextAlignButton = <BSchema extends BlockSchema>(props: {
   editor: BlockNoteEditor<BSchema>
   textAlignment: TextAlignment
 }) => {
@@ -25,8 +25,7 @@ export const TextAlignButton = <BSchema extends BlockSchema>(props: {
     if ('textAlignment' in block.props) {
       return block.props.textAlignment as TextAlignment
     }
-
-    return
+    return undefined
   })
 
   useEditorContentChange(props.editor, () => {
@@ -99,9 +98,11 @@ export const TextAlignButton = <BSchema extends BlockSchema>(props: {
       mainTooltip={
         props.textAlignment === 'justify'
           ? 'Justify Text'
-          : 'Align Text ' + props.textAlignment.slice(0, 1).toUpperCase() + props.textAlignment.slice(1)
+          : `Align Text ${props.textAlignment.slice(0, 1).toUpperCase()}${props.textAlignment.slice(1)}`
       }
       icon={icons[props.textAlignment]}
     />
   )
 }
+
+export default TextAlignButton
