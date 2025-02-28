@@ -1,5 +1,5 @@
 import { Button } from '@mantine/core'
-import { MouseEventHandler, forwardRef } from 'react'
+import React, { MouseEventHandler, forwardRef } from 'react'
 import { IconType } from 'react-icons'
 import { HiChevronDown } from 'react-icons/hi'
 

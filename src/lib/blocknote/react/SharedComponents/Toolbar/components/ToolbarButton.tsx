@@ -1,8 +1,8 @@
 import { ActionIcon, Button } from '@mantine/core'
 import Tippy from '@tippyjs/react'
-import { ForwardedRef, MouseEvent, forwardRef } from 'react'
+import React, { ForwardedRef, MouseEvent, forwardRef } from 'react'
 import { IconType } from 'react-icons'
-import { TooltipContent } from '../../Tooltip/components/TooltipContent'
+import TooltipContent from '../../Tooltip/components/TooltipContent'
 
 export type ToolbarButtonProps = {
   onClick?: (e: MouseEvent) => void

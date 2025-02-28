@@ -1,7 +1,7 @@
+import { BlockNoteEditor, BlockSchema, ToggledStyle } from '@/lib/blocknote/core'
 import { useState } from 'react'
 import { IconType } from 'react-icons'
 import { RiBold, RiCodeFill, RiItalic, RiStrikethrough, RiUnderline } from 'react-icons/ri'
-import { BlockNoteEditor, BlockSchema, ToggledStyle } from '@/lib/blocknote/core'
 import { ToolbarButton } from '../../../SharedComponents/Toolbar/components/ToolbarButton'
 import useEditorContentChange from '../../../hooks/useEditorContentChange'
 import useEditorSelectionChange from '../../../hooks/useEditorSelectionChange'

@@ -1,7 +1,8 @@
+import React from 'react'
 import { Stack, Text } from '@mantine/core'
 import { createStyles } from '@mantine/styles'
 
-export const TooltipContent = (props: { mainTooltip: string; secondaryTooltip?: string }) => {
+const TooltipContent = (props: { mainTooltip: string; secondaryTooltip?: string }) => {
   const { classes } = createStyles({ root: {} })(undefined, {
     name: 'Tooltip',
   })
@@ -13,3 +14,5 @@ export const TooltipContent = (props: { mainTooltip: string; secondaryTooltip?: 
     </Stack>
   )
 }
+
+export default TooltipContent

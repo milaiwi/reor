@@ -1,10 +1,11 @@
 import { Menu } from '@mantine/core'
-import { MouseEvent } from 'react'
+import React, { MouseEvent } from 'react'
 import { IconType } from 'react-icons'
 import { TiTick } from 'react-icons/ti'
 
 export type ToolbarDropdownItemProps = {
   text: string
+  // eslint-disable-next-line react/no-unused-prop-types
   type?: string
   icon?: IconType
   onClick?: (e: MouseEvent) => void

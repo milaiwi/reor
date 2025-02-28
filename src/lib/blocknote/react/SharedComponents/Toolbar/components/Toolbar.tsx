@@ -1,8 +1,8 @@
 import { Group } from '@mantine/core'
 import { createStyles } from '@mantine/styles'
-import { forwardRef, HTMLAttributes } from 'react'
+import React, { forwardRef, HTMLAttributes } from 'react'
 
-export const Toolbar = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>((props, ref) => {
+const Toolbar = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>((props, ref) => {
   const { classes } = createStyles({ root: {} })(undefined, {
     name: 'Toolbar',
   })
@@ -13,3 +13,5 @@ export const Toolbar = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>
     </Group>
   )
 })
+
+export default Toolbar

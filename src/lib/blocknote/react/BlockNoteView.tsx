@@ -26,14 +26,7 @@ const BaseBlockNoteView = <BSchema extends BlockSchema>(
       className={mergeCSSClasses(classes.root, props.className || '')}
       {...rest}
     >
-      {props.children || (
-        <>
-          {/* <FormattingToolbarPositioner editor={props.editor} /> */}
-          {/* <SlashMenuPositioner editor={props.editor} />
-          <SideMenuPositioner editor={props.editor} />
-          <LinkMenuPositioner editor={props.editor} /> */}
-        </>
-      )}
+      {props.children}
     </EditorContent>
   )
 }

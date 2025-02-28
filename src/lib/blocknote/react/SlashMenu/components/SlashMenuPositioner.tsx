@@ -1,12 +1,12 @@
 import Tippy from '@tippyjs/react'
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react'
 
-import { 
+import {
   BlockNoteEditor,
   BlockSchema,
   DefaultBlockSchema,
   SlashMenuProsemirrorPlugin,
-  SuggestionsMenuState
+  SuggestionsMenuState,
 } from '@/lib/blocknote/core'
 
 import { ReactSlashMenuItem } from '../ReactSlashMenuItem'

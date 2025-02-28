@@ -1,6 +1,6 @@
+import { BlockNoteEditor, BlockSchema } from '@/lib/blocknote/core'
 import { useCallback, useState } from 'react'
 import { RiLink } from 'react-icons/ri'
-import { BlockNoteEditor, BlockSchema } from '@/editor/blocknote/core'
 import useEditorSelectionChange from '../../../hooks/useEditorSelectionChange'
 import LinkToolbarButton from '../LinkToolbarButton'
 

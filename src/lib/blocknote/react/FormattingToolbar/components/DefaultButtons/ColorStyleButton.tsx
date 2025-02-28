@@ -1,6 +1,6 @@
+import { BlockNoteEditor, BlockSchema } from '@/lib/blocknote/core'
 import { Menu } from '@mantine/core'
 import { useCallback, useState } from 'react'
-import { BlockNoteEditor, BlockSchema } from '@/lib/blocknote/core'
 import { ColorIcon } from '../../../SharedComponents/ColorPicker/components/ColorIcon'
 import { ColorPicker } from '../../../SharedComponents/ColorPicker/components/ColorPicker'
 import { ToolbarButton } from '../../../SharedComponents/Toolbar/components/ToolbarButton'
@@ -49,7 +49,7 @@ export const ColorStyleButton = <BSchema extends BlockSchema>(props: { editor: B
     <Menu>
       <Menu.Target>
         <ToolbarButton
-          mainTooltip="Colors"
+          mainTooltip={'Colors'}
           icon={() => <ColorIcon textColor={currentTextColor} backgroundColor={currentBackgroundColor} size={20} />}
         />
       </Menu.Target>

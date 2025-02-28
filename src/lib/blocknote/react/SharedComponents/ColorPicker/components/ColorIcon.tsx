@@ -23,11 +23,11 @@ export const ColorIcon = (
         return {
           backgroundColor: theme.other.backgroundColors[backgroundColor],
           color: theme.other.textColors[textColor],
-          fontSize: `${(size * 0.75).toString()}px`,
-          height: `${size.toString()}px`,
-          lineHeight: `${size.toString()}px`,
+          fontSize: (size * 0.75).toString() + 'px',
+          height: size.toString() + 'px',
+          lineHeight: size.toString() + 'px',
           textAlign: 'center',
-          width: `${size.toString()}px`,
+          width: size.toString() + 'px',
         }
       }}
     >

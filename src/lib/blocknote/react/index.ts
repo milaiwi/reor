@@ -12,19 +12,6 @@ export * from './FormattingToolbar/components/DefaultDropdowns/BlockTypeDropdown
 export * from './FormattingToolbar/components/DefaultFormattingToolbar'
 export * from './FormattingToolbar/components/FormattingToolbarPositioner'
 
-export * from './SideMenu/components/DefaultButtons/AddBlockButton'
-export * from './SideMenu/components/DefaultButtons/DragHandle'
-export * from './SideMenu/components/DefaultSideMenu'
-export * from './SideMenu/components/SideMenu'
-export * from './SideMenu/components/SideMenuButton'
-export * from './SideMenu/components/SideMenuPositioner'
-
-export * from './SideMenu/components/DragHandleMenu/DefaultButtons/BlockColorsButton'
-export * from './SideMenu/components/DragHandleMenu/DefaultButtons/RemoveBlockButton'
-export * from './SideMenu/components/DragHandleMenu/DefaultDragHandleMenu'
-export * from './SideMenu/components/DragHandleMenu/DragHandleMenu'
-export * from './SideMenu/components/DragHandleMenu/DragHandleMenuItem'
-
 export * from './SlashMenu/ReactSlashMenuItem'
 export * from './SlashMenu/components/DefaultSlashMenu'
 export * from './SlashMenu/components/SlashMenuItem'
