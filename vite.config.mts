@@ -6,9 +6,10 @@ import { defineConfig } from 'vite'
 import electron from 'vite-plugin-electron'
 import renderer from 'vite-plugin-electron-renderer'
 import { sentryVitePlugin } from '@sentry/vite-plugin'
-import { tamaguiExtractPlugin, tamaguiPlugin } from '@tamagui/vite-plugin'
+import { tamaguiPlugin } from '@tamagui/vite-plugin'
 import tailwindcss from 'tailwindcss'
 import autoprefixer from 'autoprefixer'
+import circleDependency from "vite-plugin-circular-dependency";
 
 // For CommonJS compatibility
 import { createRequire } from 'module'
@@ -34,6 +35,7 @@ export default defineConfig(({ command }) => {
     },
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
     plugins: [
+      circleDependency(),
       tamaguiPlugin({
         config: './tamagui.config.ts',
         components: ['tamagui'],
