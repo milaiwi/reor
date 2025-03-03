@@ -64,6 +64,7 @@ const EmbeddingModelSettings: React.FC<EmbeddingModelManagerProps> = ({
     <SettingsSection
       title="Embedding Model"
       footnote="Note: If you notice some lag in the editor it is likely because you chose too large of an embedding model..."
+      error={userTriedToSubmit && !selectedModel ? currentError : ''}
     >
       <SettingsRow
         title="Embedding Model"
