@@ -16,7 +16,8 @@ const customBlockSerializer = (schema: Schema) => {
     defaultSerializer.marks,
   )
 }
-export const CustomBlockSerializerExtension = Extension.create({
+
+const CustomBlockSerializerExtension = Extension.create({
   addProseMirrorPlugins() {
     return [
       new Plugin({
@@ -27,3 +28,5 @@ export const CustomBlockSerializerExtension = Extension.create({
     ]
   },
 })
+
+export default CustomBlockSerializerExtension

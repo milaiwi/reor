@@ -2,7 +2,7 @@ import { EditorState, Plugin, PluginKey } from 'prosemirror-state'
 import { Decoration, DecorationSet, EditorView } from 'prosemirror-view'
 import { BlockNoteEditor } from '../../../BlockNoteEditor'
 import { BlockSchema } from '../../../extensions/Blocks/api/blockTypes'
-import { findBlock } from '../../../extensions/Blocks/helpers/findBlock'
+import findBlock from '../../../extensions/Blocks/helpers/findBlock'
 import { BaseUiElementState } from '../../BaseUiElementTypes'
 import { SuggestionItem } from './SuggestionItem'
 

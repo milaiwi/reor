@@ -6,7 +6,7 @@ import { BlockNoteEditor } from '../../BlockNoteEditor'
 import { BaseUiElementState } from '../../shared/BaseUiElementTypes'
 import EventEmitter from '../../shared/EventEmitter'
 import { BlockSchema } from '../Blocks/api/blockTypes'
-import { findBlock } from '../Blocks/helpers/findBlock'
+import findBlock from '../Blocks/helpers/findBlock'
 import { LinkMenuItem } from './LinkMenuItem'
 
 export const linkMenuPluginKey = new PluginKey('LinkMenuPlugin')

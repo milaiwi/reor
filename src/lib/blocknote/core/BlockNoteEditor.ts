@@ -523,7 +523,7 @@ export class BlockNoteEditor<BSchema extends BlockSchema = HMBlockSchema> {
     referenceBlock: BlockIdentifier,
     placement: 'before' | 'after' | 'nested' = 'before',
   ): void {
-    insertBlocks(blocksToInsert, referenceBlock, placement, this._tiptapEditor)
+    insertBlocks(blocksToInsert, referenceBlock, this._tiptapEditor, placement)
   }
 
   /**

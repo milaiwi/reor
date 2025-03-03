@@ -3,7 +3,7 @@ import { mergeCSSClasses } from '../../../../../shared/utils'
 import { createTipTapBlock } from '../../../api/block'
 import styles from '../../Block.module.css'
 
-export const HeadingBlockContent = createTipTapBlock<'heading'>({
+const HeadingBlockContent = createTipTapBlock<'heading'>({
   name: 'heading',
   content: 'inline*',
 
@@ -27,7 +27,7 @@ export const HeadingBlockContent = createTipTapBlock<'heading'>({
       ...['1', '2', '3', '4', '5'].map((level) => {
         // Creates a heading of appropriate level when starting with "#", "##", or "###".
         return new InputRule({
-          find: new RegExp(`^(#{${parseInt(level)}})\\s$`),
+          find: new RegExp(`^(#{${parseInt(level, 10)}})\\s$`),
           handler: ({ state, chain, range }) => {
             chain()
               .BNUpdateBlock(state.selection.from, {
@@ -94,3 +94,5 @@ export const HeadingBlockContent = createTipTapBlock<'heading'>({
     ]
   },
 })
+
+export default HeadingBlockContent

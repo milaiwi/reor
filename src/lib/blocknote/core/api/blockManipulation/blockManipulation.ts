@@ -7,8 +7,8 @@ import getNodeById from '../util/nodeUtil'
 export function insertBlocks<BSchema extends BlockSchema>(
   blocksToInsert: PartialBlock<BSchema>[],
   referenceBlock: BlockIdentifier,
-  placement: 'before' | 'after' | 'nested' = 'before',
   editor: Editor,
+  placement: 'before' | 'after' | 'nested' = 'before',
 ): void {
   const id = typeof referenceBlock === 'string' ? referenceBlock : referenceBlock.id
 
@@ -99,6 +99,6 @@ export function replaceBlocks<BSchema extends BlockSchema>(
   blocksToInsert: PartialBlock<BSchema>[],
   editor: Editor,
 ) {
-  insertBlocks(blocksToInsert, blocksToRemove[0], 'before', editor)
+  insertBlocks(blocksToInsert, blocksToRemove[0], editor, 'before')
   removeBlocks(blocksToRemove, editor)
 }
