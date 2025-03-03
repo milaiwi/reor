@@ -1,7 +1,8 @@
+import React from 'react'
 import { Box } from '@mantine/core'
 import { createStyles } from '@mantine/styles'
 
-export const ColorIcon = (
+const ColorIcon = (
   props: Partial<{
     textColor: string | undefined
     backgroundColor: string | undefined
@@ -35,3 +36,5 @@ export const ColorIcon = (
     </Box>
   )
 }
+
+export default ColorIcon

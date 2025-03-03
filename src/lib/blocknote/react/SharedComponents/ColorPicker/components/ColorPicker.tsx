@@ -1,9 +1,9 @@
 import React from 'react'
 import { Menu } from '@mantine/core'
 import { TiTick } from 'react-icons/ti'
-import { ColorIcon } from './ColorIcon'
+import ColorIcon from './ColorIcon'
 
-export const ColorPicker = (props: {
+const ColorPicker = (props: {
   onClick?: () => void
   iconSize?: number
   textColor: string
@@ -17,7 +17,7 @@ export const ColorPicker = (props: {
       {['default', 'gray', 'brown', 'red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink'].map((color) => (
         <Menu.Item
           onClick={() => {
-            props.onClick && props.onClick()
+            if (props.onClick) props.onClick()
             props.setTextColor(color)
           }}
           component="div"
@@ -39,7 +39,7 @@ export const ColorPicker = (props: {
       {['default', 'gray', 'brown', 'red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink'].map((color) => (
         <Menu.Item
           onClick={() => {
-            props.onClick && props.onClick()
+            if (props.onClick) props.onClick()
             props.setBackgroundColor(color)
           }}
           component="div"
@@ -60,3 +60,5 @@ export const ColorPicker = (props: {
     </>
   )
 }
+
+export default ColorPicker

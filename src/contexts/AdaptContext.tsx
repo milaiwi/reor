@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 
 type AdaptContextType = {
   when: boolean
@@ -19,8 +19,10 @@ export const useAdaptParent = (contents: React.ReactNode) => {
   const [when] = React.useState(false)
 
   const AdaptProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const adaptMemo = useMemo(() => ({ when, AdaptProvider }), [])
+
     return (
-      <AdaptContext.Provider value={{ when, AdaptProvider }}>
+      <AdaptContext.Provider value={adaptMemo}>
         {children}
         {when && contents}
       </AdaptContext.Provider>

@@ -16,9 +16,9 @@ import { Strike } from '@tiptap/extension-strike'
 import { Text } from '@tiptap/extension-text'
 import { Underline } from '@tiptap/extension-underline'
 import * as Y from 'yjs'
-import { BlockNoteEditor } from './BlockNoteEditor'
+import { IBlockNoteEditor } from './IBlockNoteEditor'
 // import {createInlineEmbedNode} from '../../mentions-plugin'
-import Link from '../../tiptap-extension-link'
+import { Link } from '../../tiptap-extension-link'
 import styles from './editor.module.css'
 import BlockManipulationExtension from './extensions/BlockManipulation/BlockManipulationExtension'
 import { BlockContainer, BlockGroup, Doc } from './extensions/Blocks'
@@ -37,9 +37,9 @@ import TextAlignmentExtension from './extensions/TextAlignment/TextAlignmentExte
 /**
  * Get all the Tiptap extensions BlockNote is configured with by default
  */
-export const getBlockNoteExtensions = <BSchema extends HMBlockSchema>(opts: {
+const getBlockNoteExtensions = <BSchema extends HMBlockSchema>(opts: {
   editable?: boolean
-  editor: BlockNoteEditor<BSchema>
+  editor: IBlockNoteEditor
   domAttributes: Partial<BlockNoteDOMAttributes>
   blockSchema: BSchema
   linkExtensionOptions: any
@@ -166,3 +166,5 @@ export const getBlockNoteExtensions = <BSchema extends HMBlockSchema>(opts: {
 
   return ret
 }
+
+export default getBlockNoteExtensions

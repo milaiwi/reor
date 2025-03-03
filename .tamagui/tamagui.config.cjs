@@ -528,9 +528,6 @@ var size = {
 };
 
 // src/components/Editor/ui/src/tamagui/themes/token-space.ts
-var spaces = Object.entries(size).map(([k, v]) => {
-  return [k, sizeToSpace(v)];
-});
 function sizeToSpace(v) {
   if (v === 0) return 0;
   if (v === 2) return 0.5;
@@ -540,11 +537,15 @@ function sizeToSpace(v) {
   return Math.floor(v * 0.7 - 12);
 }
 __name(sizeToSpace, "sizeToSpace");
+var spaces = Object.entries(size).map(([k, v]) => {
+  return [k, sizeToSpace(v)];
+});
 var spacesNegative = spaces.slice(1).map(([k, v]) => [`-${k.slice(1)}`, -v]);
 var space = {
   ...Object.fromEntries(spaces),
   ...Object.fromEntries(spacesNegative)
 };
+var token_space_default = space;
 
 // src/components/Editor/ui/src/tamagui/themes/token-z-index.ts
 var zIndex = {
@@ -559,6 +560,7 @@ var zIndex = {
   8: 800,
   9: 900
 };
+var token_z_index_default = zIndex;
 
 // src/components/Editor/ui/src/tamagui/themes/themes-generated.ts
 var ks = [
@@ -1889,8 +1891,8 @@ var conf = {
   tokens: (0, import_web4.createTokens)({
     color,
     radius: token_radius_default,
-    zIndex,
-    space,
+    zIndex: token_z_index_default,
+    space: token_space_default,
     size,
     opacity: {
       low: 0.4,

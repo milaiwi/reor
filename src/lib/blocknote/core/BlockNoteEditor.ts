@@ -1,11 +1,10 @@
 /* eslint-disable import/no-cycle */
 /* eslint no-param-reassign: ["error", { "props": false }] */
-import { Editor, EditorOptions, Extension } from '@tiptap/core'
+import { Editor as TiptapEditor, EditorOptions, Extension } from '@tiptap/core'
 import { Node } from 'prosemirror-model'
 // import "./blocknote.css";
-import { Editor as TiptapEditor } from '@tiptap/core/dist/packages/core/src/Editor'
 import * as Y from 'yjs'
-import { getBlockNoteExtensions } from './BlockNoteExtensions'
+import getBlockNoteExtensions from './BlockNoteExtensions'
 import { insertBlocks, removeBlocks, replaceBlocks, updateBlock } from './api/blockManipulation/blockManipulation'
 import {
   HTMLToBlocks,
@@ -288,9 +287,9 @@ export class BlockNoteEditor<BSchema extends BlockSchema = HMBlockSchema> {
       tiptapOptions.element = newOptions.parentElement
     }
 
-    this._tiptapEditor = new Editor({
+    this._tiptapEditor = new TiptapEditor({
       ...tiptapOptions,
-    }) as Editor & {
+    }) as TiptapEditor & {
       contentComponent: any
     }
   }
@@ -728,8 +727,9 @@ export class BlockNoteEditor<BSchema extends BlockSchema = HMBlockSchema> {
    * @param blocks An array of blocks that should be serialized into Markdown.
    * @returns The blocks, serialized as a Markdown string.
    */
+  // eslint-disable-next-line class-methods-use-this
   public async blocksToMarkdown(blocks: Block<BSchema>[]): Promise<string> {
-    return blocksToMarkdown(blocks, this._tiptapEditor.schema)
+    return blocksToMarkdown(blocks)
   }
 
   /**

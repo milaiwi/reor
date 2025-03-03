@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 import { useRef, useMemo } from 'react'
 import { BlockNoteEditor, BlockNoteEditorOptions, defaultBlockSchema, DefaultBlockSchema } from '../../core'
 import { HMBlockSchema } from '@/components/Editor/schema'

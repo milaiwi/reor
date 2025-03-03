@@ -1,3 +1,3 @@
 export * from './block-utils'
-export * from './node-utils'
+export { default as getNodeById } from './node-utils'
 export * from './entity-id-url'

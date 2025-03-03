@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { RiIndentDecrease, RiIndentIncrease } from 'react-icons/ri'
 import { BlockNoteEditor, BlockSchema } from '@/lib/blocknote/core'
 import { ToolbarButton } from '../../../SharedComponents/Toolbar/components/ToolbarButton'

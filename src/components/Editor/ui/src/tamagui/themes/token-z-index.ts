@@ -1,4 +1,4 @@
-export const zIndex = {
+const zIndex = {
   0: 0,
   1: 100,
   2: 200,
@@ -10,3 +10,5 @@ export const zIndex = {
   8: 800,
   9: 900,
 }
+
+export default zIndex

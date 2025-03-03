@@ -125,7 +125,7 @@ export const Link = Mark.create<LinkOptions>({
     return [{ tag: 'a[href]:not([href *= "javascript:" i])' }]
   },
 
-  renderHTML({ HTMLAttributes, mark }) {
+  renderHTML({ HTMLAttributes }) {
     const attrs = mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)
     const isHM = isHypermediaScheme(HTMLAttributes.href)
     return [
