@@ -3,7 +3,7 @@ import { getBlockInfoFromPos } from '../../../../helpers/getBlockInfoFromPos'
 
 // ProseMirror Plugin which automatically assigns indices to ordered list items per nesting level.
 const PLUGIN_KEY = new PluginKey(`numbered-list-indexing`)
-export const NumberedListIndexingPlugin = () => {
+const NumberedListIndexingPlugin = () => {
   return new Plugin({
     key: PLUGIN_KEY,
     appendTransaction: (_transactions, _oldState, newState) => {
@@ -44,7 +44,7 @@ export const NumberedListIndexingPlugin = () => {
               if (isPrevBlockOrderedListItem) {
                 const prevBlockIndex = prevBlockContentNode.attrs.index
 
-                newIndex = (parseInt(prevBlockIndex) + 1).toString()
+                newIndex = (parseInt(prevBlockIndex, 10) + 1).toString()
               }
             }
           }
@@ -66,3 +66,5 @@ export const NumberedListIndexingPlugin = () => {
     },
   })
 }
+
+export default NumberedListIndexingPlugin

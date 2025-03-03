@@ -9,7 +9,6 @@ export function insertOrUpdateBlock<BSchema extends BlockSchema>(
   isNode?: boolean,
 ) {
   const currentBlock = editor.getTextCursorPosition().block
-  console.log(`Block is:`, block)
   if (
     (currentBlock.content.length === 1 &&
       currentBlock.content[0].type === 'text' &&

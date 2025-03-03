@@ -32,6 +32,7 @@ export const size = {
 
 export type SizeKeysIn = keyof typeof size
 export type Sizes = {
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   [Key in SizeKeysIn extends `$${infer Key}` ? Key : SizeKeysIn]: number
 }
 export type SizeKeys = `${keyof Sizes extends `${infer K}` ? K : never}`

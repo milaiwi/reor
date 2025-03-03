@@ -31,6 +31,7 @@ export class SlashMenuProsemirrorPlugin<
             name.toLowerCase().startsWith(query.toLowerCase()) ||
             (aliases && aliases.filter((alias) => alias.toLowerCase().startsWith(query.toLowerCase())).length !== 0),
         ),
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       ({ item, editor }) => item.execute(editor),
     )
 

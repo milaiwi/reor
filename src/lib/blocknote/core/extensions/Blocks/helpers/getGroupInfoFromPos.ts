@@ -18,15 +18,7 @@ export function getGroupInfoFromPos(pos: number, state: EditorState): GroupInfo 
   let depth = maxDepth
 
   // Find block group, block container and depth it is at
-  while (true) {
-    if (depth < 0) {
-      break
-    }
-
-    if (group.type.name === 'blockGroup') {
-      break
-    }
-
+  while (depth >= 0 && group.type.name !== 'blockGroup') {
     if (group.type.name === 'blockContainer') {
       container = group
     }

@@ -2,9 +2,9 @@ import { InputRule, mergeAttributes } from '@tiptap/core'
 import { mergeCSSClasses } from '../../../../../../shared/utils'
 import { createTipTapBlock } from '../../../../api/block'
 import styles from '../../../Block.module.css'
-import { handleEnter } from '../ListItemKeyboardShortcuts'
+import handleEnter from '../ListItemKeyboardShortcuts'
 
-export const BulletListItemBlockContent = createTipTapBlock<'bulletListItem'>({
+const BulletListItemBlockContent = createTipTapBlock<'bulletListItem'>({
   name: 'bulletListItem',
   content: 'inline*',
 
@@ -12,7 +12,7 @@ export const BulletListItemBlockContent = createTipTapBlock<'bulletListItem'>({
     return [
       // Creates an unordered list when starting with "-", "+", or "*".
       new InputRule({
-        find: new RegExp(`^[-+*]\\s$`),
+        find: /^[-+*]\\s$/,
         handler: ({ state, chain, range }) => {
           chain()
             .BNUpdateBlock(state.selection.from, {
@@ -102,3 +102,5 @@ export const BulletListItemBlockContent = createTipTapBlock<'bulletListItem'>({
     ]
   },
 })
+
+export default BulletListItemBlockContent

@@ -2,10 +2,10 @@ import { InputRule, mergeAttributes } from '@tiptap/core'
 import { mergeCSSClasses } from '../../../../../../shared/utils'
 import { createTipTapBlock } from '../../../../api/block'
 import styles from '../../../Block.module.css'
-import { handleEnter } from '../ListItemKeyboardShortcuts'
-import { NumberedListIndexingPlugin } from './NumberedListIndexingPlugin'
+import handleEnter from '../ListItemKeyboardShortcuts'
+import NumberedListIndexingPlugin from './NumberedListIndexingPlugin'
 
-export const NumberedListItemBlockContent = createTipTapBlock<'numberedListItem'>({
+const NumberedListItemBlockContent = createTipTapBlock<'numberedListItem'>({
   name: 'numberedListItem',
   content: 'inline*',
 
@@ -27,7 +27,7 @@ export const NumberedListItemBlockContent = createTipTapBlock<'numberedListItem'
     return [
       // Creates an ordered list when starting with "1.".
       new InputRule({
-        find: new RegExp(`^1\\.\\s$`),
+        find: /^1\\.\\s$/,
         handler: ({ state, chain, range }) => {
           chain()
             .BNUpdateBlock(state.selection.from, {
@@ -125,3 +125,5 @@ export const NumberedListItemBlockContent = createTipTapBlock<'numberedListItem'
     ]
   },
 })
+
+export default NumberedListItemBlockContent

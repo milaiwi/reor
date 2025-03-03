@@ -107,15 +107,7 @@ function getNearestHeadingFromPos(state: EditorState, pos: number) {
   let depth = maxDepth
 
   if (maxDepth > 3) {
-    while (true) {
-      if (depth < 0) {
-        break
-      }
-
-      if (group.type.name === 'blockContainer' && heading?.type.name === 'heading') {
-        break
-      }
-
+    while (depth >= 0 && group.type.name !== 'blockContainer' && heading?.type.name !== 'heading') {
       depth -= 1
       group = $pos.node(depth)
       heading = group.firstChild

@@ -13,6 +13,7 @@ const CodeBlockView = ({ props, languages }: { props: NodeViewProps; languages: 
     setLanguage(newLanguage)
   }
 
+  const customLanguageClass = `language-${language}`
   return (
     <YStack onHoverIn={() => setHovered(true)} onHoverOut={() => setHovered(false)}>
       {hovered && (
@@ -76,7 +77,7 @@ const CodeBlockView = ({ props, languages }: { props: NodeViewProps; languages: 
         </XStack>
       )}
       <pre>
-        <code className={`language-${language}`}>
+        <code className={customLanguageClass}>
           <NodeViewContent />
         </code>
       </pre>

@@ -1,7 +1,7 @@
 import HeadingBlockContent from '../nodes/BlockContent/HeadingBlockContent/HeadingBlockContent'
-import { BulletListItemBlockContent } from '../nodes/BlockContent/ListItemBlockContent/BulletListItemBlockContent/BulletListItemBlockContent'
-import { NumberedListItemBlockContent } from '../nodes/BlockContent/ListItemBlockContent/NumberedListItemBlockContent/NumberedListItemBlockContent'
-import { ParagraphBlockContent } from '../nodes/BlockContent/ParagraphBlockContent/ParagraphBlockContent'
+import BulletListItemBlockContent from '../nodes/BlockContent/ListItemBlockContent/BulletListItemBlockContent/BulletListItemBlockContent'
+import NumberedListItemBlockContent from '../nodes/BlockContent/ListItemBlockContent/NumberedListItemBlockContent/NumberedListItemBlockContent'
+import ParagraphBlockContent from '../nodes/BlockContent/ParagraphBlockContent/ParagraphBlockContent'
 import { PropSchema, TypesMatch } from './blockTypes'
 
 export const defaultProps = {
