@@ -10,11 +10,9 @@ const RemoveBlockButton = <BSchema extends BlockSchema>(
   props: DragHandleMenuProps<BSchema> & { children: ReactNode },
 ) => {
   return (
-    <DragHandleMenuItem onClick={() => props.editor.removeBlocks([props.block])}>
-      <XStack gap="$2">
-        <Delete size={14} />
-        {props.children}
-      </XStack>
+    <DragHandleMenuItem action={() => props.editor.removeBlocks([props.block])}>
+      <Delete size={14} />
+      {props.children}
     </DragHandleMenuItem>
   )
 }

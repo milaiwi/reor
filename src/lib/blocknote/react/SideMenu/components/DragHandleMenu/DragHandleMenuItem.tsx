@@ -1,10 +1,35 @@
-import React from 'react'
-import { Menu } from '@mantine/core'
-import { PolymorphicComponentProps } from '@mantine/utils'
+import React, { ReactNode } from 'react'
+import { XStack } from 'tamagui'
 
-const DragHandleMenuItem = (props: PolymorphicComponentProps<'button'>) => {
-  const { children, ...remainingProps } = props
-  return <Menu.Item {...remainingProps}>{children}</Menu.Item>
+type DragHandleMenuItemProps = {
+  action?: () => void;
+  children: ReactNode;
+} & React.ComponentProps<typeof XStack>
+
+const DragHandleMenuItem: React.FC<DragHandleMenuItemProps> = ({ action, children, ...remainingProps }) => {
+  const handleClick = () => {
+    if (action) {
+      action()
+    }
+  }
+
+  return (
+    <XStack 
+      {...remainingProps}
+      onClick={handleClick}
+      cursor='pointer'
+      alignItems='center'
+      gap='$2'
+      hoverStyle={{
+        backgroundColor: '$gray5',
+        borderRadius: '$2',
+      }}
+      padding='$1'
+      paddingLeft='$2'
+    >
+      {children}
+    </XStack>
+  )
 }
 
 export default DragHandleMenuItem

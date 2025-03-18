@@ -1,6 +1,5 @@
 import { Block, BlockNoteEditor, BlockSchema } from '@lib/blocknote'
 import { Box, Menu } from '@mantine/core'
-import { XStack } from 'tamagui'
 import { Forward, RefreshCcw } from '@tamagui/lucide-icons'
 import * as _ from 'lodash'
 import React, { useCallback, useRef, useState } from 'react'
@@ -17,14 +16,14 @@ import { updateGroup } from '@/lib/utils'
 import RemoveBlockButton from './DefaultButtons/RemoveBlockButton'
 import { DragHandleMenu, DragHandleMenuProps } from './DragHandleMenu'
 import DragHandleMenuItem from './DragHandleMenuItem'
-import { HMBlockSchema } from '@/components/Editor/schema'
+import { Popover, Text, XStack, YStack, SizableText } from 'tamagui'
 
-const turnIntoItems = [
+const turnIntoItems = <BSchema extends BlockSchema>() => [
   {
     label: 'Paragraph',
     group: 'Block operations',
     Icon: RiText,
-    onClick: ({ block, editor }: { block: Block<HMBlockSchema>; editor: BlockNoteEditor<HMBlockSchema> }) => {
+    onClick: ({ block, editor }: { block: Block<BSchema>; editor: BlockNoteEditor<BSchema> }) => {
       editor.focus()
       editor.updateBlock(block, {
         type: 'paragraph',
@@ -36,7 +35,7 @@ const turnIntoItems = [
     label: 'Heading',
     group: 'Block operations',
     Icon: RiHeading,
-    onClick: ({ block, editor }: { block: Block<HMBlockSchema>; editor: BlockNoteEditor<HMBlockSchema> }) => {
+    onClick: ({ block, editor }: { block: Block<BSchema>; editor: BlockNoteEditor<BSchema> }) => {
       editor.focus()
       editor.updateBlock(block, {
         type: 'heading',
@@ -48,7 +47,7 @@ const turnIntoItems = [
     label: 'Code',
     group: 'Block operations',
     Icon: RiCodeBoxLine,
-    onClick: ({ block, editor }: { block: Block<HMBlockSchema>; editor: BlockNoteEditor<HMBlockSchema> }) => {
+    onClick: ({ block, editor }: { block: Block<BSchema>; editor: BlockNoteEditor<BSchema> }) => {
       editor.focus()
       editor.updateBlock(block, {
         type: 'code-block',
@@ -56,46 +55,31 @@ const turnIntoItems = [
       })
     },
   },
-  // {
-  //   label: 'Block Quote',
-  //   group: 'Group operations',
-  //   Icon: RiChatQuoteFill,
-  //   onClick: ({
-  //     block,
-  //     editor,
-  //   }: {
-  //     block: Block<HMBlockSchema>
-  //     editor: BlockNoteEditor<HMBlockSchema>
-  //   }) => {
-  //     editor.focus()
-  //     updateGroup(editor, block, 'Blockquote')
-  //   },
-  // },
   {
     label: 'Bullet item',
     group: 'Group operations',
     Icon: RiListUnordered,
-    onClick: ({ block, editor }: { block: Block<HMBlockSchema>; editor: BlockNoteEditor<HMBlockSchema> }) => {
+    onClick: ({ block, editor }: { block: Block<BSchema>; editor: BlockNoteEditor<BSchema> }) => {
       editor.focus()
-      updateGroup(editor, block, 'ul')
+      updateGroup(editor as BlockNoteEditor, block, 'ul')
     },
   },
   {
     label: 'Numbered item',
     group: 'Group operations',
     Icon: RiListOrdered,
-    onClick: ({ block, editor }: { block: Block<HMBlockSchema>; editor: BlockNoteEditor<HMBlockSchema> }) => {
+    onClick: ({ block, editor }: { block: Block<BSchema>; editor: BlockNoteEditor<BSchema> }) => {
       editor.focus()
-      updateGroup(editor, block, 'ul')
+      updateGroup(editor as BlockNoteEditor, block, 'ul')
     },
   },
   {
     label: 'Group item',
     group: 'Group operations',
     Icon: RiMenuLine,
-    onClick: ({ block, editor }: { block: Block<HMBlockSchema>; editor: BlockNoteEditor<HMBlockSchema> }) => {
+    onClick: ({ block, editor }: { block: Block<BSchema>; editor: BlockNoteEditor<BSchema> }) => {
       editor.focus()
-      updateGroup(editor, block, 'group')
+      updateGroup(editor as BlockNoteEditor, block, 'group')
     },
   },
 
@@ -103,9 +87,9 @@ const turnIntoItems = [
     label: 'Blockquote item',
     group: 'Group operations',
     Icon: RiChatQuoteLine,
-    onClick: ({ block, editor }: { block: Block<HMBlockSchema>; editor: BlockNoteEditor<HMBlockSchema> }) => {
+    onClick: ({ block, editor }: { block: Block<BSchema>; editor: BlockNoteEditor<BSchema> }) => {
       editor.focus()
-      updateGroup(editor, block, 'blockquote')
+      updateGroup(editor as BlockNoteEditor, block, 'blockquote')
     },
   },
 ]
@@ -131,24 +115,25 @@ const TurnIntoMenu = <BSchema extends BlockSchema>(props: DragHandleMenuProps<BS
     setOpened(true)
   }, [])
 
-  const groups = _.groupBy(turnIntoItems, (i) => i.group)
+  const groups = _.groupBy(turnIntoItems<BSchema>(), (i) => i.group)
   const renderedItems: any[] = []
 
   _.forEach(groups, (groupedItems) => {
-    renderedItems.push(<Menu.Label key={groupedItems[0].group}>{groupedItems[0].group}</Menu.Label>)
+    renderedItems.push(
+      <SizableText size='$3' key={groupedItems[0].group}>
+        {groupedItems[0].group}
+      </SizableText>
+    )
 
     for (const item of groupedItems) {
       renderedItems.push(
-        <Menu.Item
+        <DragHandleMenuItem
           key={item.label}
-          onClick={() => {
-            item.onClick(props)
-          }}
-          component="div"
-          icon={<item.Icon size={12} />}
+          action={() => item.onClick(props)}
         >
-          {item.label}
-        </Menu.Item>,
+          <item.Icon size={12} />
+          <SizableText size='$2'>{item.label}</SizableText>
+        </DragHandleMenuItem>
       )
     }
   })
@@ -159,32 +144,38 @@ const TurnIntoMenu = <BSchema extends BlockSchema>(props: DragHandleMenuProps<BS
 
   return (
     <DragHandleMenuItem onMouseOver={stopMenuCloseTimer} onMouseLeave={startMenuCloseTimer}>
-      <Menu opened={opened} position="right">
-        <Menu.Target>
+      <Popover
+        open={opened}
+        onOpenChange={setOpened}
+        placement="right"
+        offset={60}
+      >
+        <Popover.Trigger
+          onMouseEnter={() => setOpened(true)}
+          onMouseLeave={() => setOpened(false)}
+        >
           <XStack gap="$2">
             <RefreshCcw size={14} />
-            <div style={{ flex: 1 }}>Turn into</div>
-            <Box style={{ display: 'flex', alignItems: 'center' }}>
-              <Forward size={12} />
-            </Box>
+            <SizableText size="$1">Turn into</SizableText>
           </XStack>
-        </Menu.Target>
-        <Menu.Dropdown
-          onMouseLeave={startMenuCloseTimer}
-          onMouseOver={stopMenuCloseTimer}
-          style={{ marginLeft: '5px' }}
+        </Popover.Trigger>
+        <Popover.Content
+          borderColor="$gray6"
+          borderWidth={1}
+          elevation='$6'
+          padding='$1'
         >
-          {renderedItems}
-        </Menu.Dropdown>
-      </Menu>
+          <YStack gap="$2">{renderedItems}</YStack>
+        </Popover.Content>
+      </Popover>
     </DragHandleMenuItem>
   )
 }
 
 const DefaultDragHandleMenu = <BSchema extends BlockSchema>(props: DragHandleMenuProps<BSchema>) => (
   <DragHandleMenu>
-    <RemoveBlockButton {...props}>Delete</RemoveBlockButton>
-    <TurnIntoMenu {...props} />
+    <RemoveBlockButton {...props}><SizableText size='$1'>Delete</SizableText></RemoveBlockButton>
+    <TurnIntoMenu {...props} /> 
   </DragHandleMenu>
 )
 

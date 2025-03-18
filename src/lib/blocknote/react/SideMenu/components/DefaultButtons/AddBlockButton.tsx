@@ -6,7 +6,7 @@ import { SideMenuProps } from '../SideMenuPositioner'
 
 const AddBlockButton = <BSchema extends BlockSchema>(props: SideMenuProps<BSchema>) => (
   <SideMenuButton>
-    <AiOutlinePlus size={24} onClick={props.addBlock} data-test="dragHandleAdd" />
+    <AiOutlinePlus size={18} onClick={props.addBlock} data-test="dragHandleAdd" />
   </SideMenuButton>
 )
 
