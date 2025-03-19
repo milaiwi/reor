@@ -1,6 +1,5 @@
 import React, { ReactNode } from 'react'
 
-import { XStack } from 'tamagui'
 import { Delete } from '@tamagui/lucide-icons'
 import { BlockSchema } from '@/lib/blocknote/core'
 import { DragHandleMenuProps } from '../DragHandleMenu'

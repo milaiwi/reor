@@ -1,6 +1,5 @@
 import { Block, BlockNoteEditor, BlockSchema } from '@lib/blocknote'
-import { Box, Menu } from '@mantine/core'
-import { Forward, RefreshCcw } from '@tamagui/lucide-icons'
+import { RefreshCcw, ChevronRight } from '@tamagui/lucide-icons'
 import * as _ from 'lodash'
 import React, { useCallback, useRef, useState } from 'react'
 import {
@@ -12,11 +11,11 @@ import {
   RiMenuLine,
   RiText,
 } from 'react-icons/ri'
+import { Popover, XStack, YStack, SizableText } from 'tamagui'
 import { updateGroup } from '@/lib/utils'
 import RemoveBlockButton from './DefaultButtons/RemoveBlockButton'
 import { DragHandleMenu, DragHandleMenuProps } from './DragHandleMenu'
 import DragHandleMenuItem from './DragHandleMenuItem'
-import { Popover, Text, XStack, YStack, SizableText } from 'tamagui'
 
 const turnIntoItems = <BSchema extends BlockSchema>() => [
   {
@@ -119,21 +118,12 @@ const TurnIntoMenu = <BSchema extends BlockSchema>(props: DragHandleMenuProps<BS
   const renderedItems: any[] = []
 
   _.forEach(groups, (groupedItems) => {
-    renderedItems.push(
-      <SizableText size='$3' key={groupedItems[0].group}>
-        {groupedItems[0].group}
-      </SizableText>
-    )
-
     for (const item of groupedItems) {
       renderedItems.push(
-        <DragHandleMenuItem
-          key={item.label}
-          action={() => item.onClick(props)}
-        >
+        <DragHandleMenuItem key={item.label} action={() => item.onClick(props)}>
           <item.Icon size={12} />
-          <SizableText size='$2'>{item.label}</SizableText>
-        </DragHandleMenuItem>
+          <SizableText size="$2">{item.label}</SizableText>
+        </DragHandleMenuItem>,
       )
     }
   })
@@ -144,26 +134,23 @@ const TurnIntoMenu = <BSchema extends BlockSchema>(props: DragHandleMenuProps<BS
 
   return (
     <DragHandleMenuItem onMouseOver={stopMenuCloseTimer} onMouseLeave={startMenuCloseTimer}>
-      <Popover
-        open={opened}
-        onOpenChange={setOpened}
-        placement="right"
-        offset={60}
-      >
-        <Popover.Trigger
-          onMouseEnter={() => setOpened(true)}
-          onMouseLeave={() => setOpened(false)}
-        >
-          <XStack gap="$2">
-            <RefreshCcw size={14} />
-            <SizableText size="$1">Turn into</SizableText>
+      <Popover open={opened} onOpenChange={setOpened} placement="right" offset={45}>
+        <Popover.Trigger onMouseEnter={() => setOpened(true)} onMouseLeave={() => setOpened(false)} width="100%">
+          <XStack position="relative" width="100%" alignItems="center">
+            <XStack alignItems="center" gap="$2">
+              <RefreshCcw size={14} />
+              <SizableText size="$1">Turn into</SizableText>
+            </XStack>
+            <ChevronRight size={14} position="absolute" right={-40} />
           </XStack>
         </Popover.Trigger>
         <Popover.Content
+          onInteractOutside={() => setOpened(false)}
+          onPress={() => setOpened(false)}
           borderColor="$gray6"
           borderWidth={1}
-          elevation='$6'
-          padding='$1'
+          elevation="$6"
+          padding="$1"
         >
           <YStack gap="$2">{renderedItems}</YStack>
         </Popover.Content>
@@ -174,8 +161,10 @@ const TurnIntoMenu = <BSchema extends BlockSchema>(props: DragHandleMenuProps<BS
 
 const DefaultDragHandleMenu = <BSchema extends BlockSchema>(props: DragHandleMenuProps<BSchema>) => (
   <DragHandleMenu>
-    <RemoveBlockButton {...props}><SizableText size='$1'>Delete</SizableText></RemoveBlockButton>
-    <TurnIntoMenu {...props} /> 
+    <RemoveBlockButton {...props}>
+      <SizableText size="$1">Delete</SizableText>
+    </RemoveBlockButton>
+    <TurnIntoMenu {...props} />
   </DragHandleMenu>
 )
 

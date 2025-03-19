@@ -88,6 +88,24 @@ export const customGrayDark = {
   gray13: grayDark.gray12,
 }
 
+export const systemGray = {
+  systemGray1: 'rgb(142, 142, 147)',
+  systemGray2: 'rgb(174, 174, 178)',
+  systemGray3: 'rgb(199, 199, 204)',
+  systemGray4: 'rgb(209, 209, 214)',
+  systemGray5: 'rgb(229, 229, 234)',
+  systemGray6: 'rgb(242, 242, 247)',
+}
+
+export const systemGrayDark = {
+  systemGray1: 'rgb(142, 142, 147)',
+  systemGray2: 'rgb(99, 99, 102)',
+  systemGray3: 'rgb(72, 72, 74)',
+  systemGray4: 'rgb(58, 58, 60)',
+  systemGray5: 'rgb(44, 44, 46)',
+  systemGray6: 'rgb(28, 28, 30)',
+}
+
 export const lightColor = 'hsl(0, 0%, 9.0%)'
 export const lightPalette = [
   lightTransparent,
