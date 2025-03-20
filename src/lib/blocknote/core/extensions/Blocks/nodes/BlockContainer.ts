@@ -842,6 +842,7 @@ export const BlockContainer = Node.create<{
         // If previous block is media, node select it
         () =>
           commands.command(({ state, dispatch, view }) => {
+            console.log(`Inside backspace`)
             const blockInfo = getBlockInfoFromPos(state.doc, state.selection.from)!
             const prevBlockInfo = getBlockInfoFromPos(
               state.doc,
@@ -850,7 +851,6 @@ export const BlockContainer = Node.create<{
             const selectionAtBlockStart = state.selection.$anchor.parentOffset === 0
 
             const isParagraph = blockInfo.contentType.name === 'paragraph'
-
             if (selectionAtBlockStart) {
               if (isParagraph) {
                 if (blockInfo.contentType.name === 'image') {
@@ -862,7 +862,7 @@ export const BlockContainer = Node.create<{
                 }
                 if (!prevBlockInfo) return false
                 if (
-                  ['file', 'embed', 'video', 'web-embed', 'math'].includes(prevBlockInfo.contentType.name) ||
+                  ['embed', 'video', 'web-embed', 'math'].includes(prevBlockInfo.contentType.name) ||
                   (prevBlockInfo.contentType.name === 'image' && prevBlockInfo.contentNode.attrs.url.length === 0)
                 ) {
                   if (dispatch) {
@@ -874,6 +874,21 @@ export const BlockContainer = Node.create<{
                   }
                 }
               } else {
+                console.log(`Not a paragraph`)
+                console.log(`Blcok info: `, blockInfo)
+                if (blockInfo.contentType.name === 'image') {
+                  const { url } = blockInfo.contentNode.attrs
+                  const strippedURL = url.replace('local://', '')
+                  if (strippedURL.length !== 0) {
+                    try {
+                      window.fileSystem.deleteImage(strippedURL).then((success) => {
+                        console.log(`Successfully deleted: ${strippedURL}`)
+                      })
+                    } catch (error) {
+                      console.log(`Cold not delete file: `, error)
+                    }
+                  }
+                }
                 return commands.BNUpdateBlock(state.selection.from, {
                   type: 'paragraph',
                   props: {},

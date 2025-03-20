@@ -8,7 +8,7 @@ import type { HMBlockSchema } from '../../schema'
 import { isValidUrl } from '../utils'
 
 const Display = ({ editor, block, selected, setSelected, assign }: DisplayComponentProps) => {
-  const [imageUrl, setImageUrl] = useState(block.props.url)
+  const [imageSrc, setImageSrc] = useState(block.props.url)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -16,12 +16,12 @@ const Display = ({ editor, block, selected, setSelected, assign }: DisplayCompon
       setIsLoading(true)
       try {
         if (block.props.url?.startsWith('local://')) {
-          const localImage = await window.fileSystem.getImage(block.props.url)
+          const localImage = await window.fileSystem.getImage(block.props.url) // get the data
           if (localImage) {
-            setImageUrl(localImage)
+            setImageSrc(localImage)
           }
         } else {
-          setImageUrl(block.props.url)
+          setImageSrc(block.props.url)
         }
       } finally {
         setIsLoading(false)
@@ -29,7 +29,7 @@ const Display = ({ editor, block, selected, setSelected, assign }: DisplayCompon
     }
 
     loadImage()
-  }, [block.props.url])
+  }, [block, block.props.url])
 
   // Min image width in px.
   const minWidth = 64
@@ -164,10 +164,10 @@ const Display = ({ editor, block, selected, setSelected, assign }: DisplayCompon
           <ResizeHandle right={4} onMouseDown={rightResizeHandleMouseDownHandler} />
         </>
       )}
-      {!isLoading && imageUrl && (
+      {!isLoading && imageSrc && (
         <img
           style={{ width: `100%` }}
-          src={imageUrl}
+          src={imageSrc}
           alt={block.props.name || block.props.alt}
           contentEditable={false}
         />
@@ -196,7 +196,7 @@ const Render = (block: Block<HMBlockSchema>, editor: BlockNoteEditor<HMBlockSche
           id: block.id,
           props: {
             url: storedImageUrl,
-            name: filePath,
+            name: storedImageUrl,
           },
           children: [],
           content: [],

@@ -91,6 +91,7 @@ const fileSystem = {
   writeFile: createIPCHandler<(writeFileProps: WriteFileProps) => Promise<void>>('write-file'),
   storeImage:
     createIPCHandler<(imageData: string, filePath: string, blockID: string) => Promise<string>>('store-image'),
+  deleteImage: createIPCHandler<(filePath: string) => Promise<void>>('delete-image'),
   getImage: createIPCHandler<(fileName: string) => Promise<string | null>>('get-image'),
   storeVideo:
     createIPCHandler<(videoData: string, filePath: string, blockID: string) => Promise<string>>('store-video'),

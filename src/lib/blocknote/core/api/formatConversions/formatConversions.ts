@@ -68,6 +68,7 @@ async function replaceLocalUrls(html: string) {
     try {
       const imageData = await window.fileSystem.getImage(fileName)
       if (imageData) {
+        console.log(`new image: ${fullImg.replace(src, imageData)}`)
         return { fullImg, newImg: fullImg.replace(src, imageData) }
       }
     } catch (error) {
@@ -84,6 +85,7 @@ async function replaceLocalUrls(html: string) {
   for (const replacement of replacements) {
     if (replacement) {
       result = result.replace(replacement.fullImg, replacement.newImg)
+      console.log(`Result: `, result)
     }
   }
 

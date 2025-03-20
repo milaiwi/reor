@@ -1,6 +1,6 @@
 import {Extension} from '@tiptap/core'
 import {Plugin, PluginKey} from 'prosemirror-state'
-import { getBlockInfo, getBlockInfoFromPos } from '@/lib/utils'
+import { getBlockInfoFromPos } from '@/lib/utils'
 
 // file was taken from https://github.com/seed-hypermedia/seed/blob/main/frontend/packages/editor/src/handle-local-media-paste-plugin.ts
 // with some changes on storing the file
@@ -25,16 +25,17 @@ const handleLocalMediaPastePlugin = new Plugin({
       for (const item of items) {
         if (item.type.indexOf('image') === 0) {
           const img = item.getAsFile()
-          console.log(`Image: `, img)
+
           if (img) {
             // return true
             uploadMedia(img, id)
-              .then((data) => {
-                const {name} = img
+              .then((storedURL) => {
+                // const {name} = img
                 const {schema} = view.state
+                const newName = generateHash()
                 const node = schema.nodes.image.create({
-                  url: data,
-                  name: name,
+                  url: storedURL,
+                  'data-local-src': storedURL,
                 })
                 view.dispatch(
                   view.state.tr.insert(currentSelection.anchor - 1, node),
@@ -99,4 +100,13 @@ async function uploadMedia(file: File, blockID: string) {
     reader.onerror = () => reject("Error reading file.");
     reader.readAsDataURL(file); // Convert image to base64
   });
+}
+
+function generateHash(): string {
+  const timestamp = Date.now().toString(36);
+  const randomString = Array.from({ length: 22 }, () => 
+    Math.floor(Math.random() * 16).toString(16)
+  ).join('');
+
+  return `local://${(timestamp + randomString).substring(0, 32)}.png`;
 }
