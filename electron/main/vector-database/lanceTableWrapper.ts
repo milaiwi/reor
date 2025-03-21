@@ -111,7 +111,12 @@ class LanceDBTableWrapper {
    * @returns a list of DB records
    */
   async search(query: string, limit: number, filter?: string, query_type?: string): Promise<DBQueryResult[]> {
+    if (query_type ==='fts') {
+      const allText = await this.lanceTable.query().toArray()
+      console.log(`First element in allText: `, allText[0])
+    }
     const queryVector = await this.embedFun.computeSourceEmbeddings([query])
+    console.log(`query_type: ${query_type || 'vector'}`)
     const searchResults = this.lanceTable.search(queryVector[0], query_type || 'vector').limit(limit)
     if (filter) searchResults.where(filter)
 

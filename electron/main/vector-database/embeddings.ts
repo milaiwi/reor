@@ -3,9 +3,8 @@ import path from 'path'
 import { Pipeline, PreTrainedTokenizer } from '@xenova/transformers'
 import { app } from 'electron'
 import removeMd from 'remove-markdown'
-import { EmbeddingFunction } from '@lancedb/lancedb/dist/embedding'
+import { EmbeddingFunction } from "@lancedb/lancedb/embedding";
 
-import { Float32 } from 'apache-arrow'
 import {
   EmbeddingModelConfig,
   EmbeddingModelWithLocalPath,
@@ -110,8 +109,8 @@ export class EnhancedEmbeddingFunction<T extends EmbedType> extends EmbeddingFun
   }
 
   /* eslint-disable-next-line class-methods-use-this */
-  embeddingDataType(): Float32 {
-    return new Float32()
+  embeddingDataType(): Float32Array {
+    return new Float32Array()
   }
 
   async computeSourceEmbeddings(data: T[]): Promise<number[][]> {

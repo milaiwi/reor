@@ -12,6 +12,7 @@ import { FileInfo, FileInfoTree } from '../filesystem/types'
 
 import LanceDBTableWrapper, { convertRecordToDBType } from './lanceTableWrapper'
 import { DBEntry, DatabaseFields } from './schema'
+import { Database } from 'lucide-react'
 
 const convertFileTypeToDBType = async (table: LanceDBTableWrapper, file: FileInfo): Promise<DBEntry[]> => {
   const fileContent = readFile(file.path)
@@ -42,7 +43,7 @@ const getTableAsArray = async (table: LanceDBTableWrapper): Promise<{ notepath: 
   const nonEmptyResults = await table.lanceTable
     .query()
     .where(`${DatabaseFields.NOTE_PATH} != ''`)
-    .select([DatabaseFields.NOTE_PATH, DatabaseFields.FILE_MODIFIED])
+    .select([DatabaseFields.NOTE_PATH, DatabaseFields.FILE_MODIFIED, DatabaseFields.CONTENT])
     .toArray()
 
   const mapped = nonEmptyResults.map(convertRecordToDBType<DBEntry>)
@@ -95,6 +96,7 @@ const computeDBItemsToRemoveFromTable = async (
   const itemsInTableAndNotInFilesInfoList = tableArray.filter(
     (item) => !filesInfoList.some((file) => file.path === item.notepath),
   )
+  console.log(`Items in table and not in filesInfoList: `, itemsInTableAndNotInFilesInfoList)
   return itemsInTableAndNotInFilesInfoList
 }
 
@@ -119,6 +121,7 @@ export const removeFileTreeFromDBTable = async (
 }
 
 export const updateFileInTable = async (dbTable: LanceDBTableWrapper, filePath: string): Promise<void> => {
+  console.log(`Inside updateFileInTable`)
   await dbTable.deleteDBItemsByFilePaths([filePath])
   const content = readFile(filePath)
   const chunkedContentList = await chunkMarkdownByHeadingsAndByCharsIfBig(content)
@@ -141,10 +144,13 @@ export const RepopulateTableWithMissingItems = async (
   directoryPath: string,
   onProgress?: (progress: number) => void,
 ) => {
+  console.log(`Inside repopulateTableWithMissingItems`)
   const filesInfoTree = GetFilesInfoList(directoryPath)
 
   const tableArray = await getTableAsArray(table)
+  console.log(`TableArray: `, tableArray)
   const itemsToRemove = await computeDBItemsToRemoveFromTable(filesInfoTree, tableArray)
+  console.log(`ItemsToRemove: `, itemsToRemove)
 
   const filePathsToRemove = itemsToRemove.map((x) => x.notepath)
   await table.deleteDBItemsByFilePaths(filePathsToRemove)
@@ -163,6 +169,7 @@ export const RepopulateTableWithMissingItems = async (
 }
 
 export const addFileTreeToDBTable = async (dbTable: LanceDBTableWrapper, fileTree: FileInfoTree): Promise<void> => {
+  console.log(`Inside add filetreeToDBTAble`)
   const dbEntries = await convertFileTreeToDBEntries(fileTree, dbTable)
   await dbTable.add(dbEntries)
 }

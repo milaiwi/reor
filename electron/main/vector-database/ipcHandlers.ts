@@ -33,7 +33,7 @@ export const registerDBSessionHandlers = (store: Store<StoreSchema>, _windowMana
     if (!windowInfo) {
       throw new Error('Window info not found.')
     }
-    const searchResults = await windowInfo.dbTableClient.search(query, limit, filter)
+    const searchResults = await windowInfo.dbTableClient.search(query, limit, filter, 'fts')
     return searchResults
   })
 
