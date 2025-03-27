@@ -16,7 +16,7 @@
     "predev": "node scripts/downloadOllama.js",
     "dev": "vite",
     "prebuild": "node scripts/downloadOllama.js",
-    "build": "tsc && vite build && electron-builder --em.main=dist-electron/main/index.js",
+    "build": "tsc && vite build && electron-builder",
     "notarize": "node scripts/notarize.js",
     "preview": "vite preview",
     "pree2e": "vite build --mode=test",
