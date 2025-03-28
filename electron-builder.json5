@@ -8,9 +8,6 @@
   "extraMetadata": {
     "main": "dist-electron/main/index.js"
   },
-  "build": {
-    "main": "dist-electron/main/index.js"
-  },
   mac: {
     asarUnpack: ['**/*.{node,dll,metal,exp,lib}'],
     artifactName: '${productName}_${version}.${ext}',
