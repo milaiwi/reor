@@ -8,7 +8,7 @@
   extraMetadata: {
     "main": "dist-electron/main/index.js",
   },
-  afterSign: 'scripts/notarize.js',
+  // afterSign: 'scripts/notarize.js',
   mac: {
     asarUnpack: ['**/*.{node,dll,metal,exp,lib}'],
     artifactName: '${productName}_${version}.${ext}',
