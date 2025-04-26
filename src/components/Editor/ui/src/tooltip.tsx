@@ -19,6 +19,7 @@ const Tooltip = ({
   open?: boolean
   renderMarkdown?: boolean
 }) => {
+  console.log(`Tooltip content:`, content)
   return content ? (
     <TTooltip placement={placement} delay={delay} open={open}>
       <TTooltip.Trigger asChild>{children}</TTooltip.Trigger>
