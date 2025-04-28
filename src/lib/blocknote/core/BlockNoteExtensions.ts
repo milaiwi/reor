@@ -13,6 +13,7 @@ import { Text } from '@tiptap/extension-text'
 import { Underline } from '@tiptap/extension-underline'
 // import {createInlineEmbedNode} from '../../mentions-plugin'
 import { Link } from '../../tiptap-extension-link'
+import { RichTextLink } from '@/components/Editor/RichTextLink'
 import BlockManipulationExtension from './extensions/BlockManipulation/BlockManipulationExtension'
 import { BlockContainer, BlockGroup, Doc } from './extensions/Blocks'
 import { BlockNoteDOMAttributes } from './extensions/Blocks/api/blockTypes'
@@ -79,7 +80,11 @@ const getBlockNoteExtensions = <BSchema extends HMBlockSchema>(opts: {
     Italic,
     Strike,
     Underline,
-    Link.configure(opts.linkExtensionOptions),
+    // Link.configure(opts.linkExtensionOptions),
+    RichTextLink.configure({
+      ...opts.linkExtensionOptions,
+      // editor: opts.editor,
+    }),
     // TextColorMark,
     // TextColorExtension,
     TextAlignmentExtension,

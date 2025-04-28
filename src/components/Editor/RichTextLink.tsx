@@ -9,6 +9,12 @@ import type { LinkOptions } from '@tiptap/extension-link'
 const inputRegex = /(?:^|\s)\[([^\]]*)?\]\((\S+)(?: ["“](.+)["”])?\)$/i
 
 /**
+ * Input regex for finding similar files. For instance, if we have a file called `Temp-file`, then
+ * [[Temp-file]] will link to the file.
+ */
+const fileLinkRegex = /\[\[$/
+
+/**
  * The paste regex for Markdown links with title support, and multiple quotation marks (required
  * in case the `Typography` extension is being included).
  */
@@ -33,6 +39,21 @@ function linkInputRule(config: Parameters<typeof markInputRule>[0]) {
     },
   })
 }
+
+
+/**
+ * Input rule built for linking to files. Mimics obsidian's behavior of linking to files.
+ */
+function linkFileInputRule(config: Parameters<typeof markInputRule>[0]): InputRule {
+  return new InputRule({
+    find: config.find,
+    handler(props) {
+      
+      console.log(`Inside linkFileInputRule`)
+    },
+  })
+}
+
 
 /**
  * Paste rule built specifically for the `Link` extension, which ignores the auto-linked URL in
@@ -83,6 +104,17 @@ const RichTextLink = Link.extend({
           return {
             title: match.pop()?.trim(),
             href: match.pop()?.trim(),
+          }
+        },
+      }),
+      linkFileInputRule({
+        find: fileLinkRegex,
+        type: this.type,
+
+        getAttributes(match) {
+          return {
+            title: match[1]?.trim(),
+            href: match[1]?.trim(),
           }
         },
       }),
