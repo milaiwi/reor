@@ -1,7 +1,6 @@
 export type FileInfo = {
   name: string
   path: string
-  relativePath: string
   dateModified: Date
   dateCreated: Date
 }

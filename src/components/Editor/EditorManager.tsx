@@ -60,7 +60,7 @@ const EditorManager: React.FC = () => {
       {suggestionsState && (
         <InEditorBacklinkSuggestionsDisplay
           suggestionsState={suggestionsState}
-          suggestions={vaultFilesFlattened.map((file) => file.relativePath)}
+          suggestions={vaultFilesFlattened.map((file) => file.path)}
         />
       )}
       {/* {editor && showDocumentStats && (

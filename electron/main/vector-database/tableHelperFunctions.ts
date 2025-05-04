@@ -29,6 +29,7 @@ const convertFileTypeToDBType = async (file: FileInfo): Promise<DBEntry[]> => {
     filemodified: file.dateModified,
     filecreated: file.dateCreated,
   }))
+  console.log(`Entries are:`, entries)
   return entries
 }
 

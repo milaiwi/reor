@@ -37,7 +37,6 @@ export function GetFilesInfoTree(pathInput: string, parentRelativePath: string =
         fileInfoTree.push({
           name: path.basename(pathInput),
           path: pathInput,
-          relativePath: parentRelativePath,
           dateModified: stats.mtime,
           dateCreated: stats.birthtime, // Add the birthtime property here
         })
@@ -59,7 +58,6 @@ export function GetFilesInfoTree(pathInput: string, parentRelativePath: string =
         fileInfoTree.push({
           name: path.basename(pathInput),
           path: pathInput,
-          relativePath: parentRelativePath,
           dateModified: stats.mtime,
           dateCreated: stats.birthtime,
           children: childNodes,
@@ -79,7 +77,6 @@ export function flattenFileInfoTree(tree: FileInfoTree): FileInfo[] {
       flatList.push({
         name: node.name,
         path: node.path,
-        relativePath: node.relativePath,
         dateModified: node.dateModified,
         dateCreated: node.dateCreated,
       })

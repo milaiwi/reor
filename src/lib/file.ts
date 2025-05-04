@@ -7,7 +7,6 @@ export function flattenFileInfoTree(tree: FileInfoTree): FileInfo[] {
       flatList.push({
         name: node.name,
         path: node.path,
-        relativePath: node.relativePath,
         dateModified: node.dateModified,
         dateCreated: node.dateCreated,
       })
