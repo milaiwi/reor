@@ -15,11 +15,13 @@ import { FileInfo, FileInfoTree, RenameFileProps } from '../filesystem/types'
 import LanceDBTableWrapper, { convertRecordToDBType } from './lanceTableWrapper'
 import { DBEntry, DatabaseFields } from './schema'
 import WindowsManager from '../common/windowManager'
+import path from 'path'
 
 const convertFileTypeToDBType = async (file: FileInfo): Promise<DBEntry[]> => {
   const fileContent = readFile(file.path)
   const chunks = await chunkMarkdownByHeadingsAndByCharsIfBig(fileContent)
   const entries = chunks.map((content, index) => ({
+    name: file.name,
     notepath: file.path,
     content,
     subnoteindex: index,
@@ -171,6 +173,7 @@ export const updateFileInTable = async (dbTable: LanceDBTableWrapper, filePath: 
   const chunkedContentList = await chunkMarkdownByHeadingsAndByCharsIfBig(content)
   const stats = fs.statSync(filePath)
   const dbEntries = chunkedContentList.map((_content, index) => ({
+    name: path.basename(filePath),
     notepath: filePath,
     content: _content,
     subnoteindex: index,
