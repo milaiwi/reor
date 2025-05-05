@@ -154,7 +154,7 @@ export class BlockNoteEditor<BSchema extends BlockSchema = HMBlockSchema> {
 
   public readonly formattingToolbar: FormattingToolbarProsemirrorPlugin<BSchema>
 
-  public readonly similarFilesToolbar: LinkToolbarProsemirrorPlugin<BSchema> 
+  // public readonly similarFilesToolbar: LinkToolbarProsemirrorPlugin<BSchema> 
 
   public readonly slashMenu: SlashMenuProsemirrorPlugin<BSchema, any>
 
@@ -176,7 +176,7 @@ export class BlockNoteEditor<BSchema extends BlockSchema = HMBlockSchema> {
 
     this.sideMenu = new SideMenuProsemirrorPlugin(this)
     this.formattingToolbar = new FormattingToolbarProsemirrorPlugin(this)
-    this.similarFilesToolbar = new LinkToolbarProsemirrorPlugin(this)
+    // this.similarFilesToolbar = new LinkToolbarProsemirrorPlugin(this)
     this.slashMenu = new SlashMenuProsemirrorPlugin(
       this,
       newOptions.slashMenuItems || getDefaultSlashMenuItems(newOptions.blockSchema),
@@ -199,7 +199,7 @@ export class BlockNoteEditor<BSchema extends BlockSchema = HMBlockSchema> {
         return [
           this.sideMenu.plugin,
           this.formattingToolbar.plugin,
-          this.similarFilesToolbar.plugin,
+          // this.similarFilesToolbar.plugin,
           this.slashMenu.plugin,
           this.hyperlinkToolbar.plugin,
         ]

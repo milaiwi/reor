@@ -53,7 +53,7 @@ const EditorManager: React.FC = () => {
               <FormattingToolbarPositioner editor={editor} />
               <SlashMenuPositioner editor={editor} />
               <SideMenuPositioner editor={editor} placement="left" />
-              <LinkToolbarPositioner editor={editor} />
+              {/* <LinkToolbarPositioner editor={editor} /> */}
             </BlockNoteView>
           )}
         </YStack>

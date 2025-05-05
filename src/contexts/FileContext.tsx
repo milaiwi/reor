@@ -23,7 +23,7 @@ import { hmBlockSchema } from '@/components/Editor/schema'
 import { setGroupTypes, useEditorState } from '@/lib/utils'
 import { useFileSearchIndex } from '@/lib/utils/cache/fileSearchIndex'
 import slashMenuItems from '../components/Editor/slash-menu-items'
-import { getSimilarFiles } from '@/lib/semanticService'
+import { setSimilarFiles } from '@/lib/semanticService'
 import { useSemanticCache } from '@/lib/utils'
 
 type FileContextType = {
@@ -133,7 +133,7 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setNeedToIndexEditorContent(false)
     }
     const fileContent = (await window.fileSystem.readFile(filePath, 'utf-8')) ?? ''
-    useSemanticCache.getState().setSemanticData(filePath, await getSimilarFiles(filePath))
+    await setSimilarFiles(filePath)
     const blocks = await editor.markdownToBlocks(fileContent)
     // @ts-expect-error
     editor.replaceBlocks(editor.topLevelBlocks, blocks)

@@ -17,7 +17,12 @@ export class FormattingToolbarView<BSchema extends BlockSchema> extends EditorTo
 
       const isEmptyTextBlock = !doc.textBetween(from, to).length && isTextSelection(state.selection)
 
-      return false
+      return !(
+        !view.hasFocus() ||
+        empty ||
+        isEmptyTextBlock ||
+        isNodeSelection(state.selection)
+      )
     })
   }
 }
