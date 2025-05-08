@@ -22,11 +22,6 @@ type SemanticCacheState = {
   setFetching: (filePath: string, isFetching: boolean) => void
 }
 
-export const useEditorState = create<EditorStateStore>((set) => ({
-  currentFilePath: null,
-  setCurrentFilePath: (path) => set({ currentFilePath: path }),
-}))
-
 export const useSemanticCache = create<SemanticCacheState>((set, get) => ({
   semanticCache: {},
 

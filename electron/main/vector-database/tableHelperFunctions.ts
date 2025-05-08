@@ -3,7 +3,7 @@ import * as fsPromises from 'fs/promises'
 import path from 'path'
 
 import { BrowserWindow } from 'electron'
-import { chunkMarkdownByHeadingsAndByCharsIfBig } from '../common/chunking'
+import { chunkMarkdownByBlocksAndByCharsIfBig } from '../common/chunking'
 import {
   GetFilesInfoList,
   flattenFileInfoTree,
@@ -19,15 +19,17 @@ import WindowsManager from '../common/windowManager'
 
 const convertFileTypeToDBType = async (file: FileInfo): Promise<DBEntry[]> => {
   const fileContent = readFile(file.path)
-  const chunks = await chunkMarkdownByHeadingsAndByCharsIfBig(fileContent)
-  const entries = chunks.map((content, index) => ({
+  const chunks = await chunkMarkdownByBlocksAndByCharsIfBig(fileContent)
+  const entries = chunks.map((block, index) => ({
     name: file.name,
     notepath: file.path,
-    content,
+    content: block.content,
     subnoteindex: index,
     timeadded: new Date(),
     filemodified: file.dateModified,
     filecreated: file.dateCreated,
+    blockIndex: block.index,
+    headingContext: block.headingContext,
   }))
   return entries
 }
@@ -87,6 +89,7 @@ export const handleFileRename = async (
 export const convertFileInfoListToDBItems = async (filesInfoList: FileInfo[]): Promise<DBEntry[][]> => {
   const promises = filesInfoList.map(convertFileTypeToDBType)
   const filesAsChunksToAddToDB = await Promise.all(promises)
+  // console.log(`Files as chunks to add to DB:`, filesAsChunksToAddToDB)
   return filesAsChunksToAddToDB
 }
 
@@ -170,17 +173,19 @@ export const removeFileTreeFromDBTable = async (
 export const updateFileInTable = async (dbTable: LanceDBTableWrapper, filePath: string): Promise<void> => {
   await dbTable.deleteDBItemsByFilePaths([filePath])
   const content = readFile(filePath)
-  const chunkedContentList = await chunkMarkdownByHeadingsAndByCharsIfBig(content)
+  const chunkedContentList = await chunkMarkdownByBlocksAndByCharsIfBig(content)
   const fileName = path.basename(filePath).split('.')[0]
   const stats = fs.statSync(filePath)
-  const dbEntries = chunkedContentList.map((_content, index) => ({
+  const dbEntries = chunkedContentList.map((block, index) => ({
     name: fileName,
     notepath: filePath,
-    content: _content,
+    content: block.content,
     subnoteindex: index,
-    timeadded: new Date(), // time now
+    timeadded: new Date(),
     filemodified: stats.mtime,
     filecreated: stats.birthtime,
+    blockIndex: block.index,
+    headingContext: block.headingContext,
   }))
   await dbTable.add(dbEntries)
 }

@@ -20,7 +20,7 @@ import useOrderedSet from '../lib/hooks/use-ordered-set'
 import welcomeNote from '@/lib/welcome-note'
 import { useBlockNote, BlockNoteEditor } from '@/lib/blocknote'
 import { hmBlockSchema } from '@/components/Editor/schema'
-import { setGroupTypes, useEditorState, useSemanticCache } from '@/lib/utils'
+import { setGroupTypes, useSemanticCache } from '@/lib/utils'
 import useFileSearchIndex from '@/lib/utils/cache/fileSearchIndex'
 import slashMenuItems from '../components/Editor/slash-menu-items'
 import { getSimilarFiles } from '@/lib/semanticService'
@@ -175,12 +175,6 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
     }
   }, [debouncedEditor, currentlyOpenFilePath, editor, currentlyChangingFilePath])
-
-  useEffect(() => {
-    if (editor) {
-      useEditorState.getState().setCurrentFilePath(currentlyOpenFilePath)
-    }
-  }, [editor, currentlyOpenFilePath])
 
   const saveCurrentlyOpenedFile = async () => {
     await writeEditorContentToDisk(editor, currentlyOpenFilePath)

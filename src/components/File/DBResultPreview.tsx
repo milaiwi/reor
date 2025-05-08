@@ -49,6 +49,11 @@ export const DBResultPreview: React.FC<DBResultPreviewProps> = ({ dbResult: entr
       onPress={() => onSelect(entry.notepath)}
     >
       <Stack width="100%">
+        {entry.headingContext && (
+          <Text fontSize="sm" color="$gray9" marginBottom="$1">
+            {entry.headingContext}
+          </Text>
+        )}
         <Text fontSize="sm" color="$gray11">
           <MarkdownRenderer content={entry.content} />
         </Text>

@@ -54,12 +54,15 @@ export default defineConfig(({ command }) => {
               minify: isBuild,
               outDir: 'dist-electron/main',
               rollupOptions: {
-                external: [...Object.keys('dependencies' in pkg ? pkg.dependencies : {}), '@shared/utils'],
+                external: [
+                  ...Object.keys('dependencies' in pkg ? pkg.dependencies : {}),
+                ],
               },
             },
             resolve: {
               alias: {
                 '@shared': path.join(__dirname, 'shared'),
+                '@': path.join(__dirname, './src'),
                 'react-native-svg': 'react-native-svg-web',
               },
             },

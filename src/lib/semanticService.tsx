@@ -38,6 +38,7 @@ export async function getSimilarFiles(filePath: string | null, limit: number = 2
   const searchResults: DBQueryResult[] = await window.database.search(sanitizedText, limit, filterString)
 
   setSemanticData(filePath, searchResults)
+  console.log(`Search results:`, searchResults)
   return searchResults
 }
 
