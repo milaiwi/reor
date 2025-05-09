@@ -50,9 +50,7 @@ export const DBResultPreview: React.FC<DBResultPreviewProps> = ({ dbResult: entr
     >
       <Stack width="100%">
         {entry.headingContext && (
-          <Text fontSize="sm" color="$gray9" marginBottom="$1">
-            {entry.headingContext}
-          </Text>
+          <MarkdownRenderer content={entry.headingContext} />
         )}
         <Text fontSize="sm" color="$gray11">
           <MarkdownRenderer content={entry.content} />

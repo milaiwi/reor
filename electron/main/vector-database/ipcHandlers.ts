@@ -44,9 +44,7 @@ export const registerDBSessionHandlers = (store: Store<StoreSchema>, _windowMana
     }
     const defaultEmbeddingModelConfig = getDefaultEmbeddingModelConfig(store)
     const dbPath = path.join(app.getPath('userData'), 'vectordb')
-    console.log(`DB path:`, dbPath)
     dbConnection = await lancedb.connect(dbPath)
-    console.log(`DB connection:`, dbConnection)
     await windowInfo.dbTableClient.initialize(
       dbConnection,
       windowInfo.vaultDirectoryForWindow,

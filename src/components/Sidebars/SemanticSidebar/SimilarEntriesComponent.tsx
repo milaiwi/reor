@@ -3,7 +3,7 @@ import React from 'react'
 import { DBQueryResult } from 'electron/main/vector-database/schema'
 import { RefreshCw } from '@tamagui/lucide-icons'
 import { PiGraph } from 'react-icons/pi'
-
+import MarkdownRenderer from '@/components/Common/MarkdownRenderer'
 import '../../../styles/global.css'
 // import ResizableComponent from '@/components/Common/ResizableComponent'
 import { ScrollView, Stack, YStack, XStack, Text, Button } from 'tamagui'
