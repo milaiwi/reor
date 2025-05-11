@@ -299,6 +299,8 @@ export class BlockNoteEditor<BSchema extends BlockSchema = HMBlockSchema> {
     }) as TiptapEditor & {
       contentComponent: any
     }
+
+
   }
 
   public get prosemirrorView() {

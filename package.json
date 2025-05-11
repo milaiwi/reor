@@ -21,7 +21,7 @@
     "preview": "vite preview",
     "pree2e": "vite build --mode=test",
     "e2e": "playwright test",
-    "test": "jest",
+    "test": "vitest --config vitest.config.ts --reporter verbose",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "prepare": "husky",
