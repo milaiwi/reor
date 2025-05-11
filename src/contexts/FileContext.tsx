@@ -20,7 +20,8 @@ import useOrderedSet from '../lib/hooks/use-ordered-set'
 import welcomeNote from '@/lib/welcome-note'
 import { useBlockNote, BlockNoteEditor } from '@/lib/blocknote'
 import { hmBlockSchema } from '@/components/Editor/schema'
-import { setGroupTypes, useSemanticCache } from '@/lib/utils'
+import { setGroupTypes } from '@/lib/utils'
+import useSemanticCache from '@/lib/utils/editor-state'
 import useFileSearchIndex from '@/lib/utils/cache/fileSearchIndex'
 import slashMenuItems from '../components/Editor/slash-menu-items'
 import { getSimilarFiles } from '@/lib/semanticService'
@@ -36,7 +37,7 @@ type FileContextType = {
   editor: BlockNoteEditor | null
   navigationHistory: string[]
   addToNavigationHistory: (value: string) => void
-  openOrCreateFile: (filePath: string, optionalContentToWriteOnCreate?: string) => Promise<void>
+  openOrCreateFile: (filePath: string, optionalContentToWriteOnCreate?: string, startingPos?: number) => Promise<void>
   suggestionsState: SuggestionsState | null | undefined
   spellCheckEnabled: boolean
   highlightData: HighlightData
@@ -122,7 +123,7 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return fileObject
   }
 
-  const loadFileIntoEditor = async (filePath: string) => {
+  const loadFileIntoEditor = async (filePath: string, startingPos?: number) => {
     setCurrentlyChangingFilePath(true)
     await writeEditorContentToDisk(editor, currentlyOpenFilePath)
     if (currentlyOpenFilePath && needToIndexEditorContent) {
@@ -136,6 +137,10 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     editor.replaceBlocks(editor.topLevelBlocks, blocks)
     setGroupTypes(editor?._tiptapEditor, blocks)
 
+    if (startingPos) {
+      editor.scrollToParentBlock(startingPos)
+    }
+
     setCurrentlyOpenFilePath(filePath)
     setCurrentlyChangingFilePath(false)
     const parentDirectory = await window.path.dirname(filePath)
@@ -143,9 +148,13 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     editor.setCurrentFilePath(filePath)
   }
 
-  const openOrCreateFile = async (filePath: string, optionalContentToWriteOnCreate?: string): Promise<void> => {
+  const openOrCreateFile = async (
+    filePath: string,
+    optionalContentToWriteOnCreate?: string,
+    startingPos?: number,
+  ): Promise<void> => {
     const fileObject = await createFileIfNotExists(filePath, optionalContentToWriteOnCreate)
-    await loadFileIntoEditor(fileObject.path)
+    await loadFileIntoEditor(fileObject.path, startingPos ?? undefined)
     if (!useFileSearchIndex.getState().getPath(fileObject.name)) {
       useFileSearchIndex.getState().add(fileObject)
     }

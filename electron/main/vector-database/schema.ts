@@ -8,7 +8,7 @@ export interface DBEntry {
   timeadded: Date
   filemodified: Date
   filecreated: Date
-  blockIndex?: number
+  blockStartingPos?: number
   headingContext?: string
 }
 export interface DBQueryResult extends DBEntry {
@@ -26,7 +26,7 @@ export enum DatabaseFields {
   TIME_ADDED = 'timeadded',
   FILE_MODIFIED = 'filemodified',
   FILE_CREATED = 'filecreated',
-  BLOCK_INDEX = 'blockIndex',
+  BLOCK_STARTING_POS = 'blockStartingPos',
   HEADING_CONTEXT = 'headingContext',
   DISTANCE = '_distance',
 }
@@ -41,7 +41,7 @@ const CreateDatabaseSchema = (vectorDim: number): Schema => {
     new Field(DatabaseFields.TIME_ADDED, new ArrowDate(DateUnit.MILLISECOND), false),
     new Field(DatabaseFields.FILE_MODIFIED, new ArrowDate(DateUnit.MILLISECOND), false),
     new Field(DatabaseFields.FILE_CREATED, new ArrowDate(DateUnit.MILLISECOND), false),
-    new Field(DatabaseFields.BLOCK_INDEX, new Float64(), true),
+    new Field(DatabaseFields.BLOCK_STARTING_POS, new Float64(), true),
     new Field(DatabaseFields.HEADING_CONTEXT, new Utf8(), true),
   ]
   const schema = new Schema(schemaFields)

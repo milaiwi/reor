@@ -55,7 +55,6 @@ class LanceDBTableWrapper {
 
     const totalChunks = chunks.length
 
-    console.log(`Adding total chunks ${totalChunks} with chunks:`, chunks)
     await chunks.reduce(async (previousPromise, chunk, index) => {
       await previousPromise
       const arrowTableOfChunk = makeArrowTable(chunk)
@@ -110,7 +109,6 @@ class LanceDBTableWrapper {
     }
     const rawResults = await lanceQuery.execute()
     const mapped = rawResults.map(convertRecordToDBType<DBQueryResult>)
-    // console.log(`Mapped:`, mapped)
     return mapped as DBQueryResult[]
   }
 

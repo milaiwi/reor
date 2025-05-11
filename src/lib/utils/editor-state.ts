@@ -1,10 +1,6 @@
 import { create } from 'zustand'
 import { DBQueryResult } from 'electron/main/vector-database/schema'
 
-type EditorStateStore = {
-  currentFilePath: string | null
-  setCurrentFilePath: (path: string | null) => void
-}
 
 type SemanticEntry = {
   data: DBQueryResult[]
@@ -22,7 +18,7 @@ type SemanticCacheState = {
   setFetching: (filePath: string, isFetching: boolean) => void
 }
 
-export const useSemanticCache = create<SemanticCacheState>((set, get) => ({
+const useSemanticCache = create<SemanticCacheState>((set, get) => ({
   semanticCache: {},
 
   setSemanticData: (filePath: string, data: DBQueryResult[]) => {
@@ -83,3 +79,5 @@ export const useSemanticCache = create<SemanticCacheState>((set, get) => ({
     return age > thresholdMs
   },
 }))
+
+export default useSemanticCache

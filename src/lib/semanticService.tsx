@@ -1,6 +1,6 @@
 import { DBQueryResult } from 'electron/main/vector-database/schema'
 import removeMd from 'remove-markdown'
-import { useSemanticCache } from '@/lib/utils'
+import useSemanticCache from '@/lib/utils/editor-state'
 
 export async function getSanitizedChunk(filePath: string | null): Promise<string | undefined> {
   if (!filePath) {
@@ -38,7 +38,6 @@ export async function getSimilarFiles(filePath: string | null, limit: number = 2
   const searchResults: DBQueryResult[] = await window.database.search(sanitizedText, limit, filterString)
 
   setSemanticData(filePath, searchResults)
-  console.log(`Search results:`, searchResults)
   return searchResults
 }
 

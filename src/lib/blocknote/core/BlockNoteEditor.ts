@@ -811,4 +811,21 @@ export class BlockNoteEditor<BSchema extends BlockSchema = HMBlockSchema> {
   public getCurrentFilePath() {
     return this.currentFilePath
   }
+
+  /**
+   * Scrolls to the position given
+   *
+   */
+  public scrollToParentBlock(position: number) {
+    // Get the DOM node at that position and scroll to it
+    const { view, state } = this._tiptapEditor
+
+    const blockInfo = getBlockInfoFromPos(state.doc, position)
+    if (blockInfo) {
+      const blockNode = view.nodeDOM(blockInfo.startPos)
+      if (blockNode instanceof Element) {
+        blockNode.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+    }
+  }
 }

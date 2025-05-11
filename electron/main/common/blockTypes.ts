@@ -56,4 +56,4 @@ export const blockSchema: BlockSchema = {
     },
     content: 'inline*',
   },
-} 
+}

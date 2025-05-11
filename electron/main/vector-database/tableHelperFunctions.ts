@@ -28,8 +28,8 @@ const convertFileTypeToDBType = async (file: FileInfo): Promise<DBEntry[]> => {
     timeadded: new Date(),
     filemodified: file.dateModified,
     filecreated: file.dateCreated,
-    blockIndex: block.index,
     headingContext: block.headingContext,
+    blockStartingPos: block.startingPos,
   }))
   return entries
 }
@@ -89,7 +89,6 @@ export const handleFileRename = async (
 export const convertFileInfoListToDBItems = async (filesInfoList: FileInfo[]): Promise<DBEntry[][]> => {
   const promises = filesInfoList.map(convertFileTypeToDBType)
   const filesAsChunksToAddToDB = await Promise.all(promises)
-  // console.log(`Files as chunks to add to DB:`, filesAsChunksToAddToDB)
   return filesAsChunksToAddToDB
 }
 
@@ -184,8 +183,8 @@ export const updateFileInTable = async (dbTable: LanceDBTableWrapper, filePath: 
     timeadded: new Date(),
     filemodified: stats.mtime,
     filecreated: stats.birthtime,
-    blockIndex: block.index,
     headingContext: block.headingContext,
+    blockStartingPos: block.startingPos,
   }))
   await dbTable.add(dbEntries)
 }

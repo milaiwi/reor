@@ -3,7 +3,6 @@ import React from 'react'
 import { DBQueryResult } from 'electron/main/vector-database/schema'
 import { RefreshCw } from '@tamagui/lucide-icons'
 import { PiGraph } from 'react-icons/pi'
-import MarkdownRenderer from '@/components/Common/MarkdownRenderer'
 import '../../../styles/global.css'
 // import ResizableComponent from '@/components/Common/ResizableComponent'
 import { ScrollView, Stack, YStack, XStack, Text, Button } from 'tamagui'
@@ -14,7 +13,7 @@ import Spinner from '@/components/ui/Spinner'
 interface SimilarEntriesComponentProps {
   similarEntries: DBQueryResult[]
   setSimilarEntries?: (entries: DBQueryResult[]) => void
-  onSelect: (path: string) => void
+  onSelect: (path: string, startingPos?: number) => void
   updateSimilarEntries?: (isRefined?: boolean) => Promise<void>
   titleText: string
   isLoadingSimilarEntries: boolean

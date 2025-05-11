@@ -24,7 +24,7 @@ const formatModifiedDate = (date: Date) => {
 
 interface DBResultPreviewProps {
   dbResult: DBQueryResult
-  onSelect: (path: string) => void
+  onSelect: (path: string, startingPos?: number) => void
 }
 
 export const DBResultPreview: React.FC<DBResultPreviewProps> = ({ dbResult: entry, onSelect }) => {
@@ -46,12 +46,10 @@ export const DBResultPreview: React.FC<DBResultPreviewProps> = ({ dbResult: entr
       borderColor="$gray7"
       paddingHorizontal="$2"
       paddingVertical="$1"
-      onPress={() => onSelect(entry.notepath)}
+      onPress={() => onSelect(entry.notepath, entry.blockStartingPos)}
     >
       <Stack width="100%">
-        {entry.headingContext && (
-          <MarkdownRenderer content={entry.headingContext} />
-        )}
+        {entry.headingContext && <MarkdownRenderer content={entry.headingContext} />}
         <Text fontSize="sm" color="$gray11">
           <MarkdownRenderer content={entry.content} />
         </Text>

@@ -1,8 +1,6 @@
 import Store from 'electron-store'
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter'
 
 import { StoreKeys, StoreSchema } from '../electron-store/storeConfig'
-import { Block } from './blockTypes'
 
 // Chunk by markdown headings and then use Langchain chunker if the heading chunk is too big:
 const store = new Store<StoreSchema>()
@@ -13,7 +11,7 @@ interface MarkdownBlock {
   type: 'heading' | 'paragraph' | 'list' | 'code' | 'quote'
   content: string
   level?: number
-  index?: number
+  startingPos?: number
   headingContext?: string
 }
 
@@ -22,7 +20,8 @@ function parseMarkdownBlocks(markdown: string): MarkdownBlock[] {
   const blocks: MarkdownBlock[] = []
   let currentBlock: MarkdownBlock | null = null
   let currentContent: string[] = []
-  let currentHeading: string | undefined = undefined
+  let currentHeading: string | undefined
+  let currentPosition = 0 // Track current position in the document
 
   function flushCurrentBlock() {
     if (currentBlock && currentContent.length > 0) {
@@ -30,6 +29,7 @@ function parseMarkdownBlocks(markdown: string): MarkdownBlock[] {
       if (currentHeading && currentBlock.type !== 'heading') {
         currentBlock.headingContext = currentHeading
       }
+      currentBlock.startingPos = currentPosition - currentBlock.content.length // Set starting position
       blocks.push(currentBlock)
       currentContent = []
     }
@@ -37,6 +37,8 @@ function parseMarkdownBlocks(markdown: string): MarkdownBlock[] {
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]
+    currentPosition += line.length + 1 // Add 1 for the newline character
+
     if (line.startsWith('#')) {
       flushCurrentBlock()
       const level = line.match(/^#+/)?.[0].length || 1
@@ -45,7 +47,7 @@ function parseMarkdownBlocks(markdown: string): MarkdownBlock[] {
         type: 'heading',
         level,
         content: line.replace(/^#+\s*/, ''),
-        index: i,
+        startingPos: currentPosition - line.length, // Set starting position for heading
       }
       currentContent = [currentBlock.content]
     } else if (line.startsWith('- ') || line.startsWith('* ')) {
@@ -53,8 +55,8 @@ function parseMarkdownBlocks(markdown: string): MarkdownBlock[] {
       currentBlock = {
         type: 'list',
         content: line,
-        index: i,
         headingContext: currentHeading,
+        startingPos: currentPosition - line.length, // Set starting position for list
       }
       currentContent = [line]
     } else if (line.startsWith('```')) {
@@ -62,20 +64,21 @@ function parseMarkdownBlocks(markdown: string): MarkdownBlock[] {
       currentBlock = {
         type: 'code',
         content: line,
-        index: i,
         headingContext: currentHeading,
+        startingPos: currentPosition - line.length, // Set starting position for code
       }
       currentContent = [line]
     } else if (line.trim() === '') {
       flushCurrentBlock()
+      // TODO: Potentially increment index of current block
       currentBlock = null
     } else {
       if (!currentBlock) {
         currentBlock = {
           type: 'paragraph',
           content: '',
-          index: i,
           headingContext: currentHeading,
+          startingPos: currentPosition - line.length, // Set starting position for paragraph
         }
       }
       currentContent.push(line)
@@ -89,13 +92,18 @@ function parseMarkdownBlocks(markdown: string): MarkdownBlock[] {
 function chunkContentWithHeadingContext(blocks: MarkdownBlock[]): MarkdownBlock[] {
   const chunks: MarkdownBlock[] = []
   let currentChunk: MarkdownBlock[] = []
-  let currentHeading: string | undefined = undefined
+  let currentHeading: string | undefined
   let currentChunkSize = 0
+  let currentStartingPos = 0
 
-  function splitContentIntoChunks(content: string, headingContext: string | undefined): MarkdownBlock[] {
+  function splitContentIntoChunks(
+    content: string,
+    headingContext: string | undefined,
+    startingPos: number,
+  ): MarkdownBlock[] {
     const contentChunks: MarkdownBlock[] = []
     let remainingContent = content
-    let startIndex = 0
+    let currentPos = startingPos
 
     while (remainingContent.length > 0) {
       // If remaining content is less than chunk size, add it all
@@ -103,8 +111,8 @@ function chunkContentWithHeadingContext(blocks: MarkdownBlock[]): MarkdownBlock[
         contentChunks.push({
           type: 'paragraph',
           content: remainingContent,
-          index: startIndex,
           headingContext,
+          startingPos: currentPos,
         })
         break
       }
@@ -117,13 +125,13 @@ function chunkContentWithHeadingContext(blocks: MarkdownBlock[]): MarkdownBlock[
       contentChunks.push({
         type: 'paragraph',
         content: remainingContent.slice(0, splitIndex),
-        index: startIndex,
         headingContext,
+        startingPos: currentPos,
       })
 
-      // Update remaining content and start index
+      // Update remaining content and position
       remainingContent = remainingContent.slice(splitIndex + 1)
-      startIndex += splitIndex + 1
+      currentPos += splitIndex + 1 // Add 1 for the space character
     }
 
     return contentChunks
@@ -135,9 +143,9 @@ function chunkContentWithHeadingContext(blocks: MarkdownBlock[]): MarkdownBlock[
       if (currentChunk.length > 0) {
         chunks.push({
           type: 'paragraph',
-          content: currentChunk.map(b => b.content).join('\n\n'),
-          index: currentChunk[0].index,
+          content: currentChunk.map((b) => b.content).join('\n\n'),
           headingContext: currentHeading,
+          startingPos: currentStartingPos,
         })
         currentChunk = []
         currentChunkSize = 0
@@ -145,18 +153,24 @@ function chunkContentWithHeadingContext(blocks: MarkdownBlock[]): MarkdownBlock[
       currentHeading = `# ${block.content}`
       currentChunk = [block]
       currentChunkSize = block.content.length
+      currentStartingPos = block.startingPos || 0
     } else {
       const blockSize = block.content.length
 
       // If adding this block would exceed chunk size, split it into smaller chunks
       if (currentChunkSize + blockSize > chunkSize) {
         // Split the current block into smaller chunks
-        const splitChunks = splitContentIntoChunks(block.content, currentHeading)
+        const splitChunks = splitContentIntoChunks(
+          block.content,
+          currentHeading,
+          block.startingPos || currentStartingPos,
+        )
         chunks.push(...splitChunks)
       } else {
         currentChunk.push(block)
         currentChunkSize += blockSize
       }
+      currentStartingPos += blockSize
     }
   }
 
@@ -164,9 +178,9 @@ function chunkContentWithHeadingContext(blocks: MarkdownBlock[]): MarkdownBlock[
   if (currentChunk.length > 0) {
     chunks.push({
       type: 'paragraph',
-      content: currentChunk.map(b => b.content).join('\n\n'),
-      index: currentChunk[0].index,
+      content: currentChunk.map((b) => b.content).join('\n\n'),
       headingContext: currentHeading,
+      startingPos: currentStartingPos,
     })
   }
 
@@ -178,8 +192,6 @@ export function chunkMarkdownByHeadings(markdownContent: string): MarkdownBlock[
   return chunkContentWithHeadingContext(blocks)
 }
 
-export const chunkMarkdownByBlocksAndByCharsIfBig = async (
-  markdownContent: string,
-): Promise<MarkdownBlock[]> => {
+export const chunkMarkdownByBlocksAndByCharsIfBig = async (markdownContent: string): Promise<MarkdownBlock[]> => {
   return chunkMarkdownByHeadings(markdownContent)
 }
