@@ -1,4 +1,4 @@
-import { AgentConfig, Chat } from '@/lib/llm/types'
+import { Chat } from '@/lib/llm/types'
 import { SearchProps } from './types'
 
 export type APIInterface = 'openai' | 'anthropic' | 'ollama'
@@ -57,7 +57,6 @@ export interface StoreSchema {
   chats: {
     [vaultDir: string]: Chat[]
   }
-  agentConfigs: AgentConfig[]
   analytics?: boolean
   chunkSize: number
   spellCheck: string
@@ -81,7 +80,6 @@ export enum StoreKeys {
   MaxRAGExamples = 'RAG.maxRAGExamples',
   LLMGenerationParameters = 'llmGenerationParameters',
   Chats = 'chats',
-  AgentConfigs = 'agentConfigs',
   ChunkSize = 'chunkSize',
   SpellCheck = 'spellCheck',
   EditorFlexCenter = 'editorFlexCenter',

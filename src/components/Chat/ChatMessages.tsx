@@ -1,14 +1,13 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 import '../../styles/chat.css'
 import { Spinner, YStack } from 'tamagui'
-import { Chat, AgentConfig, LoadingState, ReorChatMessage } from '../../lib/llm/types'
+import { Chat, LoadingState, ReorChatMessage } from '../../lib/llm/types'
 import ChatInput from './ChatInput'
 import UserMessage from './MessageComponents/UserMessage'
 import AssistantMessage from './MessageComponents/AssistantMessage'
 import SystemMessage from './MessageComponents/SystemMessage'
 import ChatSources from './MessageComponents/ChatSources'
 import useLLMConfigs from '@/lib/hooks/use-llm-configs'
-import useAgentConfig from '@/lib/hooks/use-agent-configs'
 import { useChatContext } from '@/contexts/ChatContext'
 import { useContentContext } from '@/contexts/ContentContext'
 
@@ -19,7 +18,7 @@ interface MessageProps {
   setCurrentChat: React.Dispatch<React.SetStateAction<Chat | undefined>>
 }
 
-const Message: React.FC<MessageProps> = ({ message, index, currentChat, setCurrentChat }) => {
+const Message: React.FC<MessageProps> = ({ message, index }) => {
   return (
     <>
       {!message.hideMessage && (
@@ -29,8 +28,6 @@ const Message: React.FC<MessageProps> = ({ message, index, currentChat, setCurre
             <AssistantMessage
               key={`assistant-${index}`}
               message={message}
-              setCurrentChat={setCurrentChat}
-              currentChat={currentChat}
             />
           )}
           {message.role === 'system' && <SystemMessage key={`system-${index}`} message={message} />}
@@ -45,7 +42,7 @@ interface ChatMessagesProps {
   currentChat: Chat | undefined
   setCurrentChat: React.Dispatch<React.SetStateAction<Chat | undefined>>
   loadingState: LoadingState
-  handleNewChatMessage: (llmName: string, userTextFieldInput?: string, agentConfig?: AgentConfig) => void
+  handleNewChatMessage: (llmName: string, userTextFieldInput?: string) => void
 }
 
 const ChatMessages: React.FC<ChatMessagesProps> = ({
@@ -54,7 +51,6 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
   handleNewChatMessage,
   loadingState,
 }) => {
-  const { agentConfig, setAgentConfig } = useAgentConfig()
   const [userTextFieldInput, setUserTextFieldInput] = useState<string | undefined>()
   const { defaultLLM, setDefaultLLM } = useLLMConfigs()
   const [selectedLLM, setSelectedLLM] = useState<string>()
@@ -95,7 +91,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
         throw new Error('Select an LLM.')
       }
       setDefaultLLM(selectedLLM)
-      handleNewChatMessage(selectedLLM, userTextFieldInput, agentConfig)
+      handleNewChatMessage(selectedLLM, userTextFieldInput)
       setUserTextFieldInput('')
       setShouldAutoScroll(true)
     }
@@ -149,8 +145,6 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
           loadingState={loadingState}
           selectedLLM={selectedLLM}
           setSelectedLLM={setSelectedLLM}
-          agentConfig={agentConfig}
-          setAgentConfig={setAgentConfig}
         />
       </YStack>
     </YStack>

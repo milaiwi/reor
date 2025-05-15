@@ -133,6 +133,8 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const fileContent = (await window.fileSystem.readFile(filePath, 'utf-8')) ?? ''
     useSemanticCache.getState().setSemanticData(filePath, await getSimilarFiles(filePath))
     const blocks = await editor.markdownToBlocks(fileContent)
+    console.log(`Blocks: `, blocks)
+    console.log(`File contnet: ${fileContent}`)
     // @ts-expect-error
     editor.replaceBlocks(editor.topLevelBlocks, blocks)
     setGroupTypes(editor?._tiptapEditor, blocks)

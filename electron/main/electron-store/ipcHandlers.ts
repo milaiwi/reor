@@ -16,7 +16,7 @@ import { SearchProps } from './types'
 import WindowsManager from '../common/windowManager'
 
 import { initializeAndMaybeMigrateStore } from './storeSchemaMigrator'
-import { Chat, AgentConfig, ChatMetadata } from '@/lib/llm/types'
+import { Chat, ChatMetadata } from '@/lib/llm/types'
 
 export const registerStoreHandlers = (store: Store<StoreSchema>, windowsManager: WindowsManager) => {
   initializeAndMaybeMigrateStore(store)
@@ -102,19 +102,6 @@ export const registerStoreHandlers = (store: Store<StoreSchema>, windowsManager:
   ipcMain.handle('set-editor-flex-center', (event, setEditorFlexCenter) => {
     store.set(StoreKeys.EditorFlexCenter, setEditorFlexCenter)
     event.sender.send('editor-flex-center-changed', setEditorFlexCenter)
-  })
-
-  ipcMain.handle('get-agent-configs', () => store.get(StoreKeys.AgentConfigs))
-
-  ipcMain.handle('set-agent-config', (event, agentConfig: AgentConfig) => {
-    const agentConfigs = store.get(StoreKeys.AgentConfigs) || []
-    const existingAgentIndex = agentConfigs.findIndex((config) => config.name === agentConfig.name)
-    if (existingAgentIndex !== -1) {
-      agentConfigs[existingAgentIndex] = agentConfig
-    } else {
-      agentConfigs.push(agentConfig)
-    }
-    store.set(StoreKeys.AgentConfigs, agentConfigs)
   })
 
   ipcMain.handle('set-analytics-mode', (event, isAnalytics) => {

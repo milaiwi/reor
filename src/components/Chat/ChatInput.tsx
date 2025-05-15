@@ -2,11 +2,9 @@ import React from 'react'
 
 import { PiPaperPlaneRight } from 'react-icons/pi'
 import { TextArea } from 'tamagui'
-import { ToggleButton, ToggleThumb } from '@/components/Editor/ui/src/toggle'
-import { AgentConfig, LoadingState } from '../../lib/llm/types'
+import { LoadingState } from '../../lib/llm/types'
 import { Button } from '../ui/button'
 import LLMSelectOrButton from '../Settings/LLMSettings/LLMSelectOrButton'
-import { Label } from '@/components/ui/label'
 import { useThemeManager } from '@/contexts/ThemeContext'
 
 interface ChatInputProps {
@@ -16,8 +14,6 @@ interface ChatInputProps {
   loadingState: LoadingState
   selectedLLM: string | undefined
   setSelectedLLM: (value: string | undefined) => void
-  agentConfig: AgentConfig | undefined
-  setAgentConfig: React.Dispatch<React.SetStateAction<AgentConfig | undefined>>
 }
 
 const ChatInput: React.FC<ChatInputProps> = ({
@@ -27,27 +23,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
   loadingState,
   selectedLLM,
   setSelectedLLM,
-  agentConfig,
-  setAgentConfig,
 }) => {
   const { state } = useThemeManager()
-
-  const handleDbSearchToggle = (checked: boolean) => {
-    setAgentConfig((prevConfig) => {
-      if (!prevConfig) throw new Error('Agent config must be initialized before setting db search filters')
-      return {
-        ...prevConfig,
-        dbSearchFilters: checked
-          ? {
-              limit: 22,
-              minDate: undefined,
-              maxDate: undefined,
-              passFullNoteIntoContext: true,
-            }
-          : undefined,
-      }
-    })
-  }
 
   return (
     <div className="flex w-full">
@@ -86,16 +63,16 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
           <div className="flex">
             <div className="mr-[-8px] mt-[8px] flex flex-col items-center">
-              <ToggleButton
+              {/* <ToggleButton
                 hybrid={!!agentConfig?.dbSearchFilters}
-                onPress={() => handleDbSearchToggle(!agentConfig?.dbSearchFilters)}
-                aria-checked={!!agentConfig?.dbSearchFilters}
                 role="switch"
                 aria-label="Search notes"
               >
                 <ToggleThumb hybrid={!!agentConfig?.dbSearchFilters} />
               </ToggleButton>
-              <Label className="mt-0 text-[8px] text-muted-foreground">Search notes</Label>
+              <Label className="mt-0 text-[8px] text-muted-foreground">
+                Search notes
+              </Label> */}
             </div>
 
             <Button
