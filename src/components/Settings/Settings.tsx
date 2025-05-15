@@ -53,13 +53,13 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
             <XStack height="100%" minHeight="80vh" width="100%">
               <YStack
                 backgroundColor="$gray12"
-                width="150px"
+                width="40px"
                 gap="$1"
                 flex={1}
                 className="flex flex-col rounded-l-lg border-y-0 border-l-0 border-r-[0.1px] border-solid border-gray-700 p-2 text-white"
               >
                 <YStack
-                  backgroundColor={activeTab === SettingsTab.GeneralSettingsTab ? '$gray7' : ''}
+                  backgroundColor={activeTab === SettingsTab.GeneralSettingsTab ? '$gray8' : '$gray6'}
                   hoverStyle={{
                     backgroundColor: '$gray7',
                   }}
@@ -67,18 +67,19 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                   py="$2"
                   px="$2"
                   alignItems="flex-start"
+                  borderRadius="$2"
                   onPress={() => setActiveTab(SettingsTab.GeneralSettingsTab)}
                 >
                   <SizableText
                     size="$2"
                     fontWeight={activeTab === SettingsTab.GeneralSettingsTab ? 'bold' : 'normal'}
-                    color={activeTab === SettingsTab.GeneralSettingsTab ? '$gray13' : ''}
+                    color={activeTab === SettingsTab.GeneralSettingsTab ? '$black' : '$white'}
                   >
                     Editor
                   </SizableText>
                 </YStack>
                 <YStack
-                  backgroundColor={activeTab === SettingsTab.LLMSettingsTab ? '$gray7' : ''}
+                  backgroundColor={activeTab === SettingsTab.LLMSettingsTab ? '$gray8' : '$gray6'}
                   hoverStyle={{
                     backgroundColor: '$gray7',
                   }}
@@ -92,13 +93,13 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                   <SizableText
                     size="$2"
                     fontWeight={activeTab === SettingsTab.LLMSettingsTab ? 'bold' : 'normal'}
-                    color={activeTab === SettingsTab.LLMSettingsTab ? '$gray13' : ''}
+                    color={activeTab === SettingsTab.LLMSettingsTab ? '$black' : '$white'}
                   >
                     LLM
                   </SizableText>
                 </YStack>
                 <YStack
-                  backgroundColor={activeTab === SettingsTab.EmbeddingModelTab ? '$gray7' : ''}
+                  backgroundColor={activeTab === SettingsTab.EmbeddingModelTab ? '$gray8' : '$gray6'}
                   hoverStyle={{
                     backgroundColor: '$gray7',
                   }}
@@ -112,13 +113,13 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                   <SizableText
                     size="$2"
                     fontWeight={activeTab === SettingsTab.EmbeddingModelTab ? 'bold' : 'normal'}
-                    color={activeTab === SettingsTab.EmbeddingModelTab ? '$gray13' : ''}
+                    color={activeTab === SettingsTab.EmbeddingModelTab ? '$black' : '$white'}
                   >
                     Embedding Model
                   </SizableText>
                 </YStack>
                 <YStack
-                  backgroundColor={activeTab === SettingsTab.AnalyticsTab ? '$gray7' : ''}
+                  backgroundColor={activeTab === SettingsTab.AnalyticsTab ? '$gray8' : '$gray6'}
                   hoverStyle={{
                     backgroundColor: '$gray7',
                   }}
@@ -132,7 +133,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                   <SizableText
                     size="$2"
                     fontWeight={activeTab === SettingsTab.AnalyticsTab ? 'bold' : 'normal'}
-                    color={activeTab === SettingsTab.AnalyticsTab ? '$gray13' : ''}
+                    color={activeTab === SettingsTab.AnalyticsTab ? '$black' : '$white'}
                   >
                     Analytics
                   </SizableText>

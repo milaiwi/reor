@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import { DBQueryResult } from 'electron/main/vector-database/schema'
 
-
 type SemanticEntry = {
   data: DBQueryResult[]
   lastFetched: number

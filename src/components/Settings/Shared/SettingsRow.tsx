@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-import { YStack, XStack, SizableText } from 'tamagui'
+import { YStack, XStack, SizableText, Stack } from 'tamagui'
 
 interface SettingsSectionProps {
   title: string
@@ -18,16 +18,16 @@ interface SettingsRowProps {
 const SettingsSection: React.FC<SettingsSectionProps> = ({ title, children, footnote, error }) => (
   <YStack px="$4" backgroundColor="$gray1" width="100%" height="100%" justifyContent="space-between">
     <YStack>
-      <h2 className="mb-2">{title}</h2>
+      <SizableText size="$5" fontWeight="bold" my="$3">
+        {title}
+      </SizableText>
       <XStack className="h-[2px] w-full bg-neutral-700" />
       <YStack maxWidth="100%" width="100%" overflow="hidden">
         {children}
-        {error && (
-          <SizableText size="$1" color="$red" py="$2">
-            {error}
-          </SizableText>
-        )}
       </YStack>
+      <SizableText size="$4" color="red" py="$2">
+        {error}
+      </SizableText>
     </YStack>
     {footnote && (
       <SizableText size="$1" py="$2">
@@ -39,7 +39,7 @@ const SettingsSection: React.FC<SettingsSectionProps> = ({ title, children, foot
 
 export const SettingsRow: React.FC<SettingsRowProps> = ({ title, description, control, divider = true }) => {
   return (
-    <>
+    <Stack>
       <XStack width="100%">
         <XStack justifyContent="space-between" alignItems="center" py="$3" width="100%">
           <YStack flex={1} pr="$4">
@@ -52,11 +52,11 @@ export const SettingsRow: React.FC<SettingsRowProps> = ({ title, description, co
               </SizableText>
             )}
           </YStack>
-          {control}
+          <SizableText>{control}</SizableText>
         </XStack>
       </XStack>
       {divider && <XStack className="h-[2px] w-full bg-neutral-700" />}
-    </>
+    </Stack>
   )
 }
 
