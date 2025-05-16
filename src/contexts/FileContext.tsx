@@ -124,6 +124,7 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   const loadFileIntoEditor = async (filePath: string, startingPos?: number) => {
+    if (filePath == currentlyOpenFilePath) return
     setCurrentlyChangingFilePath(true)
     await writeEditorContentToDisk(editor, currentlyOpenFilePath)
     if (currentlyOpenFilePath && needToIndexEditorContent) {

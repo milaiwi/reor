@@ -12,7 +12,7 @@ import { Block, BlockSchema } from '../../extensions/Blocks/api/blockTypes'
 
 import { blockToNode, nodeToBlock } from '../nodeConversions/nodeConversions'
 import simplifyBlocks from './simplifyBlocksRehypePlugin'
-import { removeSingleSpace, preserveEmptyParagraphs, code, handleMedia } from './customRehypePlugins'
+import { removeSingleSpace, preserveEmptyParagraphs, code, handleMedia, handleList, preserveListLevels } from './customRehypePlugins'
 
 /**
  * Converts our blocks to HTML:
@@ -129,9 +129,10 @@ function convertBlockToHtml<BSchema extends BlockSchema>(block: Block<BSchema>, 
       .map((child) => convertBlockToHtml(child, block.props.childrenType === 'ul' || block.props.childrenType === 'ol'))
       .join('\n')
     if (block.props.childrenType === 'ul') {
-      childrenHtml = `<ul>${childrenContent}</ul>`
+      console.log(`Block level: `, block.props.listLevel)
+      childrenHtml = `<ul data-list-level="${block.props.listlevel || '1'}">${childrenContent}</ul>`
     } else if (block.props.childrenType === 'ol') {
-      childrenHtml = `<ol start="${block.props.start || 1}">${childrenContent}</ol>`
+      childrenHtml = `<ol data-list-level="${block.props.listLevel || '1'}" start="${block.props.start || 1}">${childrenContent}</ol>`
     } else {
       childrenHtml = childrenContent
     }
@@ -153,6 +154,8 @@ function convertBlockToHtml<BSchema extends BlockSchema>(block: Block<BSchema>, 
         return `<pre><code class="language-${block.props.language || 'plaintext'}">${contentHtml}</code></pre>`
       case 'video':
         return `![${block.props.name}](${block.props.url} "width=${block.props.width}")`
+      case 'bulletListItem':
+      case 'numberedListItem':
       default:
         return contentHtml
     }
@@ -189,14 +192,18 @@ export async function blocksToMarkdown<BSchema extends BlockSchema>(blocks: Bloc
     // @ts-expect-error
     .use(rehypeParse, { fragment: true })
     .use(preserveEmptyParagraphs)
+    .use(preserveListLevels)
     // @ts-expect-error
-    .use(rehypeRemark)
+    .use(rehypeRemark, {
+      ...defaultHandlers,
+    })
     // @ts-expect-error
     .use(remarkGfm)
     // @ts-expect-error
     .use(remarkStringify)
     .process(convertBlocksToHtml(blocks))
 
+  console.log(`Converting blocks to markdown: `, tmpMarkdownString.value)
   return tmpMarkdownString.value as string
 }
 

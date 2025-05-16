@@ -49,7 +49,8 @@ const BulletListItemBlockContent = createTipTapBlock<'bulletListItem'>({
           }
 
           if (parent.tagName === 'UL') {
-            return {}
+            const listLevel = parent.getAttribute('data-list-level') || '1'
+            return { listLevel }
           }
 
           return false
@@ -71,7 +72,8 @@ const BulletListItemBlockContent = createTipTapBlock<'bulletListItem'>({
           }
 
           if (parent.getAttribute('data-content-type') === 'bulletListItem') {
-            return {}
+            const listLevel = parent.getAttribute('data-list-level') || '1'
+            return { listLevel }
           }
 
           return false

@@ -38,6 +38,7 @@ const simplifyBlocks = (options: SimplifyBlocksOptions) => {
           ? 'ol'
           : 'ul'
       }
+      console.log(`List item block: `, isListItemBlock)
 
       // Plugin runs recursively to process nested blocks.
       if (blockGroup !== null) {
@@ -61,9 +62,15 @@ const simplifyBlocks = (options: SimplifyBlocksOptions) => {
       if (isListItemBlock) {
         // Checks if a list isn't already active. We don't have to check if the block and the list are of the same
         // type as this was already done earlier.
+        const listLevel = blockGroup?.properties?.['data-list-level'] || '1'
+        console.log(`List level is at: `, listLevel)
         if (!activeList) {
           // Creates a new list element to represent an active list.
           activeList = fromDom(document.createElement(listItemBlockType!)) as HASTElement
+          activeList.properties = {
+            ...activeList.properties,
+            'data-list-level': listLevel
+          }
         }
 
         // Creates a new list item element to represent the block.
@@ -102,6 +109,7 @@ const simplifyBlocks = (options: SimplifyBlocksOptions) => {
     }
   }
 
+  console.log(`Inside simplify blocks helper`)
   return simplifyBlocksHelper
 }
 

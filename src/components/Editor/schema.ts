@@ -7,8 +7,6 @@ import { VideoBlock } from './types/Video/video'
 export const hmBlockSchema: BlockSchema = {
   paragraph: defaultBlockSchema.paragraph,
   heading: defaultBlockSchema.heading,
-  bulletListItem: defaultBlockSchema.bulletListItem,
-  numberedListItem: defaultBlockSchema.numberedListItem,
   image: ImageBlock,
   // @ts-ignore
   'code-block': {

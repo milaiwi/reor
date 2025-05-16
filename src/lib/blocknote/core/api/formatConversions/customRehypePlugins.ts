@@ -21,6 +21,96 @@ export function preserveEmptyParagraphs() {
   }
 }
 
+/**
+ * Recursive function to handle lists of any depth in rehype-remark
+ * Properly maintains list levels throughout the conversion process
+ */
+export function handleList(state: any, node: any) {
+  // Get the list level from the node properties or default to 1
+  const listLevel = node.properties?.['data-list-level'] || '1'
+  const listType = node.tagName === 'ol' ? 'ol' : 'ul'
+  const start = node.properties?.start || null
+  
+  // Create the base list element with proper list level attribute
+  const result = {
+    type: 'list',
+    ordered: listType === 'ol',
+    spread: false,
+    children: [] as any[],
+    data: {
+      hProperties: {
+        'data-list-level': listLevel
+      }
+    }
+  }
+  
+  // Add start attribute for ordered lists if available
+  // if (listType === 'ol' && start) {
+  //   result.data.hProperties.start = start
+  // }
+
+  // Process each list item
+  for (const child of node.children) {
+    if (child.tagName === 'li') {
+      const listItem = {
+        type: 'listItem',
+        spread: false,
+        children: [] as any[]
+      }
+      
+      // Process the children of each list item
+      for (const itemChild of child.children) {
+        if (itemChild.tagName === 'p') {
+          // Add paragraph content
+          listItem.children.push(state.all(itemChild))
+        } else if (itemChild.tagName === 'ul' || itemChild.tagName === 'ol') {
+          // Handle nested lists - increment the list level
+          const nestedListLevel = (parseInt(listLevel) + 1).toString()
+          
+          // Set the nested list level
+          if (!itemChild.properties) {
+            itemChild.properties = {}
+          }
+          itemChild.properties['data-list-level'] = nestedListLevel
+          
+          // Process the nested list recursively
+          listItem.children.push(handleList(state, itemChild))
+        } else {
+          // Handle other content types
+          listItem.children.push(state.all(itemChild))
+        }
+      }
+      
+      result.children.push(listItem)
+    }
+  }
+  
+  return result
+}
+
+/**
+ * Rehype plugin to preserve list levels in the markdown output
+ */
+export function preserveListLevels() {
+  return (tree: any) => {
+    visit(tree, 'element', (node) => {
+      // Look for lists with data-list-level attribute
+      if ((node.tagName === 'ul' || node.tagName === 'ol') && node.properties && node.properties['data-list-level']) {
+        // Ensure the data attribute is preserved for the transformation
+        if (!node.data) {
+          node.data = {}
+        }
+        if (!node.data.hProperties) {
+          node.data.hProperties = {}
+        }
+        node.data.hProperties['data-list-level'] = node.properties['data-list-level']
+      }
+    })
+  }
+}
+
+
+
 // modefied version of https://github.com/syntax-tree/mdast-util-to-hast/blob/main/lib/handlers/code.js
 // that outputs a data-language attribute instead of a CSS class (e.g.: language-typescript)
 export function code(state: any, node: any) {
