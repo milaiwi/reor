@@ -4,7 +4,6 @@ import FileSystemService from "../FileSystemService/FileSystemService"
 class FileStateManager {
   private stateMap: Map<string, FileState> = new Map()
   private subscribers: Set<(path: string, state: FileState) => void> = new Set()
-  private TIME_ELAPSED_SINCE_LAST_WRITE: number = 5
 
   constructor(entries: FileInfo[]) {
     this.stateMap = new Map(
@@ -41,27 +40,41 @@ class FileStateManager {
   }
 
   /**
-   * Checks if we should write the content of a file if the last change to editor was > TIME_ELAPSED_SINCE_LAST_WRITE.
+   * Updates oldPath to newPath (if exists)
    * 
-   * @param path of the file
+   * @param oldPath old path to file
+   * @param newPath new path to file to update old path with
    */
-  async autoSave(path: string, content: string, fsService: FileSystemService): Promise<void> {
-    const fileObject = this.stateMap.get(path)
-    if (!fileObject || fileObject.status !== 'dirty' || !fileObject.dirtyTimestamp) return Promise.resolve()
+  updatePath(oldPath: string, newPath: string) {
+    const oldFileObject = this.stateMap.get(oldPath)
+    const newFileObject = this.stateMap.get(newPath)
+    // For this to work, a file at oldPath must exist and a file at newFile cannot exist.
+    if (!oldFileObject || newFileObject)
+      return 
+    
+    oldFileObject.file.path = newPath
+    this.stateMap.set(newPath, oldFileObject)
+    this.stateMap.delete(oldPath)
+  }
 
-    const timeSinceDirty = Date.now() - fileObject.dirtyTimestamp
-    if (timeSinceDirty < this.TIME_ELAPSED_SINCE_LAST_WRITE * 1000) return Promise.resolve()
+  /**
+   * Deletes the path from existing in the state manager.
+   * 
+   * @param path path to delete from stateMap
+   */
+  clear(path: string) {
+    this.stateMap.delete(path)
+  }
 
-    fileObject.status = 'saving'
-    this.emit(path, fileObject)
-
-    return fsService.write_queue(path, content)
-      .then(() => {
-        this.markClean(path)
-      })
-      .catch((err) => {
-        this.markError(path, err)
-      })
+  /**
+   * Registers a new file with the FileStateManager. If file already exits, does nothing.
+   * 
+   * @param path the path to the file
+   * @param state the new state to register
+   */
+  registerFile(path: string, state: FileState) {
+    if (!this.stateMap.get(path))
+      this.stateMap.set(path, state)
   }
 
   /**
@@ -75,6 +88,14 @@ class FileStateManager {
       fileObject.dirtyTimestamp = Date.now()
       this.emit(path, fileObject)
     }
+  }
+
+  /**
+   * Returns true if the file is dirty
+   */
+  isDirty(path: string) {
+    const fileObject = this.stateMap.get(path)
+    return fileObject && fileObject.status === 'dirty'
   }
 
   /**
@@ -121,9 +142,10 @@ class FileStateManager {
    * @param path the path of the file
    * @param state the current state of the file 
    */
-  private emit(path: string, state: FileState) {
+  emit(path: string, state: FileState) {
     this.subscribers.forEach(cb => cb(path, state))
   }
 }
+
 
 export default FileStateManager

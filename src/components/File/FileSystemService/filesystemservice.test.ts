@@ -1,104 +1,62 @@
 import { jest } from '@jest/globals'
 import FileSystemService from './FileSystemService'
-
-// Mock file operations before any tests run
-const mockFileSystem = {
-  readFile: jest.fn<(filePath: string, encoding: string) => Promise<string>>(),
-  writeFile: jest.fn<(props: { filePath: string; content: string }) => Promise<void>>(),
-}
-
-global.window = {
-  // @ts-ignore - Mocking window for tests
-  fileSystem: mockFileSystem
-}
+import { FileInfo } from 'electron/main/filesystem/types'
 
 describe('FileSystemService', () => {
   let fileSystemService: FileSystemService
+  let mockFileSystem: any
 
   beforeEach(() => {
-    // Reset mocks before each test
     jest.resetAllMocks()
     
-    // Reset the mock implementation
-    mockFileSystem.readFile.mockReset()
-    mockFileSystem.writeFile.mockReset()
+    mockFileSystem = {
+      readFile: jest.fn<(filePath: string, encoding: string) => Promise<string>>(),
+      writeFile: jest.fn<(props: { filePath: string; content: string }) => Promise<void>>(),
+      renameFile: jest.fn<(props: { oldFilePath: string; newFilePath: string }) => Promise<void>>(),
+      deleteFile: jest.fn<(filePath: string) => Promise<void>>(),
+      createFile: jest.fn<(filePath: string, content: string) => Promise<FileInfo | undefined>>(),
+      checkFileExists: jest.fn<(filePath: string) => Promise<boolean>>()
+    }
+    
+    // @ts-ignore - Mocking window for tests
+    global.window = {
+      fileSystem: mockFileSystem
+    }
     
     fileSystemService = new FileSystemService()
   })
 
-  describe('read_queue', () => {
+  describe('readFile', () => {
     it('should read file content successfully', async () => {
       const filePath = 'test.txt'
       const expectedContent = 'test content'
       
       mockFileSystem.readFile.mockResolvedValueOnce(expectedContent)
       
-      const result = await fileSystemService.read_queue(filePath)
+      const result = await fileSystemService.readFile(filePath)
       
       expect(result).toBe(expectedContent)
       expect(mockFileSystem.readFile).toHaveBeenCalledWith(filePath, 'utf-8')
     })
 
-    it('should handle nested file paths', async () => {
-      const filePath = 'nested/folder/test.txt'
-      const expectedContent = 'nested content'
-      
-      mockFileSystem.readFile.mockResolvedValueOnce(expectedContent)
-      
-      const result = await fileSystemService.read_queue(filePath)
-      
-      expect(result).toBe(expectedContent)
-      expect(mockFileSystem.readFile).toHaveBeenCalledWith(filePath, 'utf-8')
-    })
-
-    it('should handle non-existent files', async () => {
-      const filePath = 'nonexistent.txt'
-      const error = new Error('File not found')
+    it('should handle read errors', async () => {
+      const filePath = 'test.txt'
+      const error = new Error('Read failed')
       
       mockFileSystem.readFile.mockRejectedValueOnce(error)
       
-      await expect(fileSystemService.read_queue(filePath)).rejects.toThrow('File not found')
-    })
-
-    it('should queue multiple read requests for the same file', async () => {
-      const filePath = 'test.txt'
-      const expectedContent = 'test content'
-      
-      mockFileSystem.readFile.mockResolvedValueOnce(expectedContent)
-      
-      const read1 = fileSystemService.read_queue(filePath)
-      const read2 = fileSystemService.read_queue(filePath)
-      
-      const [result1, result2] = await Promise.all([read1, read2])
-      
-      expect(result1).toBe(expectedContent)
-      expect(result2).toBe(expectedContent)
-      expect(mockFileSystem.readFile).toHaveBeenCalledTimes(1)
+      await expect(fileSystemService.readFile(filePath)).rejects.toThrow('Read failed')
     })
   })
 
-  describe('write_queue', () => {
+  describe('writeFile', () => {
     it('should write file content successfully', async () => {
       const filePath = 'test.txt'
       const content = 'test content'
       
       mockFileSystem.writeFile.mockResolvedValueOnce(undefined)
       
-      await fileSystemService.write_queue(filePath, content)
-      
-      expect(mockFileSystem.writeFile).toHaveBeenCalledWith({
-        filePath,
-        content
-      })
-    })
-
-    it('should handle nested file paths', async () => {
-      const filePath = 'nested/folder/test.txt'
-      const content = 'nested content'
-      
-      mockFileSystem.writeFile.mockResolvedValueOnce(undefined)
-      
-      await fileSystemService.write_queue(filePath, content)
+      await fileSystemService.writeFile(filePath, content)
       
       expect(mockFileSystem.writeFile).toHaveBeenCalledWith({
         filePath,
@@ -113,62 +71,125 @@ describe('FileSystemService', () => {
       
       mockFileSystem.writeFile.mockRejectedValueOnce(error)
       
-      await expect(fileSystemService.write_queue(filePath, content)).rejects.toThrow('Write failed')
+      await expect(fileSystemService.writeFile(filePath, content)).rejects.toThrow('Write failed')
     })
+  })
 
-    it('should queue multiple write requests for the same file', async () => {
-      const filePath = 'test.txt'
-      const content1 = 'content 1'
-      const content2 = 'content 2'
+  describe('renameFile', () => {
+    it('should rename file successfully', async () => {
+      const oldPath = 'old.txt'
+      const newPath = 'new.txt'
       
-      mockFileSystem.writeFile
-        .mockResolvedValueOnce(undefined)
-        .mockResolvedValueOnce(undefined)
+      mockFileSystem.renameFile.mockResolvedValueOnce(undefined)
       
-      const write1 = fileSystemService.write_queue(filePath, content1)
-      const write2 = fileSystemService.write_queue(filePath, content2)
+      await fileSystemService.renameFile(oldPath, newPath)
       
-      await Promise.all([write1, write2])
-      
-      expect(mockFileSystem.writeFile).toHaveBeenCalledTimes(2)
-      expect(mockFileSystem.writeFile).toHaveBeenNthCalledWith(1, {
-        filePath,
-        content: content1
-      })
-      expect(mockFileSystem.writeFile).toHaveBeenNthCalledWith(2, {
-        filePath,
-        content: content2
+      expect(mockFileSystem.renameFile).toHaveBeenCalledWith({
+        oldFilePath: oldPath,
+        newFilePath: newPath
       })
     })
 
-    it('should wait for previous write to complete before starting new write', async () => {
+    it('should handle rename errors', async () => {
+      const oldPath = 'old.txt'
+      const newPath = 'new.txt'
+      const error = new Error('Rename failed')
+      
+      mockFileSystem.renameFile.mockRejectedValueOnce(error)
+      
+      await expect(fileSystemService.renameFile(oldPath, newPath)).rejects.toThrow('Rename failed')
+    })
+  })
+
+  describe('deleteFile', () => {
+    it('should delete file successfully', async () => {
       const filePath = 'test.txt'
-      const content1 = 'content 1'
-      const content2 = 'content 2'
       
-      let firstWriteResolve: () => void
-      const firstWritePromise = new Promise<void>(resolve => {
-        firstWriteResolve = resolve
-      })
+      mockFileSystem.deleteFile.mockResolvedValueOnce(undefined)
       
-      mockFileSystem.writeFile
-        .mockImplementationOnce(() => firstWritePromise)
-        .mockResolvedValueOnce(undefined)
+      await fileSystemService.deleteFile(filePath)
       
-      const write1 = fileSystemService.write_queue(filePath, content1)
-      const write2 = fileSystemService.write_queue(filePath, content2)
+      expect(mockFileSystem.deleteFile).toHaveBeenCalledWith(filePath)
+    })
+
+    it('should handle delete errors', async () => {
+      const filePath = 'test.txt'
+      const error = new Error('Delete failed')
       
-      // First write should be called immediately
-      expect(mockFileSystem.writeFile).toHaveBeenCalledTimes(1)
+      mockFileSystem.deleteFile.mockRejectedValueOnce(error)
       
-      // Resolve first write
-      firstWriteResolve!()
+      await expect(fileSystemService.deleteFile(filePath)).rejects.toThrow('Delete failed')
+    })
+  })
+
+  describe('createFile', () => {
+    it('should create file successfully', async () => {
+      const filePath = 'test.txt'
+      const initialContent = 'initial content'
+      const expectedFileInfo: FileInfo = {
+        name: 'test.txt',
+        path: '/test.txt',
+        relativePath: 'test.txt',
+        dateModified: new Date(),
+        dateCreated: new Date()
+      }
       
-      // Wait for both writes to complete
-      await Promise.all([write1, write2])
+      mockFileSystem.createFile.mockResolvedValueOnce(expectedFileInfo)
       
-      // Second write should be called after first write completes
-      expect(mockFileSystem.writeFile).toHaveBeenCalledTimes(2)
+      const result = await fileSystemService.createFile(filePath, initialContent)
+      
+      expect(result).toEqual(expectedFileInfo)
+      expect(mockFileSystem.createFile).toHaveBeenCalledWith(filePath, initialContent)
+    })
+
+    it('should create file with empty content by default', async () => {
+      const filePath = 'test.txt'
+      
+      await fileSystemService.createFile(filePath)
+      
+      expect(mockFileSystem.createFile).toHaveBeenCalledWith(filePath, '')
+    })
+
+    it('should handle create errors', async () => {
+      const filePath = 'test.txt'
+      const error = new Error('Create failed')
+      
+      mockFileSystem.createFile.mockRejectedValueOnce(error)
+      
+      await expect(fileSystemService.createFile(filePath)).rejects.toThrow('Create failed')
+    })
+  })
+
+  describe('checkFileExists', () => {
+    it('should return true for existing file', async () => {
+      const filePath = 'test.txt'
+      
+      mockFileSystem.checkFileExists.mockResolvedValueOnce(true)
+      
+      const result = await fileSystemService.checkFileExists(filePath)
+      
+      expect(result).toBe(true)
+      expect(mockFileSystem.checkFileExists).toHaveBeenCalledWith(filePath)
+    })
+
+    it('should return false for non-existent file', async () => {
+      const filePath = 'nonexistent.txt'
+      
+      mockFileSystem.checkFileExists.mockResolvedValueOnce(false)
+      
+      const result = await fileSystemService.checkFileExists(filePath)
+      
+      expect(result).toBe(false)
+      expect(mockFileSystem.checkFileExists).toHaveBeenCalledWith(filePath)
+    })
+
+    it('should handle check errors', async () => {
+      const filePath = 'test.txt'
+      const error = new Error('Check failed')
+      
+      mockFileSystem.checkFileExists.mockRejectedValueOnce(error)
+      
+      await expect(fileSystemService.checkFileExists(filePath)).rejects.toThrow('Check failed')
     })
   })
 })

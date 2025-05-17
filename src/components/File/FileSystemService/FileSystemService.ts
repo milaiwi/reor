@@ -1,35 +1,28 @@
+import { FileInfo } from "electron/main/filesystem/types"
+
 class FileSystemService {
-  private writeQueue: Map<string, Promise<void>> = new Map()
-  private readQueue: Map<string, Promise<string>> = new Map()
-
-  async read_queue(file_path: string) {
-    if (this.readQueue.has(file_path)) {
-      return this.readQueue.get(file_path)
-    }
-
-    const readPromise = window.fileSystem.readFile(file_path, 'utf-8')
-    .finally(() => {
-      this.readQueue.delete(file_path)
-    })
-
-    this.readQueue.set(file_path, readPromise)
-    return readPromise
+  async readFile(filePath: string): Promise<string> {
+    return await window.fileSystem.readFile(filePath, 'utf-8')
   }
 
-  async write_queue(file_path: string, content: string) {
-    const prevWrite = this.writeQueue.get(file_path)
-    if (prevWrite)
-      await prevWrite
+  async writeFile(filePath: string, content: string): Promise<void> {
+    return await window.fileSystem.writeFile({ filePath, content })
+  }
 
-    const writePromise = window.fileSystem.writeFile({ filePath: file_path, content})
-    .finally(() => {
-      // Check if the write that completes is also in our queue, if so, remove
-      if (this.writeQueue.get(file_path) === writePromise)
-        this.writeQueue.delete(file_path)
-    })
+  async renameFile(oldPath: string, newPath: string): Promise<void> {
+    return await window.fileSystem.renameFile({ oldFilePath: oldPath, newFilePath: newPath })
+  }
 
-    this.writeQueue.set(file_path, writePromise)
-    return writePromise
+  async deleteFile(filePath: string): Promise<void> {
+    return await window.fileSystem.deleteFile(filePath)
+  }
+
+  async createFile(filePath: string, initialContent = ''): Promise<FileInfo | undefined> {
+    return await window.fileSystem.createFile(filePath, initialContent)
+  }
+
+  async checkFileExists(filePath: string): Promise<boolean> {
+    return await window.fileSystem.checkFileExists(filePath)
   }
 }
 
