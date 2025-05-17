@@ -26,9 +26,11 @@ const registerFileHandlers = (store: Store<StoreSchema>, _windowsManager: Window
     return files
   })
 
-  ipcMain.handle('read-file', async (event, filePath, encoding = 'utf-8') => {
-    const data = await fs.promises.readFile(filePath, encoding)
-    return data
+  ipcMain.handle('read-file', (event, filePath, encoding = 'utf-8') => {
+    if (!fs.existsSync(filePath))
+      throw new Error(`File path provided at ${filePath} does not exist`)
+
+    return fs.promises.readFile(filePath, encoding)
   })
 
   ipcMain.handle('check-file-exists', async (event, filePath) => {
@@ -71,7 +73,7 @@ const registerFileHandlers = (store: Store<StoreSchema>, _windowsManager: Window
     })
   })
 
-  ipcMain.handle('write-file', async (event, writeFileProps: WriteFileProps) => {
+  ipcMain.handle('write-file', (event, writeFileProps: WriteFileProps) => {
     if (!fs.existsSync(path.dirname(writeFileProps.filePath))) {
       fs.mkdirSync(path.dirname(writeFileProps.filePath), {
         recursive: true,
