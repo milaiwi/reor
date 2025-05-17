@@ -6,6 +6,14 @@ export type FileInfo = {
   dateCreated: Date
 }
 
+export type FileState = {
+  file: FileInfo
+  status: 'clean' | 'dirty' | 'loading' | 'saving' | 'error'
+  error?: Error
+  dirtyTimestamp?: number
+  // saveScheduled?: boolean
+}
+
 export type FileInfoWithContent = FileInfo & {
   content: string
 }
