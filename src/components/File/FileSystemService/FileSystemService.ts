@@ -1,6 +1,3 @@
-import * as fs from 'fs'
-
-
 class FileSystemService {
   private writeQueue: Map<string, Promise<void>> = new Map()
   private readQueue: Map<string, Promise<string>> = new Map()
@@ -35,3 +32,5 @@ class FileSystemService {
     return writePromise
   }
 }
+
+export default FileSystemService
