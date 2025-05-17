@@ -73,6 +73,7 @@ class FileStateManager {
     if (fileObject) {
       fileObject.status = 'dirty'
       fileObject.dirtyTimestamp = Date.now()
+      this.emit(path, fileObject)
     }
   }
 
@@ -124,3 +125,5 @@ class FileStateManager {
     this.subscribers.forEach(cb => cb(path, state))
   }
 }
+
+export default FileStateManager
