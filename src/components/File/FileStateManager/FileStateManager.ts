@@ -1,9 +1,7 @@
 import { FileInfo, FileState } from "electron/main/filesystem/types"
-import FileSystemService from "../FileSystemService/FileSystemService"
 
 class FileStateManager {
   private stateMap: Map<string, FileState> = new Map()
-  private subscribers: Set<(path: string, state: FileState) => void> = new Set()
 
   constructor(entries: FileInfo[]) {
     this.stateMap = new Map(
@@ -17,17 +15,6 @@ class FileStateManager {
         } satisfies FileState,
       ])
     )
-  }
-
-  /**
-   * Allows for different components to subscribe to our FileStateManager. Good for notifying any UI changes.
-   * 
-   * @param callback content to pass back to a subscribed event
-   * @returns returns the callback to unsubscribe
-   */
-  subscribe(callback: (path: string, state: FileState) => void): () => void {
-    this.subscribers.add(callback)
-    return () => this.subscribers.delete(callback)
   }
 
   /**
@@ -86,7 +73,7 @@ class FileStateManager {
     if (fileObject) {
       fileObject.status = 'dirty'
       fileObject.dirtyTimestamp = Date.now()
-      this.emit(path, fileObject)
+      // this.emit(path, fileObject)
     }
   }
 
@@ -108,7 +95,7 @@ class FileStateManager {
     if (fileObject) {
       fileObject.status = 'clean'
       fileObject.dirtyTimestamp = undefined
-      this.emit(path, fileObject)
+      // this.emit(path, fileObject)
     }
   }
 
@@ -116,7 +103,7 @@ class FileStateManager {
     const fileObject = this.stateMap.get(path)
     if (fileObject) {
       fileObject.status = 'saving'
-      this.emit(path, fileObject)
+      // this.emit(path, fileObject)
     }
   }
 
@@ -131,19 +118,8 @@ class FileStateManager {
     if (fileObject) {
       fileObject.status = 'error'
       fileObject.error = err
-      this.emit(path, fileObject)
+      // this.emit(path, fileObject)
     }
-  }
-
-  /**
-   * Passes in the path and state for each subscribed event. Notifies each subscribed that 
-   *  the file at path has changed.
-   * 
-   * @param path the path of the file
-   * @param state the current state of the file 
-   */
-  emit(path: string, state: FileState) {
-    this.subscribers.forEach(cb => cb(path, state))
   }
 }
 

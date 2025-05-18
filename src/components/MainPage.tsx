@@ -108,7 +108,7 @@ const MainPageContent: React.FC = () => {
                   )}
                   {activePanel === 'similarFiles' && (
                     <ResizablePanel defaultSize={panelSizes.similarFilesSidebar}>
-                      <SimilarFilesSidebarComponent />
+                       <SimilarFilesSidebarComponent />
                     </ResizablePanel>
                   )}
                 </ResizablePanelGroup>

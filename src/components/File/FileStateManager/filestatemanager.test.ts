@@ -137,35 +137,6 @@ describe('FileStateManager', () => {
     })
   })
 
-  describe('Subscription', () => {
-    it('should notify subscribers of state changes', () => {
-      const mockCallback = jest.fn()
-      const unsubscribe = fileStateManager.subscribe(mockCallback)
-      
-      fileStateManager.markDirty(mockFileInfo.name)
-      
-      expect(mockCallback).toHaveBeenCalledWith(
-        mockFileInfo.name,
-        expect.objectContaining({
-          status: 'dirty',
-          file: mockFileInfo
-        })
-      )
-      
-      unsubscribe()
-    })
-
-    it('should allow unsubscribing', () => {
-      const mockCallback = jest.fn()
-      const unsubscribe = fileStateManager.subscribe(mockCallback)
-      
-      unsubscribe()
-      fileStateManager.markDirty(mockFileInfo.name)
-      
-      expect(mockCallback).not.toHaveBeenCalled()
-    })
-  })
-
   describe('State Management', () => {
     it('should mark file as dirty', () => {
       fileStateManager.markDirty(mockFileInfo.name)
