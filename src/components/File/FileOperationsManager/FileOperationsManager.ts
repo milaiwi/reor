@@ -1,12 +1,13 @@
 import FileSystemService from "../FileSystemService/FileSystemService"
 import FileStateManager from "../FileStateManager/FileStateManager"
 import FileOperationsQueue from "./FileOperationController"
-import { FileInfo } from "electron/main/filesystem/types"
+import { FileInfo, FileState } from "electron/main/filesystem/types"
 import EventEmitter from '../../../lib/blocknote/core/shared/EventEmitter'
 import path from 'path'
 
 // Define event types for FileOperationsManager
 export type FileOperationsEventTypes = {
+  // File operations
   'fileReadStarted': string
   'fileReadCompleted': { path: string, content?: string, error?: Error }
   
@@ -21,6 +22,12 @@ export type FileOperationsEventTypes = {
   
   'autoSaveStarted': string
   'autoSaveCompleted': { path: string, error?: Error }
+
+  'fileCreateStarted': string
+  'fileCreateCompleted': { path: string, error?: Error }
+
+  // File state
+  'fileStateChanged': { path: string, state: FileState }
 }
 
 class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
@@ -34,6 +41,10 @@ class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
     this.service = new FileSystemService()
     this.state = new FileStateManager(entries)
     this.queue = new FileOperationsQueue()
+
+    this.state.on('fileStateChanged', ({ path, state }) => {
+      this.emit('fileStateChanged', { path, state })
+    })
   }
 
   async readFile(path: string): Promise<string> {
@@ -122,6 +133,20 @@ class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
     }
   }
 
+  async createFile(path: string, content: string = ''): Promise<void> {
+    this.emit('fileCreateStarted', path)
+
+    try {
+      await this.queue.enqueue(path, async () => {
+        await this.service.createFile(path, content)
+      })
+
+      this.emit('fileCreateCompleted', { path })
+    } catch (err) {
+      this.emit('fileCreateCompleted', { path, error: err as Error})
+    }
+  }
+
   async autoSave(path: string, content: string): Promise<void> {
     const fileObject = this.state.getFileState(path)
     if (!fileObject || fileObject.status !== 'dirty' || !fileObject.dirtyTimestamp) return Promise.resolve()
@@ -152,6 +177,10 @@ class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
       this.emit('autoSaveCompleted', { path, error: err as Error })
       throw err
     }
+  }
+
+  getFileAtPath(path: string): FileState | undefined {
+    return this.state.getFileState(path)
   }
 }
 

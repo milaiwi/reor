@@ -1,5 +1,5 @@
 import FileOperationsManager from '../FileOperationsManager/FileOperationsManager'
-import { FileInfo, FileState } from "electron/main/filesystem/types";
+import { FileInfo, FileInfoTree, FileState } from "electron/main/filesystem/types";
 import { flattenFileInfoTree } from "../../../lib/file";
 import EventEmitter from '../../../lib/blocknote/core/shared/EventEmitter'
 
@@ -22,7 +22,7 @@ export type VaultEventTypes = {
 
   // Structure changes
   'directoryToggled': { path: string, isExpanded: boolean }
-  'treeUpdated': void
+  'treeUpdated': FileInfo[][]
   'directoryCreated': FileInfo
 
   // Selection events
@@ -44,8 +44,8 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
   public ready: boolean = false
 
   async initialize(): Promise<void> {
-    const files = await window.fileSystem.getFilesTreeForWindow()
-    const flat = flattenFileInfoTree(files).map((f: FileInfo) => ({
+    const files: FileInfoTree = await window.fileSystem.getFilesTreeForWindow()
+    const flat: FileInfo[] = flattenFileInfoTree(files).map((f: FileInfo) => ({
       ...f,
     }))
 
@@ -54,7 +54,7 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
     this.ready = true
 
     // Emit tree is ready
-    this.emit('treeUpdated', undefined)
+    this.emit('treeUpdated', flat)
   }
 
   /**
@@ -98,7 +98,7 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
     })
     
     this.on('fileStateChanged', ({ path, state }) => {
-      this.emit('fileStateChange', { path, state })
+      this.emit('fileStateChanged', { path, state })
     })
   }
  
@@ -126,6 +126,11 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
   selectFile(path: string): void {
     this.selectedFilePath = path
     this.emit('fileSelected', path)
+  }
+
+  selectDirectory(path: string): void {
+    this.selectedDirectoryPath = path
+    this.emit('directorySelected', path)
   }
 
   // File operations
@@ -159,10 +164,22 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
     return this.fileOperationsManager.deleteFile(path)
   }
 
+  async createFile(path: string, initialContent: string = ''): Promise<void> {
+    if (!this.ready)
+      throw new Error('Vault Manager is not ready yet')
+    return this.fileOperationsManager.createFile(path, initialContent)
+  }
+
   async autoSave(path: string, content: string): Promise<void> {
     if (!this.ready)
       throw new Error('VaultManager is not ready yet')
     return this.fileOperationsManager.autoSave(path, content)
+  }
+
+  getFileAtPath(path: string): FileState | undefined {
+    if (!this.ready)
+      throw new Error('Vault manager is not ready yet')
+    return this.fileOperationsManager.getFileAtPath(path)
   }
 }
 

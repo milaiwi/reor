@@ -232,6 +232,13 @@
         "tsconfig": "tsconfig.json"
       }
     },
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1",
+      "^@shared/(.*)$": "<rootDir>/shared/$1",
+      "^@blocknote/(.*)$": "<rootDir>/src/lib/blocknote/$1",
+      "^@blocknote/core/(.*)$": "<rootDir>/src/lib/blocknote/core/$1",
+      "^@lib/(.*)$": "<rootDir>/src/lib/$1"
+    },
     "moduleFileExtensions": [
       "ts",
       "tsx",

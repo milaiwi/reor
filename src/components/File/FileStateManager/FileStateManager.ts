@@ -1,9 +1,17 @@
 import { FileInfo, FileState } from "electron/main/filesystem/types"
+import EventEmitter from "@/lib/blocknote/core/shared/EventEmitter"
 
-class FileStateManager {
+export type FileStateEventTypes = {
+  'fileStateChanged': { path: string, state: FileState }
+}
+
+
+class FileStateManager extends EventEmitter<FileStateEventTypes> {
   private stateMap: Map<string, FileState> = new Map()
 
   constructor(entries: FileInfo[]) {
+    super() 
+
     this.stateMap = new Map(
       entries.map((e) => [
         e.name, // path to the file 
@@ -73,7 +81,7 @@ class FileStateManager {
     if (fileObject) {
       fileObject.status = 'dirty'
       fileObject.dirtyTimestamp = Date.now()
-      // this.emit(path, fileObject)
+      this.emit('fileStateChanged', { path, state: fileObject })
     }
   }
 
@@ -95,7 +103,7 @@ class FileStateManager {
     if (fileObject) {
       fileObject.status = 'clean'
       fileObject.dirtyTimestamp = undefined
-      // this.emit(path, fileObject)
+      this.emit('fileStateChanged', { path, state: fileObject })
     }
   }
 
@@ -103,7 +111,6 @@ class FileStateManager {
     const fileObject = this.stateMap.get(path)
     if (fileObject) {
       fileObject.status = 'saving'
-      // this.emit(path, fileObject)
     }
   }
 
@@ -118,7 +125,7 @@ class FileStateManager {
     if (fileObject) {
       fileObject.status = 'error'
       fileObject.error = err
-      // this.emit(path, fileObject)
+      this.emit('fileStateChanged', { path, state: fileObject })
     }
   }
 }

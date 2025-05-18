@@ -1,6 +1,6 @@
 // VaultContext.tsx
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
-import VaultManager from '../lib/VaultManager/VaultManager'
+import VaultManager from './VaultManager'
 import { FileInfo, FileState } from 'electron/main/filesystem/types'
 
 // Create a singleton VaultManager
@@ -24,7 +24,7 @@ type VaultContextType = {
   saveFile: (path: string, content: string) => Promise<void>
   renameFile: (oldPath: string, newPath: string) => Promise<void>
   deleteFile: (path: string) => Promise<void>
-  createFile: (directory: string, name: string) => Promise<FileInfo | undefined>
+  createFile: (path: string, content: string) => Promise<void>
   
   // File states
   getFileState: (path: string) => FileState | undefined
@@ -65,22 +65,21 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
     
     initVault()
-    
     return () => {
-      // Clean up event listeners if needed
+      // Clean up event listeners
     }
   }, [])
   
   // Set up event listeners for VaultManager events
   const setupEventListeners = useCallback(() => {
     // Listen for directory toggle events
-    vaultManager.on('directoryToggled', ({ path, isExpanded }) => {
-      setExpandedDirectories(prev => {
-        const newMap = new Map(prev)
-        newMap.set(path, isExpanded)
-        return newMap
-      })
-    })
+    // vaultManager.on('directoryToggled', ({ path, isExpanded }) => {
+    //   setExpandedDirectories(prev => {
+    //     const newMap = new Map(prev)
+    //     newMap.set(path, isExpanded)
+    //     return newMap
+    //   })
+    // })
     
     // Listen for file selection events
     vaultManager.on('fileSelected', (path: string) => {
@@ -93,7 +92,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     })
     
     // Listen for file state changes
-    vaultManager.on('fileStateChanged', ([{ path, state }]) => {
+    vaultManager.on('fileStateChanged', ({ path, state }) => {
       setFileStates(prev => {
         const newMap = new Map(prev)
         newMap.set(path, state)
@@ -103,7 +102,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       // Track saving state
       if (state.status === 'saving') {
         setSavingFiles(prev => new Set(prev).add(path))
-      } else if (state.status !== 'saving') {
+      } else {
         setSavingFiles(prev => {
           const newSet = new Set(prev)
           newSet.delete(path)
@@ -113,10 +112,9 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     })
     
     // Listen for tree updates
-    vaultManager.on('treeUpdated', () => {
-      // Update file tree (assuming you have a getTree method)
-      const updatedTree = vaultManager.getFileTree()
-      setFileTree(updatedTree)
+    vaultManager.on('treeUpdated', (files: FileInfo[]) => {
+      console.log(`Treeupdated files are: `, files)
+      setFileTree(files)
     })
   }, [])
   
@@ -142,11 +140,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   )
   
   const createFile = useCallback(
-    async (directory: string, name: string) => {
-      // Implementation depends on your VaultManager
-      // This is a placeholder
-      return undefined
-    },
+    (path: string, initialContent: string = '') => vaultManager.createFile(path, initialContent),
     [isReady]
   )
   
