@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { FileInfoNode, FileInfoTree } from 'electron/main/filesystem/types'
 import { FixedSizeList } from 'react-window'
-import { isFileNodeDirectory } from '@shared/utils'
 import { YStack } from 'tamagui'
-import { useFileContext } from '@/contexts/FileContext'
+import { useVault } from '@/components/File/VaultManager/VaultContext'
 import FileItemRows from './FileItemRows'
+
+import { FileInfoNode, FileInfoTree } from 'electron/main/filesystem/types'
+import { isFileNodeDirectory } from '@shared/utils'
+import { useFileContext } from '@/contexts/FileContext'
 
 const getFilesAndIndentationsForSidebar = (
   files: FileInfoTree,
@@ -33,7 +35,15 @@ interface FileExplorerProps {
 const FileSidebar: React.FC<FileExplorerProps> = ({ lheight }) => {
   // const { state, actions } = useThemeManager()
   const [listHeight, setListHeight] = useState(lheight ?? window.innerHeight - 50)
-  const { vaultFilesTree, expandedDirectories, renameFile, setSelectedDirectory } = useFileContext()
+  // const { vaultFilesTree, expandedDirectories, renameFile, setSelectedDirectory } = useFileContext()
+  const {
+    fileTree,
+    expandedDirectories,
+    renameFile,
+    selectDirectory
+  } = useVault()
+
+  console.log(`FileTreE: `, fileTree)
 
   const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault()
@@ -50,7 +60,7 @@ const FileSidebar: React.FC<FileExplorerProps> = ({ lheight }) => {
   }
 
   const handleClick = () => {
-    setSelectedDirectory(null)
+    selectDirectory(null)
   }
 
   useEffect(() => {
@@ -63,8 +73,14 @@ const FileSidebar: React.FC<FileExplorerProps> = ({ lheight }) => {
     }
   }, [lheight])
 
-  const filesAndIndentations = getFilesAndIndentationsForSidebar(vaultFilesTree, expandedDirectories)
+  if (!fileTree) {
+    // TODO: Test this
+    return <YStack backgroundColor="$gray3" className="grow px-1 pt-2" />
+  }
+
+  const filesAndIndentations = getFilesAndIndentationsForSidebar(fileTree, expandedDirectories)
   const itemCount = filesAndIndentations.length
+
   return (
     <YStack className="h-full grow px-1 pt-2" backgroundColor="$gray3">
       <div onDrop={handleDrop} onDragOver={handleDragOver} onClick={handleClick}>

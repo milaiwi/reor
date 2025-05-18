@@ -4,6 +4,7 @@ import { flattenFileInfoTree } from "../../../lib/file";
 import EventEmitter from '../../../lib/blocknote/core/shared/EventEmitter'
 import { extractFileNameFromFilePath } from '@/lib/utils/file-utils';
 
+
 export type VaultEventTypes = {
   // File operations
   'fileOperationStarted': { type: string, path: string }
@@ -21,12 +22,11 @@ export type VaultEventTypes = {
 
   // Structure changes
   'directoryToggled': { path: string, isExpanded: boolean }
-  'treeUpdated': FileInfo[][]
   'directoryCreated': FileInfo
 
   // Selection events
   'fileSelected': string
-  'directorySelected': string
+  'directorySelected': string | null
 }
 
 class VaultManager extends EventEmitter<VaultEventTypes> {
@@ -35,6 +35,7 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
   private expandedDirectories: Map<string, boolean> = new Map()
   public selectedFilePath: string | null = null
   public selectedDirectoryPath: string | null = null
+  public fileTreeData: FileInfoTree = []
   
   /**
    * Defines if the VaultManager is ready to be used (initialized) or not.
@@ -48,12 +49,10 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
       ...f,
     }))
 
+    this.fileTreeData = files
     this.fileOperationsManager = new FileOperationsManager(flat)
     this.setupEventRelays()
     this.ready = true
-
-    // Emit tree is ready
-    this.emit('treeUpdated', flat)
   }
 
   /**
@@ -127,7 +126,7 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
     this.emit('fileSelected', path)
   }
 
-  selectDirectory(path: string): void {
+  selectDirectory(path: string | null): void {
     this.selectedDirectoryPath = path
     this.emit('directorySelected', path)
   }

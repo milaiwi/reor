@@ -1,7 +1,7 @@
 // VaultContext.tsx
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import VaultManager from './VaultManager'
-import { FileInfo, FileState } from 'electron/main/filesystem/types'
+import { FileInfo, FileInfoTree, FileState } from 'electron/main/filesystem/types'
 
 // Create a singleton VaultManager
 export const vaultManager = new VaultManager()
@@ -17,7 +17,7 @@ type VaultContextType = {
   currentFile: string | null
   currentDirectory: string | null
   selectFile: (path: string) => void
-  selectDirectory: (path: string) => void
+  selectDirectory: (path: string | null) => void
   
   // File operations
   readFile: (path: string) => Promise<string>
@@ -43,7 +43,7 @@ const VaultContext = createContext<VaultContextType | null>(null)
 export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isReady, setIsReady] = useState(false)
   const [error, setError] = useState<Error | null>(null)
-  const [fileTree, setFileTree] = useState<FileInfo[] | null>(null)
+  const [fileTree, setFileTree] = useState<FileInfoTree | null>(null)
   const [expandedDirectories, setExpandedDirectories] = useState<Map<string, boolean>>(new Map())
   const [currentFile, setCurrentFile] = useState<string | null>(null)
   const [currentDirectory, setCurrentDirectory] = useState<string | null>(null)
@@ -59,6 +59,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         
         // Set up event listeners after initialization
         setupEventListeners()
+        setFileTree(vaultManager.fileTreeData)
       } catch (err) {
         setError(err as Error)
       }
@@ -87,7 +88,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     })
     
     // Listen for directory selection events
-    vaultManager.on('directorySelected', (path: string) => {
+    vaultManager.on('directorySelected', (path: string | null) => {
       setCurrentDirectory(path)
     })
     
@@ -111,11 +112,11 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     })
     
-    // Listen for tree updates
-    vaultManager.on('treeUpdated', (files: FileInfo[]) => {
-      console.log(`Treeupdated files are: `, files)
-      setFileTree(files)
-    })
+    // // Listen for tree updates
+    // vaultManager.on('treeUpdated', ({ files }) => {
+    //   console.log(`Treeupdated files are: `, files)
+    //   setFileTree(files)
+    // })
   }, [])
   
   // File operation wrappers
@@ -164,7 +165,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   )
   
   const selectDirectory = useCallback(
-    (path: string) => {
+    (path: string | null) => {
       if (isReady) {
         vaultManager.selectDirectory(path)
       }
