@@ -2,8 +2,7 @@ import FileOperationsManager from '../FileOperationsManager/FileOperationsManage
 import { FileInfo, FileInfoTree, FileState } from "electron/main/filesystem/types";
 import { flattenFileInfoTree } from "../../../lib/file";
 import EventEmitter from '../../../lib/blocknote/core/shared/EventEmitter'
-
-import path from 'path'
+import { extractFileNameFromFilePath } from '@/lib/utils/file-utils';
 
 export type VaultEventTypes = {
   // File operations
@@ -87,7 +86,7 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
       this.emit('fileRenamed', {
         oldPath,
         newPath,
-        fileName: path.basename(newPath),
+        fileName: extractFileNameFromFilePath(newPath),
         error: error,
       })
     })

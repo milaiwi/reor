@@ -3,7 +3,7 @@ import FileStateManager from "../FileStateManager/FileStateManager"
 import FileOperationsQueue from "./FileOperationController"
 import { FileInfo, FileState } from "electron/main/filesystem/types"
 import EventEmitter from '../../../lib/blocknote/core/shared/EventEmitter'
-import path from 'path'
+import { extractFileNameFromFilePath } from "@/lib/utils/file-utils"
 
 // Define event types for FileOperationsManager
 export type FileOperationsEventTypes = {
@@ -98,7 +98,7 @@ class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
       return
 
     this.emit('fileRenameStarted', { oldPath, newPath })
-    const fileName = path.basename(newPath)
+    const fileName = extractFileNameFromFilePath(newPath)
     try {
       await Promise.all([
         this.queue.waitFor(oldPath),
@@ -111,7 +111,7 @@ class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
         this.emit('fileRenameCompleted', { oldPath, newPath, fileName })
       })
     } catch (err: any) {
-      const fileName = path.basename(newPath)
+      const fileName = extractFileNameFromFilePath(newPath)
       this.emit('fileRenameCompleted', { oldPath, newPath, fileName, error: err as Error})
       throw err
     }
