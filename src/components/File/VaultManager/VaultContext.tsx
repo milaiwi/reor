@@ -44,7 +44,7 @@ type VaultContextType = {
   
   // File operations
   readFile: (path: string) => Promise<string>
-  saveFile: (path: string, content: string) => Promise<void>
+  saveFile: (path: string, content: string) => void
   renameFile: (oldPath: string, newPath: string) => Promise<void>
   deleteFile: (path: string) => Promise<void>
   createFile: (path: string, content: string) => Promise<FileInfo>
@@ -111,9 +111,31 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     values: navigationHistory,
   } = useOrderedSet()
 
+  // Save editor content to disk
+  const saveEditorContentToDisk = async () => {
+    console.log(`CurrentFile`, currentFile)
+    if (currentFile && needToWriteEditorContentToDisk && editor) {
+      const blocks = editor.topLevelBlocks
+      const markdownContent = await editor.blocksToMarkdown(blocks)
+
+      if (markdownContent !== null) {
+        await vaultManager.saveFile(currentFile, markdownContent)
+        setNeedToWriteEditorContentToDisk(false)
+      }
+    }
+  }
+
+  const saveCurrentlyOpenedFile = async () => {
+    console.log(`Inside saveCurrentlyOpenedFile`)
+    await saveEditorContentToDisk()
+  }
+
   // Initialize the editor
   const editor = useBlockNote<typeof hmBlockSchema>({
     onEditorContentChange() {
+      if (currentFile && !isDirty(currentFile)) {
+        markDirty(currentFile)
+      }
       setNeedToWriteEditorContentToDisk(true)
       setNeedToIndexEditorContent(true)
     },
@@ -124,6 +146,9 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         openOrCreateFile(path)
       },
     },
+    fileOperations: {
+      saveCurrentlyOpenedFile: saveCurrentlyOpenedFile
+    }
   })
 
   // Debounced editor content for auto-save
@@ -276,7 +301,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     (path: string) => vaultManager.readFile(path),
     [isReady]
   )
-  
+
   const saveFile = useCallback(
     (path: string, content: string) => vaultManager.saveFile(path, content),
     [isReady]
@@ -336,6 +361,12 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     [fileStates]
   )
   
+  const markDirty = useCallback(
+    (path: string) =>
+      vaultManager.markDirty(path),
+    [isReady]
+  )
+
   const isDirty = useCallback(
     (path: string) => {
       const state = fileStates.get(path)
@@ -400,23 +431,6 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   ): Promise<void> => {
     const fileObject = await createFile(filePath, optionalContentToWriteOnCreate)
     await loadFileIntoEditor(fileObject.path, startingPos ?? undefined)
-  }
-
-  // Save editor content to disk
-  const saveEditorContentToDisk = async () => {
-    if (currentFile && needToWriteEditorContentToDisk && editor) {
-      const blocks = editor.topLevelBlocks
-      const markdownContent = await editor.blocksToMarkdown(blocks)
-
-      if (markdownContent !== null) {
-        await vaultManager.saveFile(currentFile, markdownContent)
-        setNeedToWriteEditorContentToDisk(false)
-      }
-    }
-  }
-
-  const saveCurrentlyOpenedFile = async () => {
-    await saveEditorContentToDisk()
   }
 
   const handleNewFileRenaming = async (filePath: string) => {

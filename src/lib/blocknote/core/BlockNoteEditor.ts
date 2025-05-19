@@ -39,6 +39,10 @@ import '@/components/Editor/editor.css'
 import LinkToolbarProsemirrorPlugin from './extensions/LinkToolbar/LinkToolbarPlugin'
 import { removeFileExtension } from '@/lib/file'
 
+export interface FileOperationsForBlockNote {
+  saveCurrentlyOpenedFile: () => void,
+}
+
 export type BlockNoteEditorOptions<BSchema extends BlockSchema> = {
   // TODO: Figure out if enableBlockNoteExtensions/disableHistoryExtension are needed and document them.
   enableBlockNoteExtensions: boolean
@@ -130,6 +134,7 @@ export type BlockNoteEditorOptions<BSchema extends BlockSchema> = {
   // isEditable
   isEditable: boolean
   linkExtensionOptions?: any
+  fileOperations?: FileOperationsForBlockNote
 }
 
 const blockNoteTipTapOptions = {
@@ -168,6 +173,7 @@ export class BlockNoteEditor<BSchema extends BlockSchema = HMBlockSchema> {
       blockSchema: BSchema
       linkExtensionOptions?: any
       inlineEmbedOptions?: any
+      fileOperations?: FileOperationsForBlockNote
     } = {
       defaultStyles: true,
       blockSchema: options.blockSchema || (hmBlockSchema as any),
@@ -191,6 +197,7 @@ export class BlockNoteEditor<BSchema extends BlockSchema = HMBlockSchema> {
       editable: newOptions.editable,
       linkExtensionOptions: newOptions.linkExtensionOptions,
       inlineEmbedOptions: newOptions.inlineEmbedOptions,
+      fileOperations: newOptions.fileOperations,
     })
 
     const blockNoteUIExtension = Extension.create({

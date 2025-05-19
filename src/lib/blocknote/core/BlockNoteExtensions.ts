@@ -25,9 +25,8 @@ import SearchAndReplace from '@/components/Editor/Search/SearchAndReplaceExtensi
 import TextAlignmentExtension from './extensions/TextAlignment/TextAlignmentExtension'
 import { BlockNoteEditor } from './BlockNoteEditor'
 import LocalMediaPastePlugin from './extensions/Pasting/local-media-paste-plugin'
-// import { RichTextLink } from '@/components/Editor/RichTextLink'
+import { FileOperationsForBlockNote } from './BlockNoteEditor'
 import createLinkExtension from '@/components/Editor/RichTextLink'
-
 /**
  * Get all the Tiptap extensions BlockNote is configured with by default
  */
@@ -38,7 +37,9 @@ const getBlockNoteExtensions = <BSchema extends HMBlockSchema>(opts: {
   blockSchema: BSchema
   linkExtensionOptions: any
   inlineEmbedOptions: any
+  fileOperations?: FileOperationsForBlockNote
 }) => {
+  console.log(`File operations: `, opts.fileOperations)
   const ret: Extensions = [
     // createInlineEmbedNode(opts.editor),
     extensions.ClipboardTextSerializer,
@@ -104,6 +105,7 @@ const getBlockNoteExtensions = <BSchema extends HMBlockSchema>(opts: {
     TrailingNode,
     BlockContainer.configure({
       domAttributes: opts.domAttributes,
+      saveCurrentlyOpenedFile: opts.fileOperations?.saveCurrentlyOpenedFile,
     }),
     SearchAndReplace,
     // debugPlugin,

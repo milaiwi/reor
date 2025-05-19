@@ -230,7 +230,8 @@ declare module '@tiptap/core' {
  * The main "Block node" documents consist of
  */
 export const BlockContainer = Node.create<{
-  domAttributes?: BlockNoteDOMAttributes
+  domAttributes?: BlockNoteDOMAttributes,
+  saveCurrentlyOpenedFile?: any,
 }>({
   name: 'blockContainer',
   group: 'blockContainer',
@@ -1155,6 +1156,7 @@ export const BlockContainer = Node.create<{
       // Always returning true for tab key presses ensures they're not captured by the browser. Otherwise, they blur the
       // editor since the browser will try to use tab for keyboard navigation.
       Tab: handleTab,
+      'Mod-s': this.options.saveCurrentlyOpenedFile,
       'Shift-Tab': handleShiftTab,
       'Mod-Alt-0': () => this.editor.commands.BNCreateBlock(this.editor.state.selection.anchor + 2),
       'Mod-Alt-1': () =>

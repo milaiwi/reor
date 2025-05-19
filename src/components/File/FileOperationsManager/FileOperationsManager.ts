@@ -62,6 +62,7 @@ class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
   }
 
   async writeFile(path: string, content: string): Promise<void> {
+    console.log(`is dirty: ${this.state.isDirty(path)}`)
     if (!this.state.isDirty(path)) // Matches with disk file, no need to write!
       return
 
@@ -90,6 +91,7 @@ class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
    * @param content the content of the file to save
    */
   async saveFile(path: string, content: string): Promise<void> {
+    console.log(`Writing ${content} to ${path}`)
     this.writeFile(path, content)
   }
 
@@ -183,6 +185,10 @@ class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
 
   getFileAtPath(path: string): FileState | undefined {
     return this.state.getFileState(path)
+  }
+
+  markDirty(path: string): void {
+    return this.state.markDirty(path)
   }
 }
 

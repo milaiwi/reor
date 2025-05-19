@@ -177,6 +177,7 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
   async saveFile(path: string, content: string): Promise<void> {
     if (!this.ready)
       throw new Error('VaultManager is not ready yet')
+    console.log(`Inside vault savefile!`)
     return this.fileOperationsManager.saveFile(path, content)
   }
 
@@ -229,6 +230,12 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
     if (!this.ready)
       throw new Error('Vault manager is not ready yet')
     return this.fileOperationsManager.getFileAtPath(path)
+  }
+
+  markDirty(path: string) {
+    if (!this.ready)
+      throw new Error('Vault manager is not ready yet')
+    return this.fileOperationsManager.markDirty(path)
   }
 }
 
