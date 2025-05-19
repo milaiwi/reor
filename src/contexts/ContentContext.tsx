@@ -3,7 +3,7 @@ import posthog from 'posthog-js'
 import { useChatContext } from './ChatContext'
 import { useVault } from '@/components/File/VaultManager/VaultContext'
 import { getNextAvailableFileNameGivenBaseName } from '@/lib/file'
-import { getDirname } from '@/lib/utils'
+import { getDirname, joinPaths } from '@/lib/utils'
 
 interface ContentContextType {
   showEditor: boolean
@@ -45,6 +45,7 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
     addToNavigationHistory,
     currentDirectory,
     getFilesInDirectory,
+    vaultDirectory
   } = useVault()
 
   const openContent = React.useCallback(
@@ -63,6 +64,7 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
         // It's a chat, open it
         openNewChat(pathOrChatID)
       } else {
+        console.log(`Opening in editor`)
         // It's a file, open it in the editor
         setShowEditor(true)
         openOrCreateFile(pathOrChatID, optionalContentToWriteOnCreate, startingPos)
@@ -85,7 +87,7 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
       const directoryToMakeFileIn =
         parentDirectory || 
         currentDirectory || 
-        await window.electronStore.getVaultDirectoryForWindow()
+        vaultDirectory
 
       // Get files in the selected directory
       const filesInDirectory = parentDirectory ?
@@ -99,7 +101,8 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
       )
 
       // Create the full path and open the content
-      const finalPath = await window.path.join(directoryToMakeFileIn, fileName)
+      const finalPath = joinPaths(directoryToMakeFileIn, fileName)
+      console.log(`Final path to open is: ${finalPath}`)
       openContent(finalPath, `## `)
       
       // Analytics

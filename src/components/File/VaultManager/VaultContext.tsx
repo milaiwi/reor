@@ -14,7 +14,7 @@ import useOrderedSet from '@/lib/hooks/use-ordered-set'
 import welcomeNote from '@/lib/welcome-note'
 import { useBlockNote, BlockNoteEditor } from '@/lib/blocknote'
 import { hmBlockSchema } from '@/components/Editor/schema'
-import { setGroupTypes } from '@/lib/utils'
+import { arePathsEqual, setGroupTypes } from '@/lib/utils'
 import useSemanticCache from '@/lib/utils/editor-state'
 import slashMenuItems from '@/components/Editor/slash-menu-items'
 import { getSimilarFiles } from '@/lib/semanticService'
@@ -31,7 +31,7 @@ type VaultContextType = {
   // File tree and navigation
   fileTree: FileInfoTree
   flattenedFiles: FileInfo[]
-  vaultDirectory: string | undefined
+  vaultDirectory: string
   expandedDirectories: Map<string, boolean>
   toggleDirectory: (path: string) => void
   getFilesInDirectory: (path: string) => FileInfo[]
@@ -45,8 +45,8 @@ type VaultContextType = {
   // File operations
   readFile: (path: string) => Promise<string>
   saveFile: (path: string, content: string) => void
-  renameFile: (oldPath: string, newPath: string) => Promise<void>
-  deleteFile: (path: string) => Promise<void>
+  renameFile: (oldPath: string, newPath: string) => void
+  deleteFile: (path: string) => void
   createFile: (path: string, content: string) => Promise<FileInfo>
   
   // Advanced file operations
@@ -88,7 +88,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [error, setError] = useState<Error | null>(null)
   const [fileTree, setFileTree] = useState<FileInfoTree>([])
   const [flattenedFiles, setFlattenedFiles] = useState<FileInfo[]>([])
-  const [vaultDirectory, setVaultDirectory] = useState<string | undefined>(undefined)
+  const [vaultDirectory, setVaultDirectory] = useState<string>('')
   const [expandedDirectories, setExpandedDirectories] = useState<Map<string, boolean>>(new Map())
   const [currentFile, setCurrentFile] = useState<string | null>(null)
   const [currentDirectory, setCurrentDirectory] = useState<string | null>(null)
@@ -189,13 +189,20 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Set up event listeners for VaultManager events
   const setupEventListeners = useCallback(() => {
     // Listen for directory toggle events
-    // vaultManager.on('directoryToggled', ({ path, isExpanded }) => {
-    //   setExpandedDirectories(prev => {
-    //     const newMap = new Map(prev)
-    //     newMap.set(path, isExpanded)
-    //     return newMap
-    //   })
-    // })
+    vaultManager.on('directoryToggled', ({ path, isExpanded }) => {
+      setExpandedDirectories(prev => {
+        const newMap = new Map(prev)
+        newMap.set(path, isExpanded)
+        console.log(`Updated expandedDirectories, ${path} = ${isExpanded}`);
+        return newMap
+      })
+    })
+
+    vaultManager.on('treeUpdated', ({ tree, flattenedFiles }) => {
+      console.log(`Tree updated event received`, tree)
+      setFileTree(tree)
+      setFlattenedFiles(flattenedFiles)
+    })
     
     // Listen for file selection events
     vaultManager.on('fileSelected', (path: string) => {
@@ -229,6 +236,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     
     // Listen for file delete events
     vaultManager.on('fileDeleted', ({ path }) => {
+      console.log(`File got deleted!`)
       if (currentFile === path) {
         setCurrentFile(null)
         editor?.replaceBlocks(editor.topLevelBlocks, [])
@@ -236,14 +244,14 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     })
 
     // Listen for file rename events
-    vaultManager.on('fileRenamed', ({ oldPath, newPath, fileName }) => {
-      if (currentFile === oldPath) {
-        setCurrentFile(newPath)
-      }
+    // vaultManager.on('fileRenamed', ({ oldPath, newPath, fileName }) => {
+    //   if (currentFile === oldPath) {
+    //     setCurrentFile(newPath)
+    //   }
 
-      removeFromNavigationHistory(oldPath)
-      addToNavigationHistory(newPath)
-    })
+    //   removeFromNavigationHistory(oldPath)
+    //   addToNavigationHistory(newPath)
+    // })
   }, [
     currentFile,
     editor,
@@ -312,6 +320,11 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }
 
+  const openEmptyPage = () => {
+    setCurrentFile(null)
+    editor.setCurrentFilePath(null)
+  }
+
   // File operation wrappers
   const readFile = useCallback(
     (path: string) => vaultManager.readFile(path),
@@ -324,12 +337,31 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   )
   
   const renameFile = useCallback(
-    (oldPath: string, newPath: string) => vaultManager.renameFile(oldPath, newPath),
+    (oldPath: string, newPath: string) => {
+      vaultManager.renameFile(oldPath, newPath)
+      removeFromNavigationHistory(oldPath)
+      addToNavigationHistory(newPath)
+
+      if (currentFile === oldPath) {
+        console.log(`Rename is old path!`)
+        setCurrentFile(newPath)
+      }
+    },
     [isReady]
   )
   
   const deleteFile = useCallback(
-    (path: string) => vaultManager.deleteFile(path),
+    (path: string) => {
+      vaultManager.deleteFile(path)
+      if (editor.currentFilePath && arePathsEqual(editor.currentFilePath, path)) {
+        if (navigationHistory.length > 0) {
+          const newIndex = navigationHistory.length - 1
+          openOrCreateFile(navigationHistory[newIndex], undefined)
+        } else {
+          openEmptyPage()
+        }
+      }
+    },
     [isReady]
   )
   
@@ -378,12 +410,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   )
   
   const markDirty = useCallback(
-    (path: string) => {
-      console.log(`Attempting to mark file dirty: ${path}`);
-      const result = vaultManager.markDirty(path);
-      console.log(`Result of markDirty: ${result}`);
-      return result;
-    },
+    (path: string) => vaultManager.markDirty(path),
     [isReady]
   );
 
@@ -449,8 +476,16 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     optionalContentToWriteOnCreate?: string,
     startingPos?: number,
   ): Promise<void> => {
-    const fileObject = await createFile(filePath, optionalContentToWriteOnCreate)
-    await loadFileIntoEditor(fileObject.path, startingPos ?? undefined)
+    console.log(`Inside openOrCreateFile at path: ${filePath}`)
+    let fileObject = vaultManager.getFileAtPath(filePath)
+    console.log(`File object: `, fileObject)
+    if (!fileObject) {
+      const newFileObject = await createFile(filePath, optionalContentToWriteOnCreate)
+      console.log(`New file object: `, newFileObject)
+      await loadFileIntoEditor(newFileObject.path, startingPos ?? undefined)
+    } else {
+      await loadFileIntoEditor(fileObject.file.path, startingPos ?? undefined)
+    }
   }
 
   const handleNewFileRenaming = async (filePath: string) => {

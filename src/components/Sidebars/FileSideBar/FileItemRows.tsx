@@ -9,6 +9,7 @@ import { removeFileExtension } from '@/lib/file'
 import { useContentContext } from '@/contexts/ContentContext'
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/ui/context-menu'
 import NewDirectoryComponent from '@/components/File/NewDirectory'
+import { getDirname } from '@/lib/utils'
 
 const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data }) => {
   const { file, indentation } = data.filesAndIndentations[index]
@@ -114,7 +115,7 @@ const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data })
   const renderContextMenuItems = () => (
     <>
       <ContextMenuItem
-        onClick={async () => createUntitledNote(isDirectory ? file.path : await window.path.dirname(file.path))}
+        onClick={async () => createUntitledNote(isDirectory ? file.path : getDirname(file.path))}
       >
         New file
       </ContextMenuItem>

@@ -6,6 +6,7 @@ import FileItemRows from './FileItemRows'
 
 import { FileInfoNode, FileInfoTree } from 'electron/main/filesystem/types'
 import { isFileNodeDirectory } from '@shared/utils'
+import { getPathBasename, joinPaths } from '@/lib/utils'
 
 const getFilesAndIndentationsForSidebar = (
   files: FileInfoTree,
@@ -32,14 +33,12 @@ interface FileExplorerProps {
 }
 
 const FileSidebar: React.FC<FileExplorerProps> = ({ lheight }) => {
-  // const { state, actions } = useThemeManager()
   const [listHeight, setListHeight] = useState(lheight ?? window.innerHeight - 50)
-  // const { vaultFilesTree, expandedDirectories, renameFile, setSelectedDirectory } = useFileContext()
   const {
     fileTree,
     expandedDirectories,
     renameFile,
-    selectDirectory
+    selectDirectory,
   } = useVault()
 
   const handleDrop = async (e: React.DragEvent) => {
@@ -47,7 +46,7 @@ const FileSidebar: React.FC<FileExplorerProps> = ({ lheight }) => {
     e.stopPropagation()
     const sourcePath = e.dataTransfer.getData('text/plain')
     const destinationDirectory = await window.electronStore.getVaultDirectoryForWindow()
-    const destinationPath = await window.path.join(destinationDirectory, await window.path.basename(sourcePath))
+    const destinationPath = joinPaths(destinationDirectory, getPathBasename(sourcePath))
     renameFile(sourcePath, destinationPath)
   }
 

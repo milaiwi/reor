@@ -1,53 +1,158 @@
-import path from 'path-browserify'
+import path from 'path-browserify';
 
-export function extractFileNameFromFilePath(filePath: string) {
-  const match = filePath.match(/[^\\/]+$/);
-  return match ? match[0] : '';
+/* Normalizes paths according to platform conventions:
+* - Windows: uses backslashes
+* - macOS/Linux: uses forward slashes
+* - Also resolves '.', '..', and duplicate slashes
+*/
+export function normalizePath(p: string): string {
+ if (!p) return p
+
+ const platform = getPlatform()
+
+ // Step 1: Normalize path (removes '.', '..', duplicate separators)
+ let normalized = path.normalize(p.replace(/\\/g, '/')) // path-browserify uses POSIX normalization
+
+ // Step 2: Convert to correct slash type
+ if (platform === 'windows') {
+   // Convert forward slashes to backslashes
+   normalized = normalized.replace(/\//g, '\\')
+
+   // Normalize drive letter to uppercase
+   const driveLetterMatch = normalized.match(/^([a-z]):\\/i)
+   if (driveLetterMatch) {
+     normalized = driveLetterMatch[1].toUpperCase() + normalized.slice(1)
+   }
+ }
+
+ return normalized
 }
 
+/**
+ * Adds a default extension if the filename has no Markdown extension.
+ */
 export function addExtensionIfNoExtensionPresent(
   fileName: string,
-  defaultExtension: string = 'md',
-) {
-  const extension = path.extname(fileName).toLowerCase()
+  defaultExtension: string = '.md'
+): string {
+  const extension = path.extname(fileName).toLowerCase();
   if (['.md', '.markdown', '.mdown', '.mkdn', '.mkd'].includes(extension)) {
-    return fileName
+    return fileName;
   }
-  return `${fileName}${defaultExtension}`
+  return `${fileName}${defaultExtension.startsWith('.') ? defaultExtension : '.' + defaultExtension}`;
 }
 
-export function extractExtensionName(filePath: string) {
-  return path.extname(filePath)
+/**
+ * Extracts the file extension from a path.
+ */
+export function extractExtensionName(filePath: string): string {
+  return path.extname(normalizePath(filePath));
 }
 
-export function extractAbsolutePath(filePath: string) {
-  return path.resolve(filePath)
+/**
+ * Returns an absolute normalized path.
+ */
+export function extractAbsolutePath(filePath: string): string {
+  return normalizePath(path.resolve(normalizePath(filePath)));
 }
 
+/**
+ * Checks if a path is absolute.
+ */
 export function isPathAbsolute(filePath: string): boolean {
-  // Windows absolute path (e.g., C:\...)
-  if (/^[a-zA-Z]:[\\/]/.test(filePath)) return true
-
-  // POSIX absolute path (e.g., /home/user)
-  return filePath.startsWith('/')
+  const normalized = normalizePath(filePath);
+  // Windows drive letter or UNC path or POSIX root
+  return /^[A-Za-z]:\//.test(normalized) || normalized.startsWith('//') || normalized.startsWith('/');
 }
 
-export function getRelativePath(from: string, to: string) {
-  return path.relative(from, to)
+/**
+ * Returns the relative path from one file to another.
+ */
+export function getRelativePath(from: string, to: string): string {
+  return normalizePath(path.relative(normalizePath(from), normalizePath(to)));
 }
 
-export function getDirname(filePath: string) {
-  return path.dirname(filePath)
+/**
+ * Gets the parent directory of a file.
+ */
+export function getDirname(filePath: string): string {
+  return normalizePath(path.dirname(normalizePath(filePath)));
 }
 
-export function joinPaths(...args: any) {
-  return path.join(...args)
+/**
+ * Joins multiple paths together, ensuring slash normalization.
+ */
+export function joinPaths(...args: string[]): string {
+  const normalizedArgs = args.map(arg => arg ? normalizePath(arg) : arg);
+  return normalizePath(path.join(...normalizedArgs));
 }
 
-export function getPlatformSpecificSep() {
-  return path.sep
+/**
+ * Returns the platform-specific path separator (always POSIX in path-browserify).
+ * Note: In the browser, this is always '/' regardless of platform.
+ */
+export function getPlatformSpecificSep(): string {
+  return '/';
 }
 
-export function getPathBasename(filePath: string) {
-  return path.basename(filePath)
+/**
+ * Returns the last part of a path (the filename or last directory).
+ */
+export function getPathBasename(filePath: string): string {
+  return path.basename(normalizePath(filePath));
+}
+
+/**
+ * 
+ * @returns Returns the platform user is on
+ */
+export function getPlatform(): 'windows' | 'macos' | 'linux' | 'unknown' {
+  const ua = navigator.userAgent.toLowerCase()
+
+  if (ua.includes('win')) return 'windows'
+  if (ua.includes('mac')) return 'macos'
+  if (ua.includes('linux')) return 'linux'
+
+  return 'unknown'
+}
+
+/**
+ * Compares two paths in a case-sensitive or case-insensitive manner depending on platform.
+ * Defaults to smart detection.
+ */
+export function arePathsEqual(a: string, b: string, forceCase: boolean = false): boolean {
+  const normalizedA = normalizePath(a);
+  const normalizedB = normalizePath(b);
+  
+  // Force case-sensitive comparison if requested
+  if (forceCase) {
+    return normalizedA === normalizedB;
+  }
+
+  // Case-sensitive for Linux and other platforms
+  return normalizedA === normalizedB;
+}
+
+/**
+ * Converts a file path to a file:// URL
+ */
+export function pathToFileURL(p: string): string {
+  const normalized = normalizePath(p);
+  
+  // Handle Windows drive letters specially
+  if (/^[A-Z]:\//.test(normalized)) {
+    return `file:///${normalized}`;
+  }
+  
+  // Standard path
+  return `file://${normalized.startsWith('/') ? normalized : '/' + normalized}`;
+}
+
+/**
+ * Gets the volume name from a path (e.g., "C:" on Windows, or empty string on POSIX)
+ */
+export function getVolume(p: string): string {
+  const normalized = normalizePath(p);
+  const match = normalized.match(/^([A-Za-z]:)\//);
+  return match ? match[1] : '';
 }

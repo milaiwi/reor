@@ -3,7 +3,6 @@ import FileStateManager from "../FileStateManager/FileStateManager"
 import FileOperationsQueue from "./FileOperationController"
 import { FileInfo, FileState } from "electron/main/filesystem/types"
 import EventEmitter from '../../../lib/blocknote/core/shared/EventEmitter'
-import { extractFileNameFromFilePath } from "@/lib/utils/file-util/file-utils"
 
 // Define event types for FileOperationsManager
 export type FileOperationsEventTypes = {
@@ -48,16 +47,16 @@ class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
   }
 
   async readFile(path: string): Promise<string> {
-    this.emit('fileReadStarted', path)
+    // this.emit('fileReadStarted', path)
 
     try{
       await this.queue.waitFor(path)
       const content = await this.service.readFile(path)
-      this.emit('fileReadCompleted', { path, content: content })
+      // this.emit('fileReadCompleted', { path, content: content })
       return content
     } catch (err: any) {
-      this.emit('fileReadCompleted', { path, error: err as Error })
-      throw err
+      // this.emit('fileReadCompleted', { path, error: err as Error })
+      throw new Error(err)
     }
   }
 
@@ -66,21 +65,21 @@ class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
     if (!this.state.isDirty(path)) // Matches with disk file, no need to write!
       return
 
-    this.emit('fileWriteStarted', path)
+    // this.emit('fileWriteStarted', path)
 
     try {
       await this.queue.enqueue(path, async () => {
         this.state.markSaving(path)
         try {
           await this.service.writeFile(path, content)
-          this.emit('fileWriteCompleted', { path })
+          // this.emit('fileWriteCompleted', { path })
         } finally {
           this.state.markClean(path)
         }
       })
     } catch (err: any) {
-      this.emit('fileWriteCompleted', { path, error: err as Error})
-      throw err
+      // this.emit('fileWriteCompleted', { path, error: err as Error})
+      throw new Error(err)
     }
   }
 
@@ -100,7 +99,6 @@ class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
       return
 
     this.emit('fileRenameStarted', { oldPath, newPath })
-    const fileName = extractFileNameFromFilePath(newPath)
     try {
       await Promise.all([
         this.queue.waitFor(oldPath),
@@ -110,16 +108,14 @@ class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
       await this.queue.enqueue(oldPath, async () => {
         await this.service.renameFile(oldPath, newPath)
         this.state.updatePath(oldPath, newPath)
-        this.emit('fileRenameCompleted', { oldPath, newPath, fileName })
       })
     } catch (err: any) {
-      const fileName = extractFileNameFromFilePath(newPath)
-      this.emit('fileRenameCompleted', { oldPath, newPath, fileName, error: err as Error})
-      throw err
+      throw new Error
     }
   }
 
   async deleteFile(path: string): Promise<void> {
+    console.log(`Deleting file at path: ${path}`)
     this.emit('fileDeleteStarted', path)
 
     try {
@@ -136,17 +132,17 @@ class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
   }
 
   async createFile(path: string, content: string = ''): Promise<FileInfo | undefined> {
-    this.emit('fileCreateStarted', path)
-
     try {
       const fileObject = await this.queue.enqueue(path, async () => {
-        return await this.service.createFile(path, content)
+        const completedObject = await this.service.createFile(path, content)
+        if (!completedObject)
+          throw new Error("Failed to create new file")
+        this.state.registerFile(path, completedObject)
+        return completedObject
       })
 
-      this.emit('fileCreateCompleted', { path })
       return fileObject
     } catch (err) {
-      this.emit('fileCreateCompleted', { path, error: err as Error})
       return undefined
     }
   }

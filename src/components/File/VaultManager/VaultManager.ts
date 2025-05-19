@@ -2,7 +2,7 @@ import FileOperationsManager from '../FileOperationsManager/FileOperationsManage
 import { FileInfo, FileInfoTree, FileState } from "electron/main/filesystem/types";
 import { flattenFileInfoTree, getInvalidCharacterInFilePath } from "../../../lib/file";
 import EventEmitter from '../../../lib/blocknote/core/shared/EventEmitter'
-import { addExtensionIfNoExtensionPresent, extractFileNameFromFilePath, getDirname, isPathAbsolute, joinPaths } from '@/lib/utils/file-util/file-utils';
+import { addExtensionIfNoExtensionPresent, getDirname, isPathAbsolute, joinPaths, normalizePath } from '@/lib/utils/file-util/file-utils';
 
 
 export type VaultEventTypes = {
@@ -53,7 +53,9 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
     this.setupEventRelays()
     this.ready = true
 
-    this.vaultDirectory = await window.electronStore.getVaultDirectoryForWindow()
+    const rawVaultDirectory = await window.electronStore.getVaultDirectoryForWindow()
+    this.vaultDirectory = normalizePath(rawVaultDirectory)
+    console.log(`This vault directory: `, this.vaultDirectory)
   }
 
   /**
@@ -65,31 +67,21 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
       this.emit('fileOperationStarted', { type: 'read', path })
     })
 
-    this.fileOperationsManager.on('fileReadCompleted', ({ path, content, error }) => {
-      this.emit('fileOperationCompleted', { type: 'read', path, error: error })
-      this.emit('fileContentLoaded', { path, content: content, error: error })
-    })
+    // this.fileOperationsManager.on('fileReadCompleted', ({ path, content, error }) => {
+    //   this.emit('fileOperationCompleted', { type: 'read', path, error: error })
+    //   this.emit('fileContentLoaded', { path, content: content, error: error })
+    // })
 
     // File write events
-    this.fileOperationsManager.on('fileWriteStarted', (path) => {
-      this.emit('fileOperationStarted', { type: 'write', path })
-    })
+    // this.fileOperationsManager.on('fileWriteStarted', (path) => {
+    //   this.emit('fileOperationStarted', { type: 'write', path })
+    // })
 
-    this.fileOperationsManager.on('fileWriteCompleted', ({ path, error}) => {
-      this.emit('fileOperationCompleted', { type: 'write', path, error: error })
-      this.emit('fileSaved', path)
-      this.emit('fileBecameClean', path)
-    })
-
-    // File rename events
-    this.fileOperationsManager.on('fileRenameCompleted', ({ oldPath, newPath, error }) => {
-      this.emit('fileRenamed', {
-        oldPath,
-        newPath,
-        fileName: extractFileNameFromFilePath(newPath),
-        error: error,
-      })
-    })
+    // this.fileOperationsManager.on('fileWriteCompleted', ({ path, error}) => {
+    //   this.emit('fileOperationCompleted', { type: 'write', path, error: error })
+    //   this.emit('fileSaved', path)
+    //   this.emit('fileBecameClean', path)
+    // })
 
     // File delete events
     this.fileOperationsManager.on('fileDeleteCompleted', ({ path, error }) => {
@@ -151,10 +143,10 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
   getFilesInDirectory(directoryPath: string): FileInfo[] {
     if (!this.ready) throw new Error('VaultManager is not ready yet')
     
-      return this.flattenedFiles.filter(file => {
-        const fileDir = getDirname(file.path)
-        return fileDir === directoryPath
-      })
+    return this.flattenedFiles.filter(file => {
+      const fileDir = getDirname(file.path)
+      return fileDir === directoryPath
+    })
   }
 
   fileExists(path: string): boolean {
@@ -209,8 +201,9 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
     const absolutePath = isAbsolutePath
       ? filePathWithExtension
       : joinPaths(this.vaultDirectory, filePathWithExtension)
-    
+     
     const fileState = this.getFileAtPath(absolutePath)
+    console.log(`FileState: ${fileState}`)
     if (!fileState) {
       const newFile = await this.fileOperationsManager.createFile(absolutePath, initialContent)
       if (!newFile) throw new Error(`Could not create file ${filePathWithExtension}`)
@@ -229,6 +222,7 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
   getFileAtPath(path: string): FileState | undefined {
     if (!this.ready)
       throw new Error('Vault manager is not ready yet')
+    console.log(`Path: `, path)
     return this.fileOperationsManager.getFileAtPath(path)
   }
 

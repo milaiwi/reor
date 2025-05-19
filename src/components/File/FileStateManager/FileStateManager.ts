@@ -23,7 +23,6 @@ class FileStateManager extends EventEmitter<FileStateEventTypes> {
         } satisfies FileState,
       ])
     )
-    console.log(`This Statemap: `, this.stateMap)
   }
 
   /**
@@ -32,6 +31,7 @@ class FileStateManager extends EventEmitter<FileStateEventTypes> {
    * @returns the FileState corresponding to the filePath
    */
   getFileState(path: string) {
+    console.log(`Getting at path: ${path}`)
     return this.stateMap.get(path)
   }
 
@@ -68,9 +68,18 @@ class FileStateManager extends EventEmitter<FileStateEventTypes> {
    * @param path the path to the file
    * @param state the new state to register
    */
-  registerFile(path: string, state: FileState) {
-    if (!this.stateMap.get(path))
-      this.stateMap.set(path, state)
+  registerFile(path: string, file: FileInfo) {
+    console.log(`StateMap:`, this.stateMap)
+    if (!this.stateMap.get(path)) {
+      const fileStateObject = {       
+        file: file,
+        status: 'clean',
+        error: undefined,
+        dirtyTimestamp: undefined
+      } as FileState
+      console.log(`Updating path: ${path}`)
+      this.stateMap.set(path, fileStateObject)
+    }
   }
 
   /**
