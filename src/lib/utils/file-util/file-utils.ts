@@ -24,8 +24,12 @@ export function extractAbsolutePath(filePath: string) {
   return path.resolve(filePath)
 }
 
-export function isPathAbsolute(filePath: string) {
-  return path.isAbsolute(filePath)
+export function isPathAbsolute(filePath: string): boolean {
+  // Windows absolute path (e.g., C:\...)
+  if (/^[a-zA-Z]:[\\/]/.test(filePath)) return true
+
+  // POSIX absolute path (e.g., /home/user)
+  return filePath.startsWith('/')
 }
 
 export function getRelativePath(from: string, to: string) {

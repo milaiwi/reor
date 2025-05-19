@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { YStack } from 'tamagui'
 import InEditorBacklinkSuggestionsDisplay from './BacklinkSuggestionsDisplay'
-import { useFileContext } from '@/contexts/FileContext'
+import { useVault } from '../File/VaultManager/VaultContext'
 import {
   BlockNoteView,
   FormattingToolbarPositioner,
@@ -14,7 +14,7 @@ import SearchBar from './Search/SearchBar'
 const EditorManager: React.FC = () => {
   const [editorFlex, setEditorFlex] = useState(true)
 
-  const { editor, suggestionsState, vaultFilesFlattened } = useFileContext()
+  const { editor, suggestionsState, flattenedFiles } = useVault()
   const [showDocumentStats, setShowDocumentStats] = useState(false)
 
   useEffect(() => {
@@ -67,7 +67,7 @@ const EditorManager: React.FC = () => {
       {suggestionsState && (
         <InEditorBacklinkSuggestionsDisplay
           suggestionsState={suggestionsState}
-          suggestions={vaultFilesFlattened.map((file) => file.relativePath)}
+          suggestions={flattenedFiles.map((file) => file.relativePath)}
         />
       )}
       {/* {editor && showDocumentStats && (

@@ -6,7 +6,6 @@ import VaultManager from './VaultManager'
 import { FileInfo, FileInfoTree, FileState } from 'electron/main/filesystem/types'
 import {
   generateFileNameFromFileContent,
-  getFilesInDirectory,
   getInvalidCharacterInFilePath,
   getNextAvailableFileNameGivenBaseName
 } from '@/lib/file'
@@ -31,9 +30,11 @@ export const vaultManager = new VaultManager()
 type VaultContextType = {
   // File tree and navigation
   fileTree: FileInfoTree
+  flattenedFiles: FileInfo[]
   vaultDirectory: string | undefined
   expandedDirectories: Map<string, boolean>
   toggleDirectory: (path: string) => void
+  getFilesInDirectory: (path: string) => FileInfo[]
   
   // File selection and opening
   currentFile: string | null
@@ -305,6 +306,11 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     },
     [isReady]
   )
+
+  const getFilesInDirectory = useCallback(
+    (path: string) => vaultManager.getFilesInDirectory(path),
+    []
+  )
   
   const selectFile = useCallback(
     (path: string) => {
@@ -347,7 +353,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Advanced file operations
   // Loads the file content into the editor
   const loadFileIntoEditor = async (filePath: string, startingPos?: number) => {
-    console.log(`Current file: `, currentFile)
+    console.log(`Current file: ${currentFile} and filePath: ${filePath}`)
     if (currentFile === filePath) return
     setCurrentlyChangingFilePath(true)
 
@@ -362,6 +368,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     // Read the file content using VaultManager
     const fileContent = await vaultManager.readFile(filePath)
+    console.log(`File content: `, fileContent)
     useSemanticCache.getState().setSemanticData(filePath, await getSimilarFiles(filePath))
 
     // Load content into editor
@@ -445,9 +452,11 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const contextValue = useMemo<VaultContextType>(() => ({
     // File tree and navigation
     fileTree,
+    flattenedFiles,
     vaultDirectory,
     expandedDirectories,
     toggleDirectory,
+    getFilesInDirectory,
     
     // File selection and opening
     currentFile,
@@ -491,9 +500,11 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     error
   }), [
     fileTree,
+    flattenedFiles,
     vaultDirectory,
     expandedDirectories,
     toggleDirectory,
+    getFilesInDirectory,
     currentFile,
     currentDirectory,
     selectFile,

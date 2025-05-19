@@ -14,9 +14,9 @@ import IconsSidebar from './Sidebars/IconsSidebar'
 import SidebarManager from './Sidebars/MainSidebar'
 import EmptyPage from './Common/EmptyPage'
 import { ContentProvider, useContentContext } from '../contexts/ContentContext'
-// import WritingAssistant from './WritingAssistant/WritingAssistant'
 import { ChatProvider, useChatContext } from '@/contexts/ChatContext'
-import { FileProvider, useFileContext } from '@/contexts/FileContext'
+import { VaultProvider, useVault } from './File/VaultManager/VaultContext'
+import { FileProvider } from '@/contexts/FileContext'
 import ModalProvider from '@/contexts/ModalContext'
 import CommonModals from './Common/CommonModals'
 import useAppShortcuts from '../lib/shortcuts/use-shortcut'
@@ -29,12 +29,12 @@ interface MainContentProps {
 
 // Moved MainContent outside as a separate component
 const MainContent: React.FC<MainContentProps> = ({ togglePanel }) => {
-  const { currentlyOpenFilePath } = useFileContext()
+  const { currentFile } = useVault()
   const { showEditor, setShowEditor } = useContentContext()
 
   return (
     <div className="relative flex size-full overflow-hidden">
-      {currentlyOpenFilePath && showEditor && (
+      {currentFile && showEditor && (
         <div className="size-full overflow-hidden">
           <WindowControls
             onClose={() => setShowEditor(false)}
@@ -50,7 +50,7 @@ const MainContent: React.FC<MainContentProps> = ({ togglePanel }) => {
 }
 
 const MainPageContent: React.FC = () => {
-  const { currentlyOpenFilePath } = useFileContext()
+  const { currentFile } = useVault()
   const { setShowEditor, showEditor } = useContentContext()
   const { getShortcutDescription } = useAppShortcuts()
   const { activePanel, setActivePanel, openNewChat } = useChatContext()
@@ -84,9 +84,9 @@ const MainPageContent: React.FC = () => {
 
           <ResizablePanel>
             <div className="size-full">
-              {currentlyOpenFilePath || activePanel ? (
+              {currentFile || activePanel ? (
                 <ResizablePanelGroup direction="horizontal" className="size-full">
-                  {currentlyOpenFilePath && showEditor && (
+                  {currentFile && showEditor && (
                     <>
                       <ResizablePanel defaultSize={panelSizes.mainContent}>
                         <MainContent togglePanel={togglePanel} />
@@ -128,13 +128,15 @@ const MainPageContent: React.FC = () => {
 const MainPageComponent: React.FC = () => {
   return (
     <FileProvider>
-      <ChatProvider>
-        <ContentProvider>
-          <ModalProvider>
-            <MainPageContent />
-          </ModalProvider>
-        </ContentProvider>
-      </ChatProvider>
+      <VaultProvider>
+        <ChatProvider>
+          <ContentProvider>
+            <ModalProvider>
+              <MainPageContent />
+            </ModalProvider>
+          </ContentProvider>
+        </ChatProvider>
+      </VaultProvider>
     </FileProvider>
   )
 }

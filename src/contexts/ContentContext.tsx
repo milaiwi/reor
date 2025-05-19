@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useMemo, ReactNode, useState, useCallback } from 'react'
-
 import posthog from 'posthog-js'
 import { useChatContext } from './ChatContext'
-import { useFileContext } from './FileContext'
-import { getFilesInDirectory, getNextAvailableFileNameGivenBaseName } from '@/lib/file'
+import { useVault } from '@/components/File/VaultManager/VaultContext'
+import { getNextAvailableFileNameGivenBaseName } from '@/lib/file'
+import { getDirname } from '@/lib/utils'
 
 interface ContentContextType {
   showEditor: boolean
@@ -36,13 +36,16 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
   const [showEditor, setShowEditor] = useState(false)
   const [currentOpenFileOrChatID, setCurrentOpenFileOrChatID] = useState<string | null>(null)
 
+  // Use ChatContext for chat-related operations
   const { allChatsMetadata, openNewChat } = useChatContext()
+
   const {
-    vaultFilesFlattened: flattenedFiles,
+    flattenedFiles,
     openOrCreateFile,
     addToNavigationHistory,
-    selectedDirectory,
-  } = useFileContext()
+    currentDirectory,
+    getFilesInDirectory,
+  } = useVault()
 
   const openContent = React.useCallback(
     async (
@@ -52,14 +55,22 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
       startingPos?: number,
     ) => {
       if (!pathOrChatID) return
+
+      // Check if this is a chat or a file 
       const chatMetadata = allChatsMetadata.find((chat) => chat.id === pathOrChatID)
+
       if (chatMetadata) {
+        // It's a chat, open it
         openNewChat(pathOrChatID)
       } else {
+        // It's a file, open it in the editor
         setShowEditor(true)
         openOrCreateFile(pathOrChatID, optionalContentToWriteOnCreate, startingPos)
       }
+
+      // Update state and history
       setCurrentOpenFileOrChatID(pathOrChatID)
+
       if (!dontUpdateChatHistory) {
         addToNavigationHistory(pathOrChatID)
       }
@@ -67,21 +78,34 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
     [allChatsMetadata, openNewChat, openOrCreateFile, addToNavigationHistory],
   )
 
+  // Create a new untitled note
   const createUntitledNote = useCallback(
     async (parentDirectory?: string) => {
+      // Determine the directory to create the file in
       const directoryToMakeFileIn =
-        parentDirectory || selectedDirectory || (await window.electronStore.getVaultDirectoryForWindow())
+        parentDirectory || 
+        currentDirectory || 
+        await window.electronStore.getVaultDirectoryForWindow()
 
-      const filesInDirectory = await getFilesInDirectory(directoryToMakeFileIn, flattenedFiles)
+      // Get files in the selected directory
+      const filesInDirectory = parentDirectory ?
+        getFilesInDirectory(directoryToMakeFileIn) :
+        flattenedFiles.filter(file => getDirname(file.path) === directoryToMakeFileIn)
+      
+        // Generate a unique name for the new file
       const fileName = getNextAvailableFileNameGivenBaseName(
         filesInDirectory.map((file) => file.name),
         'Untitled',
       )
+
+      // Create the full path and open the content
       const finalPath = await window.path.join(directoryToMakeFileIn, fileName)
       openContent(finalPath, `## `)
+      
+      // Analytics
       posthog.capture('created_new_note_from_new_note_modal')
     },
-    [selectedDirectory, flattenedFiles, openContent],
+    [currentDirectory, flattenedFiles, openContent, getFilesInDirectory],
   )
 
   const ContentContextMemo = useMemo(

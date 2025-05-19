@@ -209,7 +209,7 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
       ? filePathWithExtension
       : joinPaths(this.vaultDirectory, filePathWithExtension)
     
-    const fileState = this.getFileAtPath(absolutePath)    
+    const fileState = this.getFileAtPath(absolutePath)
     if (!fileState) {
       const newFile = await this.fileOperationsManager.createFile(absolutePath, initialContent)
       if (!newFile) throw new Error(`Could not create file ${filePathWithExtension}`)

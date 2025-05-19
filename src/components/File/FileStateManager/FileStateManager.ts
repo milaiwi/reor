@@ -11,10 +11,10 @@ class FileStateManager extends EventEmitter<FileStateEventTypes> {
 
   constructor(entries: FileInfo[]) {
     super() 
-
+    console.log(`Initiating FileStateManager with: `, entries)
     this.stateMap = new Map(
       entries.map((e) => [
-        e.name, // path to the file 
+        e.path, // path to the file 
         {       // the FileState object
           file: e,
           status: 'clean',
@@ -23,6 +23,7 @@ class FileStateManager extends EventEmitter<FileStateEventTypes> {
         } satisfies FileState,
       ])
     )
+    console.log(`This Statemap: `, this.stateMap)
   }
 
   /**
