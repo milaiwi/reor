@@ -1,4 +1,3 @@
-import { markdownExtensions } from "electron/main/filesystem/filesystem";
 import path from 'path-browserify'
 
 export function extractFileNameFromFilePath(filePath: string) {
@@ -11,7 +10,7 @@ export function addExtensionIfNoExtensionPresent(
   defaultExtension: string = 'md',
 ) {
   const extension = path.extname(fileName).toLowerCase()
-  if (markdownExtensions.includes(extension)) {
+  if (['.md', '.markdown', '.mdown', '.mkdn', '.mkd'].includes(extension)) {
     return fileName
   }
   return `${fileName}${defaultExtension}`

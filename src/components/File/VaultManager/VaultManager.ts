@@ -1,8 +1,8 @@
 import FileOperationsManager from '../FileOperationsManager/FileOperationsManager'
 import { FileInfo, FileInfoTree, FileState } from "electron/main/filesystem/types";
-import { flattenFileInfoTree } from "../../../lib/file";
+import { flattenFileInfoTree, getInvalidCharacterInFilePath } from "../../../lib/file";
 import EventEmitter from '../../../lib/blocknote/core/shared/EventEmitter'
-import { addExtensionIfNoExtensionPresent, extractFileNameFromFilePath, isPathAbsolute, joinPaths } from '@/lib/utils/file-util/file-utils';
+import { addExtensionIfNoExtensionPresent, extractFileNameFromFilePath, getDirname, isPathAbsolute, joinPaths } from '@/lib/utils/file-util/file-utils';
 
 
 export type VaultEventTypes = {
@@ -23,6 +23,7 @@ export type VaultEventTypes = {
   // Structure changes
   'directoryToggled': { path: string, isExpanded: boolean }
   'directoryCreated': FileInfo
+  'treeUpdated': { tree: FileInfoTree, flattenedFiles: FileInfo[] }
 
   // Selection events
   'fileSelected': string
@@ -47,14 +48,8 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
   public ready: boolean = false
 
   async initialize(): Promise<void> {
-    const files: FileInfoTree = await window.fileSystem.getFilesTreeForWindow()
-    const flat: FileInfo[] = flattenFileInfoTree(files).map((f: FileInfo) => ({
-      ...f,
-    }))
-
-    this.fileTreeData = files
-    this.flattenedFiles = flat
-    this.fileOperationsManager = new FileOperationsManager(flat)
+    await this.updateFileTree()
+    this.fileOperationsManager = new FileOperationsManager(this.flattenedFiles)
     this.setupEventRelays()
     this.ready = true
 
@@ -105,6 +100,22 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
       this.emit('fileStateChanged', { path, state })
     })
   }
+
+  async updateFileTree(): Promise<void> {
+    const files: FileInfoTree = await window.fileSystem.getFilesTreeForWindow()
+    const flat: FileInfo[] = flattenFileInfoTree(files).map((f: FileInfo) => ({
+      ...f,
+    }))
+
+    this.fileTreeData = files
+    this.flattenedFiles = flat
+
+    // Emit event to notify the tree has been updated
+    this.emit('treeUpdated', {
+      tree: this.fileTreeData,
+      flattenedFiles: this.flattenedFiles
+    })
+  }
  
   /**
    * Toggle directory expansion state
@@ -137,6 +148,19 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
     this.emit('directorySelected', path)
   }
 
+  getFilesInDirectory(directoryPath: string): FileInfo[] {
+    if (!this.ready) throw new Error('VaultManager is not ready yet')
+    
+      return this.flattenedFiles.filter(file => {
+        const fileDir = getDirname(file.path)
+        return fileDir === directoryPath
+      })
+  }
+
+  fileExists(path: string): boolean {
+    return this.getFileAtPath(path) !== undefined
+  }
+
   // File operations
   async readFile(path: string): Promise<string> {
     if (!this.ready)
@@ -159,18 +183,25 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
   async renameFile(oldPath: string, newPath: string): Promise<void> {
     if (!this.ready)
       throw new Error('VaultManager is not ready yet')
-    return this.fileOperationsManager.renameFile(oldPath, newPath)
+    const fileObject = this.fileOperationsManager.renameFile(oldPath, newPath)
+    this.updateFileTree()
+    return fileObject
   }
 
   async deleteFile(path: string): Promise<void> {
     if (!this.ready)
       throw new Error('VaultManager is not ready yet')
-    return this.fileOperationsManager.deleteFile(path)
+    const fileObject = await this.fileOperationsManager.deleteFile(path)
+    this.updateFileTree()
+    return fileObject
   }
 
-  async createFile(path: string, initialContent: string = ''): Promise<FileInfo | undefined> {
+  async createFile(path: string, initialContent: string = ''): Promise<FileInfo> {
     if (!this.ready)
       throw new Error('Vault Manager is not ready yet')
+    const invalidCharacters = getInvalidCharacterInFilePath(path)
+    if (invalidCharacters)
+      throw new Error(`File path contains invalid characters: ${invalidCharacters}`)
 
     const filePathWithExtension = addExtensionIfNoExtensionPresent(path)
     const isAbsolutePath = isPathAbsolute(filePathWithExtension)
@@ -178,11 +209,14 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
       ? filePathWithExtension
       : joinPaths(this.vaultDirectory, filePathWithExtension)
     
-    const fileExists = this.getFileAtPath(absolutePath) !== undefined
-    if (!fileExists) {
-      return this.fileOperationsManager.createFile(path, initialContent)
+    const fileState = this.getFileAtPath(absolutePath)    
+    if (!fileState) {
+      const newFile = await this.fileOperationsManager.createFile(absolutePath, initialContent)
+      if (!newFile) throw new Error(`Could not create file ${filePathWithExtension}`)
+      await this.updateFileTree()
+      return newFile
     }
-    return undefined
+    return fileState.file
   }
 
   async autoSave(path: string, content: string): Promise<void> {

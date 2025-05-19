@@ -19,16 +19,9 @@ import { setGroupTypes } from '@/lib/utils'
 import useSemanticCache from '@/lib/utils/editor-state'
 import slashMenuItems from '@/components/Editor/slash-menu-items'
 import { getSimilarFiles } from '@/lib/semanticService'
-import { 
-  addExtensionIfNoExtensionPresent,
-  extractExtensionName,
-  extractAbsolutePath,
-  isPathAbsolute,
-  getRelativePath,
+import {
   getDirname,
   joinPaths,
-  getPlatformSpecificSep,
-  getPathBasename,
 } from '@/lib/utils'
 
 // Create a singleton VaultManager
@@ -53,7 +46,7 @@ type VaultContextType = {
   saveFile: (path: string, content: string) => Promise<void>
   renameFile: (oldPath: string, newPath: string) => Promise<void>
   deleteFile: (path: string) => Promise<void>
-  createFile: (path: string, content: string) => Promise<void>
+  createFile: (path: string, content: string) => Promise<FileInfo>
   
   // Advanced file operations
   openOrCreateFile: (filePath: string, optionalContent?: string, startingPos?: number) => Promise<void>
@@ -92,7 +85,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Core state handling from VaultManager
   const [isReady, setIsReady] = useState(false)
   const [error, setError] = useState<Error | null>(null)
-  const [fileTree, setFileTree] = useState<FileInfoTree | null>(null)
+  const [fileTree, setFileTree] = useState<FileInfoTree>([])
   const [flattenedFiles, setFlattenedFiles] = useState<FileInfo[]>([])
   const [vaultDirectory, setVaultDirectory] = useState<string | undefined>(undefined)
   const [expandedDirectories, setExpandedDirectories] = useState<Map<string, boolean>>(new Map())
@@ -133,7 +126,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   })
 
   // Debounced editor content for auto-save
-  const [debouncedEditor] = useDebounce(editor?.topLevelBlocks, 3000)
+  const [debouncedEditor] = useDebounce(editor?.topLevelBlocks, 200000)
 
   // Initialize the VaultManager
   useEffect(() => {
@@ -352,26 +345,10 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
 
   // Advanced file operations
-  
-  // Create a file if it doesn't exist
-  const createFileIfNotExists = async (filePath: string, optionalContent?: string): Promise<FileInfo> => {
-    const invalidChars = getInvalidCharacterInFilePath(filePath)
-    if (invalidChars) {
-      const errorMessage = `Could not create note ${filePath}. Character ${invalidChars} cannot be included in note name.`
-      toast.error(errorMessage)
-      throw new Error(errorMessage)
-    }
-    
-    await vaultManager.createFile(filePath, optionalContent)
-    const fileState = vaultManager.getFileAtPath(filePath)
-    if (!fileState)
-      throw new Error(`Could not access file at ${filePath}`)
-
-    return fileState.file
-  }
-
   // Loads the file content into the editor
   const loadFileIntoEditor = async (filePath: string, startingPos?: number) => {
+    console.log(`Current file: `, currentFile)
+    if (currentFile === filePath) return
     setCurrentlyChangingFilePath(true)
 
     // Save current file before loading new one
@@ -396,7 +373,6 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (startingPos)
       editor.scrollToParentBlock(startingPos)
 
-
     // Updating state
     setCurrentFile(filePath)
     setCurrentlyChangingFilePath(false)
@@ -408,6 +384,15 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     // Add to navigation history
     addToNavigationHistory(filePath)
+  }
+
+  const openOrCreateFile = async (
+    filePath: string,
+    optionalContentToWriteOnCreate?: string,
+    startingPos?: number,
+  ): Promise<void> => {
+    const fileObject = await createFile(filePath, optionalContentToWriteOnCreate)
+    await loadFileIntoEditor(fileObject.path, startingPos ?? undefined)
   }
 
   // Save editor content to disk
@@ -460,6 +445,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const contextValue = useMemo<VaultContextType>(() => ({
     // File tree and navigation
     fileTree,
+    vaultDirectory,
     expandedDirectories,
     toggleDirectory,
     
@@ -505,6 +491,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     error
   }), [
     fileTree,
+    vaultDirectory,
     expandedDirectories,
     toggleDirectory,
     currentFile,

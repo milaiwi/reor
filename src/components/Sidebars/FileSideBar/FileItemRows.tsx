@@ -4,7 +4,7 @@ import posthog from 'posthog-js'
 import { isFileNodeDirectory } from '@shared/utils'
 import { XStack, Text } from 'tamagui'
 import { ChevronRight, ChevronDown } from '@tamagui/lucide-icons'
-import { useFileContext } from '@/contexts/FileContext'
+import { useVault } from '@/components/File/VaultManager/VaultContext'
 import { removeFileExtension } from '@/lib/file'
 import { useContentContext } from '@/contexts/ContentContext'
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/ui/context-menu'
@@ -14,26 +14,32 @@ const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data })
   const { file, indentation } = data.filesAndIndentations[index]
 
   const {
-    handleDirectoryToggle,
+    toggleDirectory,
     expandedDirectories,
-    currentlyOpenFilePath,
-    setNoteToBeRenamed,
-    deleteFile,
-    selectedDirectory,
-    setSelectedDirectory,
+    currentFile: currentlyOpenFilePath,
+    currentDirectory: selectedDirectory,
+    selectDirectory,
     renameFile,
-  } = useFileContext()
+    deleteFile,
+    setNoteToBeRenamed,
+  } = useVault()
+
   const { openContent, createUntitledNote } = useContentContext()
+
+  // Local component state
   const [isNewDirectoryModalOpen, setIsNewDirectoryModalOpen] = useState(false)
   const [parentDirectoryPathForNewDirectory, setParentDirectoryPathForNewDirectory] = useState<string | undefined>()
   const [isDragOver, setIsDragOver] = useState(false)
 
+  // Determine if file is directory and if it's selected
   const isDirectory = isFileNodeDirectory(file)
   const isSelected = isDirectory ? file.path === selectedDirectory : file.path === currentlyOpenFilePath
 
+  // Styling and UI State
   const indentationPadding = indentation ? 10 * indentation : 0
   const isExpanded = expandedDirectories.get(file.path)
 
+  // Drag and drop handlers
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
     setIsDragOver(true)
@@ -63,27 +69,30 @@ const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data })
     [file.path, isDirectory, renameFile],
   )
 
+  // Click handler for files and directories
   const clickOnFileOrDirectory = useCallback(
     (event: any) => {
       const e = event.nativeEvent
       if (isDirectory) {
-        handleDirectoryToggle(file.path)
-        setSelectedDirectory(file.path)
+        toggleDirectory(file.path)
+        selectDirectory(file.path)
       } else {
         openContent(file.path)
         posthog.capture('open_file_from_sidebar')
       }
       e.stopPropagation()
     },
-    [file.path, isDirectory, handleDirectoryToggle, openContent, setSelectedDirectory],
+    [file.path, isDirectory, toggleDirectory, openContent, selectDirectory],
   )
 
+  // Modal Handlers
   const openNewDirectoryModal = useCallback(async () => {
     const dirPath = isDirectory ? file.path : await window.path.dirname(file.path)
     setParentDirectoryPathForNewDirectory(dirPath)
     setIsNewDirectoryModalOpen(true)
   }, [file.path, isDirectory])
 
+  // Delete handler
   const handleDelete = useCallback(() => {
     const itemType = isDirectory ? 'directory' : 'file'
     const confirmMessage = `Are you sure you want to delete this ${itemType}?${
@@ -96,10 +105,12 @@ const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data })
     }
   }, [deleteFile, file.path, isDirectory])
 
+  // CSS classes for styling
   const itemClasses = `flex items-center cursor-pointer px-2 py-1 border-b border-gray-200 h-full mt-0 mb-0 font-sans text-xs leading-relaxed rounded-md ${
     isSelected ? 'font-semibold' : ''
   } ${isDragOver ? 'bg-neutral-500' : ''}`
 
+  // Context menu items
   const renderContextMenuItems = () => (
     <>
       <ContextMenuItem
