@@ -1,6 +1,16 @@
 import { isFileNodeDirectory } from '@shared/utils'
 import { FileInfo, FileInfoTree } from 'electron/main/filesystem/types'
 
+export const detectPlatform = (): 'win32' | 'darwin' | 'linux' => {
+  const platform = navigator.userAgent.toLowerCase();
+
+  if (platform.includes('win')) return 'win32';
+  if (platform.includes('mac')) return 'darwin';
+  if (platform.includes('linux')) return 'linux';
+
+  return 'darwin';
+};
+
 export function flattenFileInfoTree(tree: FileInfoTree): FileInfo[] {
   return tree.reduce((flatList: FileInfo[], node) => {
     if (!isFileNodeDirectory(node)) {
@@ -58,26 +68,26 @@ export function removeFileExtension(filename: string): string {
   return filename.substring(0, filename.lastIndexOf('.'))
 }
 
-export const getInvalidCharacterInFilePath = async (filePath: string): Promise<string | null> => {
-  let invalidCharacters: RegExp
-  const platform = await window.electronUtils.getPlatform()
+export const getInvalidCharacterInFilePath = (filePath: string): string | null => {
+  let invalidCharacters: RegExp;
+
+  const platform = detectPlatform();
 
   switch (platform) {
     case 'win32':
-      invalidCharacters = /["*<>?|]/
-      break
+      invalidCharacters = /["*<>?|]/;
+      break;
     case 'darwin':
-      invalidCharacters = /[:]/
-      break
+      invalidCharacters = /[:]/;
+      break;
     default:
-      invalidCharacters = /$^/
-      break
+      invalidCharacters = /$^/;
+      break;
   }
 
-  const idx = filePath.search(invalidCharacters)
-
-  return idx === -1 ? null : filePath[idx]
-}
+  const idx = filePath.search(invalidCharacters);
+  return idx === -1 ? null : filePath[idx];
+};
 
 // eslint-disable-next-line no-useless-escape
 const INVALID_FILENAME_CHARACTERS = /[<>:"\/\\|?*\.\[\]\{\}!@#$%^&()+=,;'`~]/g

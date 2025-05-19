@@ -51,8 +51,8 @@ const NewDirectoryComponent: React.FC<NewDirectoryComponentProps> = ({ isOpen, o
     }
   }, [isOpen])
 
-  const handleValidName = async (name: string) => {
-    const invalidCharacters = await getInvalidCharacterInFilePath(name)
+  const handleValidName = (name: string) => {
+    const invalidCharacters = getInvalidCharacterInFilePath(name)
     if (invalidCharacters) {
       setErrorMessage(`Cannot put ${invalidCharacters} in file name`)
       return false
@@ -61,13 +61,13 @@ const NewDirectoryComponent: React.FC<NewDirectoryComponentProps> = ({ isOpen, o
     return true
   }
 
-  const handleNameChange = async (newName: string) => {
-    await handleValidName(newName)
+  const handleNameChange = (newName: string) => {
+    handleValidName(newName)
     setDirectoryRelativePath(newName)
   }
 
   const createNewDirectory = async () => {
-    const validName = await handleValidName(directoryRelativePath)
+    const validName = handleValidName(directoryRelativePath)
     if (!directoryRelativePath || errorMessage || !validName) return
 
     const directoryPath = await window.electronStore.getVaultDirectoryForWindow()

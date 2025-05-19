@@ -3,7 +3,7 @@ import FileStateManager from "../FileStateManager/FileStateManager"
 import FileOperationsQueue from "./FileOperationController"
 import { FileInfo, FileState } from "electron/main/filesystem/types"
 import EventEmitter from '../../../lib/blocknote/core/shared/EventEmitter'
-import { extractFileNameFromFilePath } from "@/lib/utils/file-utils"
+import { extractFileNameFromFilePath } from "@/lib/utils/file-util/file-utils"
 
 // Define event types for FileOperationsManager
 export type FileOperationsEventTypes = {
@@ -133,17 +133,19 @@ class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
     }
   }
 
-  async createFile(path: string, content: string = ''): Promise<void> {
+  async createFile(path: string, content: string = ''): Promise<FileInfo | undefined> {
     this.emit('fileCreateStarted', path)
 
     try {
-      await this.queue.enqueue(path, async () => {
-        await this.service.createFile(path, content)
+      const fileObject = await this.queue.enqueue(path, async () => {
+        return await this.service.createFile(path, content)
       })
 
       this.emit('fileCreateCompleted', { path })
+      return fileObject
     } catch (err) {
       this.emit('fileCreateCompleted', { path, error: err as Error})
+      return undefined
     }
   }
 

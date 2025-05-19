@@ -1,11 +1,11 @@
 class FileOperationsQueue {
-  private queue: Map<string, Promise<void>> = new Map()
+  private queue: Map<string, Promise<unknown>> = new Map()
 
   /**
    * Enqueues a file operation to run after all previous operations
-   * on the same path have completed.
+   * on the same path have completed. Returns the result of the operation.
    */
-  enqueue(path: string, op: () => Promise<void>): Promise<void> {
+  enqueue<T>(path: string, op: () => Promise<T>): Promise<T> {
     const previous = this.queue.get(path) ?? Promise.resolve()
 
     let resolveNext: () => void
@@ -13,12 +13,13 @@ class FileOperationsQueue {
       resolveNext = resolve
     })
 
-    const operation = previous.then(() => op()).finally(() => {
-      resolveNext()
-      if (this.queue.get(path) === next) {
-        this.queue.delete(path)
-      }
-    })
+    const operation = previous.then(() => op())
+      .finally(() => {
+        resolveNext()
+        if (this.queue.get(path) === next) {
+          this.queue.delete(path)
+        }
+      })
 
     this.queue.set(path, next)
     return operation
@@ -29,7 +30,7 @@ class FileOperationsQueue {
    * Does not enqueue anything.
    */
   waitFor(path: string): Promise<void> {
-    return this.queue.get(path) ?? Promise.resolve()
+    return this.queue.get(path) as Promise<void> ?? Promise.resolve()
   }
 }
 

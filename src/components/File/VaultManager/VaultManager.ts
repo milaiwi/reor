@@ -2,7 +2,7 @@ import FileOperationsManager from '../FileOperationsManager/FileOperationsManage
 import { FileInfo, FileInfoTree, FileState } from "electron/main/filesystem/types";
 import { flattenFileInfoTree } from "../../../lib/file";
 import EventEmitter from '../../../lib/blocknote/core/shared/EventEmitter'
-import { extractFileNameFromFilePath } from '@/lib/utils/file-utils';
+import { addExtensionIfNoExtensionPresent, extractFileNameFromFilePath, isPathAbsolute, joinPaths } from '@/lib/utils/file-util/file-utils';
 
 
 export type VaultEventTypes = {
@@ -33,9 +33,12 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
   // @ts-expect-error ts(2564)
   private fileOperationsManager: FileOperationsManager
   private expandedDirectories: Map<string, boolean> = new Map()
+
   public selectedFilePath: string | null = null
   public selectedDirectoryPath: string | null = null
   public fileTreeData: FileInfoTree = []
+  public flattenedFiles: FileInfo[] = []
+  public vaultDirectory: string = ""
   
   /**
    * Defines if the VaultManager is ready to be used (initialized) or not.
@@ -50,9 +53,12 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
     }))
 
     this.fileTreeData = files
+    this.flattenedFiles = flat
     this.fileOperationsManager = new FileOperationsManager(flat)
     this.setupEventRelays()
     this.ready = true
+
+    this.vaultDirectory = await window.electronStore.getVaultDirectoryForWindow()
   }
 
   /**
@@ -162,10 +168,21 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
     return this.fileOperationsManager.deleteFile(path)
   }
 
-  async createFile(path: string, initialContent: string = ''): Promise<void> {
+  async createFile(path: string, initialContent: string = ''): Promise<FileInfo | undefined> {
     if (!this.ready)
       throw new Error('Vault Manager is not ready yet')
-    return this.fileOperationsManager.createFile(path, initialContent)
+
+    const filePathWithExtension = addExtensionIfNoExtensionPresent(path)
+    const isAbsolutePath = isPathAbsolute(filePathWithExtension)
+    const absolutePath = isAbsolutePath
+      ? filePathWithExtension
+      : joinPaths(this.vaultDirectory, filePathWithExtension)
+    
+    const fileExists = this.getFileAtPath(absolutePath) !== undefined
+    if (!fileExists) {
+      return this.fileOperationsManager.createFile(path, initialContent)
+    }
+    return undefined
   }
 
   async autoSave(path: string, content: string): Promise<void> {
