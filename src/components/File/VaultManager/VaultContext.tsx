@@ -103,6 +103,8 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [needToIndexEditorContent, setNeedToIndexEditorContent] = useState<boolean>(false)
   const [currentlyChangingFilePath, setCurrentlyChangingFilePath] = useState(false)
 
+  // Creating a ref to store the current saveCurrentlyOpenedFile implementation -- needed since editor may not be initialized yet.
+  const saveCurrentlyOpenedFileRef = React.useRef<() => Promise<void>>(async () => {})
 
   // Navigation history
   const {
@@ -126,15 +128,14 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }
 
   const saveCurrentlyOpenedFile = async () => {
-    console.log(`Inside saveCurrentlyOpenedFile`)
-    await saveEditorContentToDisk()
+    return saveCurrentlyOpenedFileRef.current()
   }
 
   // Initialize the editor
   const editor = useBlockNote<typeof hmBlockSchema>({
     onEditorContentChange() {
-      if (currentFile && !isDirty(currentFile)) {
-        markDirty(currentFile)
+      if (editor.currentFilePath && !isDirty(editor.currentFilePath)) {
+        markDirty(editor.currentFilePath)
       }
       setNeedToWriteEditorContentToDisk(true)
       setNeedToIndexEditorContent(true)
@@ -147,7 +148,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       },
     },
     fileOperations: {
-      saveCurrentlyOpenedFile: saveCurrentlyOpenedFile
+      saveCurrentlyOpenedFile: () => saveCurrentlyOpenedFileRef.current()
     }
   })
 
@@ -285,6 +286,21 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, [currentFile, editor])
 
+  useEffect(() => {
+    saveCurrentlyOpenedFileRef.current = async () => {
+      console.log(`CurrentFile`, currentFile)
+      if (currentFile && needToWriteEditorContentToDisk && editor) {
+        const blocks = editor.topLevelBlocks
+        const markdownContent = await editor.blocksToMarkdown(blocks)
+  
+        if (markdownContent !== null) {
+          await vaultManager.saveFile(currentFile, markdownContent)
+          setNeedToWriteEditorContentToDisk(false)
+        }
+      }
+    }
+  }, [currentFile, editor, vaultManager])
+
   // First-time app usage check
   const checkAppUsage = async () => {
     if (!editor) return
@@ -362,10 +378,14 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   )
   
   const markDirty = useCallback(
-    (path: string) =>
-      vaultManager.markDirty(path),
+    (path: string) => {
+      console.log(`Attempting to mark file dirty: ${path}`);
+      const result = vaultManager.markDirty(path);
+      console.log(`Result of markDirty: ${result}`);
+      return result;
+    },
     [isReady]
-  )
+  );
 
   const isDirty = useCallback(
     (path: string) => {
@@ -374,7 +394,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     },
     [fileStates]
   )
-  
+
   const isSaving = useCallback(
     (path: string) => savingFiles.has(path),
     [savingFiles]
