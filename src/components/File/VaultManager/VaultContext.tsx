@@ -571,7 +571,6 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     currentlyChangingFilePath
   ])
   
-
   return <VaultContext.Provider value={contextValue}>{children}</VaultContext.Provider>
 }
 

@@ -1,12 +1,12 @@
 import React from "react";
 
 const LoadingAnimation: React.FC = () => (
-  <div className="notion-loading-container">
-    <div className="notion-loading-dot" />
-    <div className="notion-loading-dot" />
-    <div className="notion-loading-dot" />
+  <div className="loading-container">
+    <div className="loading-dot" />
+    <div className="loading-dot" />
+    <div className="loading-dot" />
     <style>{`
-      .notion-loading-container {
+      .loading-container {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -14,20 +14,20 @@ const LoadingAnimation: React.FC = () => (
         min-height: 120px;
         gap: 8px;
       }
-      .notion-loading-dot {
+      .loading-dot {
         width: 12px;
         height: 12px;
         border-radius: 50%;
         background: #b3b8c2;
-        animation: notion-bounce 1.2s infinite ease-in-out both;
+        animation: loading-bounce 1.2s infinite ease-in-out both;
       }
-      .notion-loading-dot:nth-child(2) {
+      .loading-dot:nth-child(2) {
         animation-delay: 0.2s;
       }
-      .notion-loading-dot:nth-child(3) {
+      .loading-dot:nth-child(3) {
         animation-delay: 0.4s;
       }
-      @keyframes notion-bounce {
+      @keyframes loading-bounce {
         0%, 80%, 100% {
           transform: scale(0.7);
           opacity: 0.5;

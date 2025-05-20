@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { Button } from '@material-tailwind/react'
 import { toast } from 'react-toastify'
@@ -8,15 +8,25 @@ import { NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native'
 import ReorModal from '../Common/Modal'
 
 import { getInvalidCharacterInFileName } from '@/lib/file'
-import { useFileContext } from '@/contexts/FileContext'
+import { useVault } from './VaultManager/VaultContext'
+import { addExtensionIfNoExtensionPresent, getDirname, joinPaths } from '@/lib/utils'
 
 const RenameNoteModal: React.FC = () => {
-  const { noteToBeRenamed, setNoteToBeRenamed, renameFile } = useFileContext()
+  const { noteToBeRenamed, setNoteToBeRenamed, renameFile } = useVault()
   const [newNoteName, setNewNoteName] = useState<string>('')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
+  console.log(`Inside rename note modal`)
+  // Reset newNoteName when noteToBeRenamed changes
+  useEffect(() => {
+    if (noteToBeRenamed) {
+      console.log('Note to be renamed changed:', noteToBeRenamed);
+      setNewNoteName('');
+      setErrorMessage(null);
+    }
+  }, [noteToBeRenamed]);
+
   const handleNameChange = (name: string) => {
-    // const newName = e.target.value
     setNewNoteName(name)
 
     const invalidCharacter = getInvalidCharacterInFileName(name)
@@ -26,14 +36,17 @@ const RenameNoteModal: React.FC = () => {
       setErrorMessage(null)
     }
   }
+
   const onClose = () => {
-    setNoteToBeRenamed('')
+    setNoteToBeRenamed(null)
+    setNewNoteName('')
+    setErrorMessage(null)
   }
 
-  const handleNoteRename = async () => {
-    if (errorMessage) {
+  const handleNoteRename = () => {
+    console.log('Handling rename:', { noteToBeRenamed, newNoteName });
+    if (errorMessage || !noteToBeRenamed)
       return
-    }
     if (!newNoteName) {
       toast.error('Note name cannot be empty', {
         className: 'mt-5',
@@ -43,12 +56,21 @@ const RenameNoteModal: React.FC = () => {
       return
     }
 
-    const initialNotePathPrefix = await window.path.dirname(noteToBeRenamed)
-    const initialPath = await window.path.join(initialNotePathPrefix, newNoteName)
-    const outputPath = await window.path.addExtensionIfNoExtensionPresent(initialPath)
+    const initialNotePathPrefix = getDirname(noteToBeRenamed)
+    const initialPath = joinPaths(initialNotePathPrefix, newNoteName)
+    const outputPath = addExtensionIfNoExtensionPresent(initialPath)
 
-    await renameFile(noteToBeRenamed, outputPath)
-    onClose()
+    try {
+      renameFile(noteToBeRenamed, outputPath)
+      onClose()
+    } catch (error) {
+      console.error('Failed to rename:', error);
+      toast.error('Failed to rename note', {
+        className: 'mt-5',
+        closeOnClick: false,
+        draggable: false,
+      })
+    }
   }
 
   const handleKeyPress = (e: NativeSyntheticEvent<TextInputKeyPressEventData>) => {
@@ -57,6 +79,7 @@ const RenameNoteModal: React.FC = () => {
     }
   }
 
+  console.log('RenameNote render:', { noteToBeRenamed, newNoteName });
   return (
     <ReorModal isOpen={!!noteToBeRenamed} onClose={onClose}>
       <YStack my={2} ml={3} mr={6} h="100%" minWidth={400}>
@@ -70,7 +93,7 @@ const RenameNoteModal: React.FC = () => {
           borderWidth={1}
           borderColor="$gray6"
           mt={10}
-          value={newNoteName}
+          value={newNoteName || ''}
           onChangeText={handleNameChange}
           onKeyPress={handleKeyPress}
           fontSize="$1"

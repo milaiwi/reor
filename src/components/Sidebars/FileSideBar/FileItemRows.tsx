@@ -196,7 +196,10 @@ const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data })
         New file
       </ContextMenuItem>
       <ContextMenuItem onClick={openNewDirectoryModal}>New folder</ContextMenuItem>
-      <ContextMenuItem onClick={() => setNoteToBeRenamed(file.path)}>Rename</ContextMenuItem>
+      <ContextMenuItem onClick={() => {
+        console.log('Setting note to be renamed:', file.path);
+        setNoteToBeRenamed(file.path);
+      }}>Rename</ContextMenuItem>
       <ContextMenuItem onClick={handleDelete}>Delete</ContextMenuItem>
     </>
   )

@@ -181,7 +181,7 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
   async renameFile(oldPath: string, newPath: string): Promise<void> {
     if (!this.ready)
       throw new Error('VaultManager is not ready yet')
-    const fileObject = this.fileOperationsManager.renameFile(normalizePath(oldPath), normalizePath(newPath))
+    const fileObject = await this.fileOperationsManager.renameFile(normalizePath(oldPath), normalizePath(newPath))
     this.updateFileTree()
     return fileObject
   }
