@@ -217,6 +217,19 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
     return fileState.file
   }
 
+  async createDirectory(dirPath: string): Promise<void> {
+    if (!this.ready)
+      throw new Error('Vault Manager is not ready yet')
+    const pathNormalized = normalizePath(dirPath)
+    const invalidCharacters = getInvalidCharacterInFilePath(pathNormalized)
+    if (invalidCharacters)
+      throw new Error(`File path contains invalid characters: ${invalidCharacters}`)
+
+    console.log(`Creating directory at path: ${pathNormalized}`)
+    await this.fileOperationsManager.createDirectory(pathNormalized)
+    await this.updateFileTree()
+  }
+
   async autoSave(path: string, content: string): Promise<void> {
     if (!this.ready)
       throw new Error('VaultManager is not ready yet')

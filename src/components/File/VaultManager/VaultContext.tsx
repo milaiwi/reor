@@ -48,6 +48,7 @@ type VaultContextType = {
   renameFile: (oldPath: string, newPath: string) => void
   deleteFile: (path: string) => void
   createFile: (path: string, content: string) => Promise<FileInfo>
+  createDirectory: (dirPath: string) => Promise<void>
   
   // Advanced file operations
   openOrCreateFile: (filePath: string, optionalContent?: string, startingPos?: number) => Promise<void>
@@ -369,6 +370,11 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     (path: string, initialContent: string = '') => vaultManager.createFile(path, initialContent),
     [isReady]
   )
+
+  const createDirectory = useCallback(
+    (dirPath: string) => vaultManager.createDirectory(dirPath),
+    [isReady]
+  )
   
   // Directory and file selection
   const toggleDirectory = useCallback(
@@ -539,6 +545,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     renameFile,
     deleteFile,
     createFile,
+    createDirectory,
     
     // Advanced file operations
     openOrCreateFile,
@@ -583,6 +590,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     renameFile,
     deleteFile,
     createFile,
+    createDirectory,
     openOrCreateFile,
     saveCurrentlyOpenedFile,
     getFileState,

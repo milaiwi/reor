@@ -147,6 +147,12 @@ class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
     }
   }
 
+  async createDirectory(dirPath: string): Promise<void> {
+    this.queue.enqueue(dirPath, async () => {
+      await this.service.createDirectory(dirPath)
+    })
+  }
+
   async autoSave(path: string, content: string): Promise<void> {
     const fileObject = this.state.getFileState(path)
     if (!fileObject || fileObject.status !== 'dirty' || !fileObject.dirtyTimestamp) return Promise.resolve()

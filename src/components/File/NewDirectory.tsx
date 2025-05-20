@@ -8,7 +8,7 @@ import { NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native'
 import ReorModal from '../Common/Modal'
 import { getInvalidCharacterInFilePath } from '@/lib/file'
 import { useVault } from './VaultManager/VaultContext'
-import { getPlatformSpecificSep, getRelativePath } from '@/lib/utils'
+import { getPlatformSpecificSep, getRelativePath, joinPaths } from '@/lib/utils'
 
 interface NewDirectoryComponentProps {
   isOpen: boolean
@@ -21,7 +21,7 @@ const NewDirectoryComponent: React.FC<NewDirectoryComponentProps> = ({ isOpen, o
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   // const { selectedDirectory } = useFileContext()
-  const { currentDirectory, vaultDirectory } = useVault()
+  const { currentDirectory, vaultDirectory, createDirectory } = useVault()
 
   console.log(`Current directory: `, currentDirectory)
 
@@ -73,10 +73,10 @@ const NewDirectoryComponent: React.FC<NewDirectoryComponentProps> = ({ isOpen, o
     const validName = handleValidName(directoryRelativePath)
     if (!directoryRelativePath || errorMessage || !validName) return
 
-    const directoryPath = await window.electronStore.getVaultDirectoryForWindow()
+    const directoryPath = vaultDirectory
 
-    const finalPath = await window.path.join(directoryPath, directoryRelativePath)
-    window.fileSystem.createDirectory(finalPath)
+    const finalPath = joinPaths(directoryPath, directoryRelativePath)
+    createDirectory(finalPath)
     posthog.capture('created_new_directory_from_new_directory_modal')
     onClose()
   }
