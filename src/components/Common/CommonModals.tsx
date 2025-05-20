@@ -11,12 +11,13 @@ const CommonModals: React.FC = () => {
   const { isNewDirectoryModalOpen, setIsNewDirectoryModalOpen, isSettingsModalOpen, setIsSettingsModalOpen } =
     useModalOpeners()
 
-  const { noteToBeRenamed } = useVault()
+  const { noteToBeRenamed, dirToBeRenamed } = useVault()
 
   return (
     <div>
       <NewDirectoryComponent isOpen={isNewDirectoryModalOpen} onClose={() => setIsNewDirectoryModalOpen(false)} />
       {noteToBeRenamed && <RenameNoteModal />}
+      {dirToBeRenamed && <RenameDirModal />}
       <SettingsModal isOpen={isSettingsModalOpen} onClose={() => setIsSettingsModalOpen(false)} />
     </div>
   )

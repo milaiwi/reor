@@ -1,7 +1,7 @@
 import FileSystemService from "../FileSystemService/FileSystemService"
 import FileStateManager from "../FileStateManager/FileStateManager"
 import FileOperationsQueue from "./FileOperationController"
-import { FileInfo, FileState } from "electron/main/filesystem/types"
+import { FileInfo, FileState, FileInfoTree, FileInfoNode } from "electron/main/filesystem/types"
 import EventEmitter from '../../../lib/blocknote/core/shared/EventEmitter'
 
 // Define event types for FileOperationsManager
@@ -35,10 +35,32 @@ class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
   private queue: FileOperationsQueue
   private TIME_ELAPSED_SINCE_LAST_WRITE: number = 5
 
-  constructor(entries: FileInfo[]) {
+  constructor(entries: FileInfoTree) {
     super()
     this.service = new FileSystemService()
-    this.state = new FileStateManager(entries)
+    // Convert the tree to a flat list that includes both files and directories
+    const allEntries = entries.reduce((acc: FileInfo[], node: FileInfoNode) => {
+      acc.push({
+        name: node.name,
+        path: node.path,
+        relativePath: node.relativePath,
+        dateModified: node.dateModified,
+        dateCreated: node.dateCreated,
+        isDirectory: node.children !== undefined
+      })
+      if (node.children) {
+        acc.push(...node.children.map((child: FileInfoNode) => ({
+          name: child.name,
+          path: child.path,
+          relativePath: child.relativePath,
+          dateModified: child.dateModified,
+          dateCreated: child.dateCreated,
+          isDirectory: child.children !== undefined
+        })))
+      }
+      return acc
+    }, [])
+    this.state = new FileStateManager(allEntries)
     this.queue = new FileOperationsQueue()
 
     this.state.on('fileStateChanged', ({ path, state }) => {
@@ -47,15 +69,11 @@ class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
   }
 
   async readFile(path: string): Promise<string> {
-    // this.emit('fileReadStarted', path)
-
     try{
       await this.queue.waitFor(path)
       const content = await this.service.readFile(path)
-      // this.emit('fileReadCompleted', { path, content: content })
       return content
     } catch (err: any) {
-      // this.emit('fileReadCompleted', { path, error: err as Error })
       throw new Error(err)
     }
   }
@@ -65,20 +83,16 @@ class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
     if (!this.state.isDirty(path)) // Matches with disk file, no need to write!
       return
 
-    // this.emit('fileWriteStarted', path)
-
     try {
       await this.queue.enqueue(path, async () => {
         this.state.markSaving(path)
         try {
           await this.service.writeFile(path, content)
-          // this.emit('fileWriteCompleted', { path })
         } finally {
           this.state.markClean(path)
         }
       })
     } catch (err: any) {
-      // this.emit('fileWriteCompleted', { path, error: err as Error})
       throw new Error(err)
     }
   }
@@ -90,13 +104,24 @@ class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
    * @param content the content of the file to save
    */
   async saveFile(path: string, content: string): Promise<void> {
-    console.log(`Writing ${content} to ${path}`)
     this.writeFile(path, content)
   }
 
   async renameFile(oldPath: string, newPath: string): Promise<void> {
-    if (!this.state.getFileState(oldPath) || this.state.getFileState(newPath))
+    const oldState = this.state.getFileState(oldPath)
+    const newState = this.state.getFileState(newPath)
+    
+    // For directories, use moveDirectory instead
+    if (this.state.isDirectory(oldPath)) {
+      await this.moveDirectory(oldPath, newPath)
+      this.state.updatePath(oldPath, newPath)
       return
+    }
+    
+    // For files, check states
+    if (!oldState || newState) {
+      return
+    }
 
     this.emit('fileRenameStarted', { oldPath, newPath })
     try {
@@ -104,13 +129,13 @@ class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
         this.queue.waitFor(oldPath),
         this.queue.waitFor(newPath),
       ])
-  
+
       await this.queue.enqueue(oldPath, async () => {
         await this.service.renameFile(oldPath, newPath)
         this.state.updatePath(oldPath, newPath)
       })
     } catch (err: any) {
-      throw new Error
+      throw new Error(err)
     }
   }
 

@@ -16,11 +16,9 @@ const RenameNoteModal: React.FC = () => {
   const [newNoteName, setNewNoteName] = useState<string>('')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  console.log(`Inside rename note modal`)
   // Reset newNoteName when noteToBeRenamed changes
   useEffect(() => {
     if (noteToBeRenamed) {
-      console.log('Note to be renamed changed:', noteToBeRenamed);
       setNewNoteName('');
       setErrorMessage(null);
     }

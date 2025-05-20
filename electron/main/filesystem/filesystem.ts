@@ -39,7 +39,8 @@ export function GetFilesInfoTree(pathInput: string, parentRelativePath: string =
           path: pathInput,
           relativePath: parentRelativePath,
           dateModified: stats.mtime,
-          dateCreated: stats.birthtime, // Add the birthtime property here
+          dateCreated: stats.birthtime,
+          isDirectory: false
         })
       }
     } else {
@@ -62,6 +63,7 @@ export function GetFilesInfoTree(pathInput: string, parentRelativePath: string =
           relativePath: parentRelativePath,
           dateModified: stats.mtime,
           dateCreated: stats.birthtime,
+          isDirectory: true,
           children: childNodes,
         })
       }
@@ -82,6 +84,7 @@ export function flattenFileInfoTree(tree: FileInfoTree): FileInfo[] {
         relativePath: node.relativePath,
         dateModified: node.dateModified,
         dateCreated: node.dateCreated,
+        isDirectory: false
       })
     }
     if (isFileNodeDirectory(node) && node.children) {
@@ -131,6 +134,7 @@ export function createFileRecursive(filePath: string, content: string, charset?:
     relativePath: path.relative(dirname, filePathWithExtension),
     dateModified: new Date(),
     dateCreated: new Date(),
+    isDirectory: false
   }
 }
 

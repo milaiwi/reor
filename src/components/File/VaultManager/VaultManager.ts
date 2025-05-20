@@ -50,7 +50,7 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
 
   async initialize(): Promise<void> {
     await this.updateFileTree()
-    this.fileOperationsManager = new FileOperationsManager(this.flattenedFiles)
+    this.fileOperationsManager = new FileOperationsManager(this.fileTreeData)
     this.setupEventRelays()
     this.ready = true
 
@@ -66,22 +66,6 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
     this.fileOperationsManager.on('fileReadStarted', (path: string) => {
       this.emit('fileOperationStarted', { type: 'read', path })
     })
-
-    // this.fileOperationsManager.on('fileReadCompleted', ({ path, content, error }) => {
-    //   this.emit('fileOperationCompleted', { type: 'read', path, error: error })
-    //   this.emit('fileContentLoaded', { path, content: content, error: error })
-    // })
-
-    // File write events
-    // this.fileOperationsManager.on('fileWriteStarted', (path) => {
-    //   this.emit('fileOperationStarted', { type: 'write', path })
-    // })
-
-    // this.fileOperationsManager.on('fileWriteCompleted', ({ path, error}) => {
-    //   this.emit('fileOperationCompleted', { type: 'write', path, error: error })
-    //   this.emit('fileSaved', path)
-    //   this.emit('fileBecameClean', path)
-    // })
 
     // File delete events
     this.fileOperationsManager.on('fileDeleteCompleted', ({ path, error }) => {
@@ -181,6 +165,7 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
   async renameFile(oldPath: string, newPath: string): Promise<void> {
     if (!this.ready)
       throw new Error('VaultManager is not ready yet')
+    console.log(`oldPath ${oldPath} newPath ${newPath}`)
     const fileObject = await this.fileOperationsManager.renameFile(normalizePath(oldPath), normalizePath(newPath))
     this.updateFileTree()
     return fileObject

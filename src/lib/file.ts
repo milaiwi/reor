@@ -20,6 +20,7 @@ export function flattenFileInfoTree(tree: FileInfoTree): FileInfo[] {
         relativePath: node.relativePath,
         dateModified: node.dateModified,
         dateCreated: node.dateCreated,
+        isDirectory: false
       })
     }
     if (isFileNodeDirectory(node) && node.children) {

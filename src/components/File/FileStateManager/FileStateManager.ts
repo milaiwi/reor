@@ -20,7 +20,8 @@ class FileStateManager extends EventEmitter<FileStateEventTypes> {
           file: e,
           status: 'clean',
           error: undefined,
-          dirtyTimestamp: undefined
+          dirtyTimestamp: undefined,
+          isDirectory: e.isDirectory || false
         } satisfies FileState
       ])
     )
@@ -31,8 +32,8 @@ class FileStateManager extends EventEmitter<FileStateEventTypes> {
    * @param path of the file
    * @returns the FileState corresponding to the filePath
    */
-  getFileState(path: string) {
-    console.log(`Getting at path: ${path}`)
+  getFileState(path: string): FileState | undefined {
+    console.log('Getting at path:', path)
     return this.stateMap.get(path)
   }
 
@@ -60,7 +61,7 @@ class FileStateManager extends EventEmitter<FileStateEventTypes> {
    * 
    * @param path path to delete from stateMap
    */
-  clear(path: string) {
+  clear(path: string): void {
     console.log(`Clearing ${path} from: `, this.stateMap)
     console.log(`Clear properly: ${this.stateMap.delete(path)}`)
   }
@@ -71,14 +72,15 @@ class FileStateManager extends EventEmitter<FileStateEventTypes> {
    * @param path the path to the file
    * @param state the new state to register
    */
-  registerFile(path: string, file: FileInfo) {
+  registerFile(path: string, file: FileInfo): void {
     console.log(`StateMap:`, this.stateMap)
     if (!this.stateMap.get(path)) {
       const fileStateObject = {       
-        file: file,
+        file,
         status: 'clean',
         error: undefined,
-        dirtyTimestamp: undefined
+        dirtyTimestamp: undefined,
+        isDirectory: file.isDirectory || false
       } as FileState
       console.log(`Updating path: ${path}`)
       this.stateMap.set(path, fileStateObject)
@@ -89,7 +91,7 @@ class FileStateManager extends EventEmitter<FileStateEventTypes> {
    * marks the File at path dirty
    * @param path of the file
    */
-  markDirty(path: string) {
+  markDirty(path: string): void {
     const fileObject = this.stateMap.get(path)
     if (fileObject) {
       fileObject.status = 'dirty'
@@ -111,7 +113,7 @@ class FileStateManager extends EventEmitter<FileStateEventTypes> {
    * 
    * @param path of the file
    */
-  markClean(path: string) {
+  markClean(path: string): void {
     const fileObject = this.stateMap.get(path)
     if (fileObject) {
       fileObject.status = 'clean'
@@ -120,10 +122,11 @@ class FileStateManager extends EventEmitter<FileStateEventTypes> {
     }
   }
 
-  markSaving(path: string) {
+  markSaving(path: string): void {
     const fileObject = this.stateMap.get(path)
     if (fileObject) {
       fileObject.status = 'saving'
+      this.emit('fileStateChanged', { path, state: fileObject })
     }
   }
 
@@ -140,6 +143,11 @@ class FileStateManager extends EventEmitter<FileStateEventTypes> {
       fileObject.error = err
       this.emit('fileStateChanged', { path, state: fileObject })
     }
+  }
+
+  isDirectory(path: string): boolean {
+    const state = this.stateMap.get(path)
+    return state?.isDirectory || false
   }
 }
 

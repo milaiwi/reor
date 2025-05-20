@@ -28,6 +28,7 @@ const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data })
     replaceFile,
     moveDirectory,
     setNoteToBeRenamed,
+    setDirToBeRenamed,
     isFileInDirectory,
   } = useVault()
 
@@ -197,8 +198,12 @@ const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data })
       </ContextMenuItem>
       <ContextMenuItem onClick={openNewDirectoryModal}>New folder</ContextMenuItem>
       <ContextMenuItem onClick={() => {
-        console.log('Setting note to be renamed:', file.path);
-        setNoteToBeRenamed(file.path);
+        console.log('Setting to be renamed:', file.path);
+        if (isDirectory) {
+          setDirToBeRenamed(file.path);
+        } else {
+          setNoteToBeRenamed(file.path);
+        }
       }}>Rename</ContextMenuItem>
       <ContextMenuItem onClick={handleDelete}>Delete</ContextMenuItem>
     </>

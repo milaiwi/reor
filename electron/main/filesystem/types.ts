@@ -4,6 +4,7 @@ export type FileInfo = {
   relativePath: string
   dateModified: Date
   dateCreated: Date
+  isDirectory: boolean
 }
 
 export type FileState = {
@@ -11,6 +12,7 @@ export type FileState = {
   status: 'clean' | 'dirty' | 'loading' | 'saving' | 'error'
   error?: Error
   dirtyTimestamp?: number
+  isDirectory: boolean
   // saveScheduled?: boolean
 }
 

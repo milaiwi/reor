@@ -70,6 +70,8 @@ type VaultContextType = {
   // UI State
   noteToBeRenamed: string | null
   setNoteToBeRenamed: React.Dispatch<React.SetStateAction<string | null>>
+  dirToBeRenamed: string | null
+  setDirToBeRenamed: React.Dispatch<React.SetStateAction<string | null>>
 
   // Initialization state
   isReady: boolean
@@ -97,6 +99,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [suggestionsState, setSuggestionsState] = useState<SuggestionsState | null>()
   const [spellCheckEnabled, setSpellCheckEnabled] = useState<boolean>(false)
   const [noteToBeRenamed, setNoteToBeRenamed] = useState<string | null>(null)
+  const [dirToBeRenamed, setDirToBeRenamed] = useState<string | null>(null)
   const [needToWriteEditorContentToDisk, setNeedToWriteEditorContentToDisk] = useState<boolean>(false)
   const [needToIndexEditorContent, setNeedToIndexEditorContent] = useState<boolean>(false)
   const [currentlyChangingFilePath, setCurrentlyChangingFilePath] = useState(false)
@@ -527,6 +530,8 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     // UI state
     noteToBeRenamed,
     setNoteToBeRenamed,
+    dirToBeRenamed,
+    setDirToBeRenamed,
     
     // Initialization state
     isReady,
@@ -566,6 +571,8 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     addToNavigationHistory,
     noteToBeRenamed,
     setNoteToBeRenamed,
+    dirToBeRenamed,
+    setDirToBeRenamed,
     isReady,
     error,
     currentlyChangingFilePath

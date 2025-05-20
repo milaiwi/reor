@@ -311,7 +311,8 @@ const registerFileHandlers = (store: Store<StoreSchema>, _windowsManager: Window
       path: absolutePath,
       relativePath: parentRelativePath,
       dateModified: fileInfo.mtime,
-      dateCreated: fileInfo.birthtime, // Add the birthtime property here
+      dateCreated: fileInfo.birthtime,
+      isDirectory: fileInfo.isDirectory()
     }
   })
 }
