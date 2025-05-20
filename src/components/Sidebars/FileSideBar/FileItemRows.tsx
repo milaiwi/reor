@@ -1,5 +1,6 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { ListChildComponentProps } from 'react-window'
+import { toast } from 'react-toastify'
 import posthog from 'posthog-js'
 import { isFileNodeDirectory } from '@shared/utils'
 import { XStack, Text } from 'tamagui'
@@ -10,14 +11,16 @@ import { useContentContext } from '@/contexts/ContentContext'
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/ui/context-menu'
 import NewDirectoryComponent from '@/components/File/NewDirectory'
 import { getDirname, getPathBasename, joinPaths, normalizePath } from '@/lib/utils'
+import { BlockNoteEditor } from '@blocknote/core'
 
 const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data }) => {
   const { file, indentation } = data.filesAndIndentations[index]
+  const editorRef = useRef<BlockNoteEditor | null>(null)
 
   const {
     toggleDirectory,
     expandedDirectories,
-    currentFile: currentlyOpenFilePath,
+    editor,
     currentDirectory: selectedDirectory,
     selectDirectory,
     renameFile,
@@ -36,11 +39,20 @@ const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data })
 
   // Determine if file is directory and if it's selected
   const isDirectory = isFileNodeDirectory(file)
-  const isSelected = isDirectory ? file.path === selectedDirectory : file.path === currentlyOpenFilePath
+  const isSelected = isDirectory 
+    ? file.path === selectedDirectory 
+    : editor?.currentFilePath ? file.path === editor.currentFilePath : false
 
   // Styling and UI State
   const indentationPadding = indentation ? 10 * indentation : 0
   const isExpanded = expandedDirectories.get(file.path)
+
+  // Update editor ref whenever editor changes
+  useEffect(() => {
+    if (editor) {
+      editorRef.current = editor
+    }
+  }, [editor])
 
   // Drag and drop handlers
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -68,6 +80,17 @@ const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data })
       const destinationDirectory = isDirectory ? file.path : getDirname(file.path)
       const fileName = getPathBasename(sourcePath)
       const destinationPath = joinPaths(destinationDirectory, fileName)
+
+      const currentFilePath = editorRef.current?.currentFilePath
+      if (currentFilePath && normalizePath(sourcePath) === normalizePath(currentFilePath)) {
+        toast.error("Cannot drag file that is currently opened", {
+          className: 'mt-5',
+          autoClose: false,
+          closeOnClick: false,
+          draggable: false,
+        })
+        return
+      }
       
       // If src and destination are the same, do nothing
       if (normalizePath(sourcePath) === normalizePath(destinationPath))
@@ -95,7 +118,7 @@ const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data })
         }
       }
     },
-    [file.path, isDirectory, renameFile],
+    [file.path, isDirectory, renameFile, editorRef],
   )
 
   // Click handler for files and directories

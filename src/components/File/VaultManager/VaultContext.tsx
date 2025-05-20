@@ -1,5 +1,5 @@
 // VaultContext.tsx
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { toast } from 'react-toastify'
 import { useDebounce } from 'use-debounce'
 import VaultManager from './VaultManager'
@@ -93,7 +93,6 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [flattenedFiles, setFlattenedFiles] = useState<FileInfo[]>([])
   const [vaultDirectory, setVaultDirectory] = useState<string>('')
   const [expandedDirectories, setExpandedDirectories] = useState<Map<string, boolean>>(new Map())
-  const [currentFile, setCurrentFile] = useState<string | null>(null)
   const [currentDirectory, setCurrentDirectory] = useState<string | null>(null)
   const [fileStates, setFileStates] = useState<Map<string, FileState>>(new Map())
   const [savingFiles, setSavingFiles] = useState<Set<string>>(new Set())
@@ -107,7 +106,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [currentlyChangingFilePath, setCurrentlyChangingFilePath] = useState(false)
 
   // Creating a ref to store the current saveCurrentlyOpenedFile implementation -- needed since editor may not be initialized yet.
-  const saveCurrentlyOpenedFileRef = React.useRef<() => Promise<void>>(async () => {})
+  const saveCurrentlyOpenedFileRef = useRef<() => Promise<void>>(async () => {})
 
   // Navigation history
   const {
@@ -118,12 +117,12 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Save editor content to disk
   const saveEditorContentToDisk = async () => {
-    if (currentFile && needToWriteEditorContentToDisk && editor) {
+    if (editor?.currentFilePath && needToWriteEditorContentToDisk && editor) {
       const blocks = editor.topLevelBlocks
       const markdownContent = await editor.blocksToMarkdown(blocks)
 
       if (markdownContent !== null) {
-        await vaultManager.saveFile(currentFile, markdownContent)
+        await vaultManager.saveFile(editor.currentFilePath, markdownContent)
         setNeedToWriteEditorContentToDisk(false)
       }
     }
@@ -205,7 +204,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     
     // Listen for file selection events
     vaultManager.on('fileSelected', (path: string) => {
-      setCurrentFile(path)
+      editor?.setCurrentFilePath(path)
     })
     
     // Listen for directory selection events
@@ -235,23 +234,12 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     
     // Listen for file delete events
     vaultManager.on('fileDeleted', ({ path }) => {
-      if (currentFile === path) {
-        setCurrentFile(null)
+      if (editor?.currentFilePath === path) {
+        editor.setCurrentFilePath(null)
         editor?.replaceBlocks(editor.topLevelBlocks, [])
       }
     })
-
-    // Listen for file rename events
-    // vaultManager.on('fileRenamed', ({ oldPath, newPath, fileName }) => {
-    //   if (currentFile === oldPath) {
-    //     setCurrentFile(newPath)
-    //   }
-
-    //   removeFromNavigationHistory(oldPath)
-    //   addToNavigationHistory(newPath)
-    // })
   }, [
-    currentFile,
     editor,
     removeFromNavigationHistory,
     addToNavigationHistory
@@ -259,26 +247,26 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   
   // Auto-save on editor content change
   useEffect(() => {
-    if (debouncedEditor && !currentlyChangingFilePath && currentFile) {
+    if (debouncedEditor && !currentlyChangingFilePath && editor?.currentFilePath) {
       saveEditorContentToDisk()
 
       // Check if we need to rename a new file based on content
-      if (editor && currentFile) {
-        handleNewFileRenaming(currentFile)
+      if (editor) {
+        handleNewFileRenaming(editor.currentFilePath)
       }
     }
   }, [
     debouncedEditor,
-    currentFile,
+    editor?.currentFilePath,
     currentlyChangingFilePath
   ])
 
   // Handle window close event to save content
   useEffect(() => {
     const handleWindowClose = async () => {
-      if (currentFile && editor && editor.topLevelBlocks) {
+      if (editor?.currentFilePath && editor && editor.topLevelBlocks) {
         await saveEditorContentToDisk()
-        await window.database.indexFileInDatabase(currentFile)
+        await window.database.indexFileInDatabase(editor.currentFilePath)
       }
     }
 
@@ -290,21 +278,21 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return () => {
       removeWindowCloseListener()
     }
-  }, [currentFile, editor])
+  }, [editor])
 
   useEffect(() => {
     saveCurrentlyOpenedFileRef.current = async () => {
-      if (currentFile && needToWriteEditorContentToDisk && editor) {
+      if (editor?.currentFilePath && needToWriteEditorContentToDisk && editor) {
         const blocks = editor.topLevelBlocks
         const markdownContent = await editor.blocksToMarkdown(blocks)
   
         if (markdownContent !== null) {
-          await vaultManager.saveFile(currentFile, markdownContent)
+          await vaultManager.saveFile(editor.currentFilePath, markdownContent)
           setNeedToWriteEditorContentToDisk(false)
         }
       }
     }
-  }, [currentFile, editor, vaultManager])
+  }, [editor, vaultManager])
 
   // First-time app usage check
   const checkAppUsage = async () => {
@@ -318,8 +306,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }
 
   const openEmptyPage = () => {
-    setCurrentFile(null)
-    editor.setCurrentFilePath(null)
+    editor?.setCurrentFilePath(null)
   }
 
   // File operation wrappers
@@ -339,8 +326,8 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       removeFromNavigationHistory(oldPath)
       addToNavigationHistory(newPath)
 
-      if (currentFile === oldPath) {
-        setCurrentFile(newPath)
+      if (editor?.currentFilePath === oldPath) {
+        editor.setCurrentFilePath(newPath)
       }
     },
     [isReady]
@@ -349,7 +336,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const deleteFile = useCallback(
     (path: string) => {
       vaultManager.deleteFile(path)
-      if (editor.currentFilePath && arePathsEqual(editor.currentFilePath, path)) {
+      if (editor?.currentFilePath && arePathsEqual(editor.currentFilePath, path)) {
         if (navigationHistory.length > 0) {
           const newIndex = navigationHistory.length - 1
           openOrCreateFile(navigationHistory[newIndex], undefined)
@@ -442,14 +429,14 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Advanced file operations
   // Loads the file content into the editor
   const loadFileIntoEditor = async (filePath: string, startingPos?: number) => {
-    if (currentFile === filePath) return
+    if (editor?.currentFilePath === filePath) return
     setCurrentlyChangingFilePath(true)
 
     // Save current file before loading new one
-    if (currentFile) {
+    if (editor?.currentFilePath) {
       await saveEditorContentToDisk()
       if (needToIndexEditorContent) {
-        window.database.indexFileInDatabase(currentFile)
+        window.database.indexFileInDatabase(editor.currentFilePath)
         setNeedToIndexEditorContent(false)
       }
     }
@@ -468,13 +455,13 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       editor.scrollToParentBlock(startingPos)
 
     // Updating state
-    setCurrentFile(filePath)
+    console.log(`New content is: `, fileContent)
+    editor.setCurrentFilePath(filePath)
     setCurrentlyChangingFilePath(false)
 
     // Set current directory and update editor state
     const parentDirectory = getDirname(filePath)
     setCurrentDirectory(parentDirectory)
-    editor.setCurrentFilePath(filePath)
 
     // Add to navigation history
     addToNavigationHistory(filePath)
@@ -535,7 +522,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     isFileInDirectory,
     
     // File selection and opening
-    currentFile,
+    currentFile: editor?.currentFilePath ?? null,
     currentDirectory,
     selectFile,
     selectDirectory,
@@ -584,7 +571,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     toggleDirectory,
     getFilesInDirectory,
     isFileInDirectory,
-    currentFile,
+    editor?.currentFilePath,
     currentDirectory,
     selectFile,
     selectDirectory,
@@ -613,6 +600,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     error
   ])
   
+
   return <VaultContext.Provider value={contextValue}>{children}</VaultContext.Provider>
 }
 
