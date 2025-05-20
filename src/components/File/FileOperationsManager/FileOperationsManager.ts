@@ -121,8 +121,8 @@ class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
     try {
       await this.queue.enqueue(path, async () => {
         await this.service.deleteFile(path)
-        this.state.clear(path)
       })
+      this.state.clear(path)
 
       this.emit('fileDeleteCompleted', { path })
     } catch (err) {

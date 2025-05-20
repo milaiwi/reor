@@ -47,12 +47,14 @@ export function getNextAvailableFileNameGivenBaseName(
       return match && match[1] ? parseInt(match[1].trim(), 10) : 0
     })
 
+    console.log(`Existing fileNames: `, existingFilenames)
   if (existingNumbers.length === 0) {
     return `${baseName}.${extension}`
   }
 
   const maxNumber = Math.max(...existingNumbers)
 
+  console.log(`max number at ${maxNumber} for existingFileNames: `, existingFilenames)
   return `${baseName} ${maxNumber + 1}.${extension}`
 }
 

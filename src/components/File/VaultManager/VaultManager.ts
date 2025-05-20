@@ -3,6 +3,7 @@ import { FileInfo, FileInfoTree, FileState } from "electron/main/filesystem/type
 import { flattenFileInfoTree, getInvalidCharacterInFilePath } from "../../../lib/file";
 import EventEmitter from '../../../lib/blocknote/core/shared/EventEmitter'
 import { addExtensionIfNoExtensionPresent, getDirname, isPathAbsolute, joinPaths, normalizePath } from '@/lib/utils/file-util/file-utils';
+import { normalize } from 'path-browserify';
 
 
 export type VaultEventTypes = {
@@ -136,7 +137,8 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
   }
 
   selectDirectory(path: string | null): void {
-    this.selectedDirectoryPath = path
+    if (path)
+      this.selectedDirectoryPath = normalizePath(path)
     this.emit('directorySelected', path)
   }
 
@@ -145,38 +147,39 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
     
     return this.flattenedFiles.filter(file => {
       const fileDir = getDirname(file.path)
-      return fileDir === directoryPath
+      console.log(`File dir ${fileDir} for ${file}`)
+      return fileDir === normalizePath(directoryPath)
     })
   }
 
   fileExists(path: string): boolean {
-    return this.getFileAtPath(path) !== undefined
+    return this.getFileAtPath(normalizePath(path)) !== undefined
   }
 
   // File operations
   async readFile(path: string): Promise<string> {
     if (!this.ready)
       throw new Error('VaultManager is not ready yet')
-    return this.fileOperationsManager.readFile(path)
+    return this.fileOperationsManager.readFile(normalizePath(path))
   }
 
   async writeFile(path: string, content: string): Promise<void> {
     if (!this.ready)
       throw new Error('VaultManager is not ready yet')
-    this.fileOperationsManager.writeFile(path, content)
+    this.fileOperationsManager.writeFile(normalizePath(path), content)
   }
 
   async saveFile(path: string, content: string): Promise<void> {
     if (!this.ready)
       throw new Error('VaultManager is not ready yet')
     console.log(`Inside vault savefile!`)
-    return this.fileOperationsManager.saveFile(path, content)
+    return this.fileOperationsManager.saveFile(normalizePath(path), content)
   }
 
   async renameFile(oldPath: string, newPath: string): Promise<void> {
     if (!this.ready)
       throw new Error('VaultManager is not ready yet')
-    const fileObject = this.fileOperationsManager.renameFile(oldPath, newPath)
+    const fileObject = this.fileOperationsManager.renameFile(normalizePath(oldPath), normalizePath(newPath))
     this.updateFileTree()
     return fileObject
   }
@@ -184,7 +187,7 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
   async deleteFile(path: string): Promise<void> {
     if (!this.ready)
       throw new Error('VaultManager is not ready yet')
-    const fileObject = await this.fileOperationsManager.deleteFile(path)
+    const fileObject = await this.fileOperationsManager.deleteFile(normalizePath(path))
     this.updateFileTree()
     return fileObject
   }
@@ -192,11 +195,12 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
   async createFile(path: string, initialContent: string = ''): Promise<FileInfo> {
     if (!this.ready)
       throw new Error('Vault Manager is not ready yet')
-    const invalidCharacters = getInvalidCharacterInFilePath(path)
+    const pathNormalized = normalizePath(path)
+    const invalidCharacters = getInvalidCharacterInFilePath(pathNormalized)
     if (invalidCharacters)
       throw new Error(`File path contains invalid characters: ${invalidCharacters}`)
 
-    const filePathWithExtension = addExtensionIfNoExtensionPresent(path)
+    const filePathWithExtension = addExtensionIfNoExtensionPresent(pathNormalized)
     const isAbsolutePath = isPathAbsolute(filePathWithExtension)
     const absolutePath = isAbsolutePath
       ? filePathWithExtension
@@ -216,20 +220,20 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
   async autoSave(path: string, content: string): Promise<void> {
     if (!this.ready)
       throw new Error('VaultManager is not ready yet')
-    return this.fileOperationsManager.autoSave(path, content)
+    return this.fileOperationsManager.autoSave(normalizePath(path), content)
   }
 
   getFileAtPath(path: string): FileState | undefined {
     if (!this.ready)
       throw new Error('Vault manager is not ready yet')
     console.log(`Path: `, path)
-    return this.fileOperationsManager.getFileAtPath(path)
+    return this.fileOperationsManager.getFileAtPath(normalizePath(path))
   }
 
   markDirty(path: string) {
     if (!this.ready)
       throw new Error('Vault manager is not ready yet')
-    return this.fileOperationsManager.markDirty(path)
+    return this.fileOperationsManager.markDirty(normalizePath(path))
   }
 }
 

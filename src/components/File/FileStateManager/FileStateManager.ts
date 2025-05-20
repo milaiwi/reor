@@ -1,5 +1,6 @@
 import { FileInfo, FileState } from "electron/main/filesystem/types"
 import EventEmitter from "@/lib/blocknote/core/shared/EventEmitter"
+import { normalizePath } from "@/lib/utils"
 
 export type FileStateEventTypes = {
   'fileStateChanged': { path: string, state: FileState }
@@ -13,14 +14,14 @@ class FileStateManager extends EventEmitter<FileStateEventTypes> {
     super() 
     console.log(`Initiating FileStateManager with: `, entries)
     this.stateMap = new Map(
-      entries.map((e) => [
-        e.path, // path to the file 
-        {       // the FileState object
+      entries.map((e): [string, FileState] => [
+        normalizePath(e.path),
+        {
           file: e,
           status: 'clean',
           error: undefined,
           dirtyTimestamp: undefined
-        } satisfies FileState,
+        } satisfies FileState
       ])
     )
   }
@@ -59,7 +60,8 @@ class FileStateManager extends EventEmitter<FileStateEventTypes> {
    * @param path path to delete from stateMap
    */
   clear(path: string) {
-    this.stateMap.delete(path)
+    console.log(`Clearing ${path} from: `, this.stateMap)
+    console.log(`Clear properly: ${this.stateMap.delete(path)}`)
   }
 
   /**

@@ -90,6 +90,8 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
         vaultDirectory
 
       // Get files in the selected directory
+      console.log(`Parent Directory: `, parentDirectory)
+      console.log(`File in directory ${directoryToMakeFileIn}:`, getFilesInDirectory(directoryToMakeFileIn))
       const filesInDirectory = parentDirectory ?
         getFilesInDirectory(directoryToMakeFileIn) :
         flattenedFiles.filter(file => getDirname(file.path) === directoryToMakeFileIn)

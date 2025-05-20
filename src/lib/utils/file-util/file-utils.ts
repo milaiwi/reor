@@ -6,26 +6,26 @@ import path from 'path-browserify';
 * - Also resolves '.', '..', and duplicate slashes
 */
 export function normalizePath(p: string): string {
- if (!p) return p
+  if (!p) return p
 
- const platform = getPlatform()
+  // Convert backslashes to forward slashes
+  let normalized = p.replace(/\\/g, '/')
 
- // Step 1: Normalize path (removes '.', '..', duplicate separators)
- let normalized = path.normalize(p.replace(/\\/g, '/')) // path-browserify uses POSIX normalization
+  // Remove duplicate slashes (except after drive letter)
+  normalized = normalized.replace(/\/+/g, '/')
 
- // Step 2: Convert to correct slash type
- if (platform === 'windows') {
-   // Convert forward slashes to backslashes
-   normalized = normalized.replace(/\//g, '\\')
+  // Uppercase drive letter on Windows (e.g., c:/ → C:/)
+  const winDriveMatch = normalized.match(/^([a-zA-Z]):\//)
+  if (winDriveMatch) {
+    normalized = winDriveMatch[1].toUpperCase() + normalized.substring(1)
+  }
 
-   // Normalize drive letter to uppercase
-   const driveLetterMatch = normalized.match(/^([a-z]):\\/i)
-   if (driveLetterMatch) {
-     normalized = driveLetterMatch[1].toUpperCase() + normalized.slice(1)
-   }
- }
+  // Remove trailing slash (unless it's root like C:/ or /)
+  if (normalized.length > 1 && normalized.endsWith('/')) {
+    normalized = normalized.slice(0, -1)
+  }
 
- return normalized
+  return normalized
 }
 
 /**
@@ -76,6 +76,7 @@ export function getRelativePath(from: string, to: string): string {
  * Gets the parent directory of a file.
  */
 export function getDirname(filePath: string): string {
+  console.log(`inside getDirName: ${path.dirname(normalizePath(filePath))} for ${filePath}`)
   return normalizePath(path.dirname(normalizePath(filePath)));
 }
 

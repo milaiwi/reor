@@ -7,7 +7,8 @@ import { Input, H3 } from 'tamagui'
 import { NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native'
 import ReorModal from '../Common/Modal'
 import { getInvalidCharacterInFilePath } from '@/lib/file'
-import { useFileContext } from '@/contexts/FileContext'
+import { useVault } from './VaultManager/VaultContext'
+import { getPlatformSpecificSep, getRelativePath } from '@/lib/utils'
 
 interface NewDirectoryComponentProps {
   isOpen: boolean
@@ -19,22 +20,24 @@ const NewDirectoryComponent: React.FC<NewDirectoryComponentProps> = ({ isOpen, o
   const [directoryRelativePath, setDirectoryRelativePath] = useState<string>('')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  const { selectedDirectory } = useFileContext()
+  // const { selectedDirectory } = useFileContext()
+  const { currentDirectory, vaultDirectory } = useVault()
+
+  console.log(`Current directory: `, currentDirectory)
 
   useEffect(() => {
     const setupInitialPath = async () => {
-      const vaultDirectory = await window.electronStore.getVaultDirectoryForWindow()
 
       let fullPath = ''
       if (parentDirectoryPath) {
         fullPath = parentDirectoryPath
-      } else if (selectedDirectory) {
-        fullPath = selectedDirectory
+      } else if (currentDirectory) {
+        fullPath = currentDirectory
       }
 
       if (fullPath) {
-        const relativePath = await window.path.relative(vaultDirectory, fullPath)
-        const pathWithSeparator = relativePath ? `${relativePath}${await window.path.pathSep()}` : ''
+        const relativePath = getRelativePath(vaultDirectory, fullPath)
+        const pathWithSeparator = relativePath ? `${relativePath}${getPlatformSpecificSep()}` : ''
         setDirectoryRelativePath(pathWithSeparator)
       }
     }
@@ -42,7 +45,7 @@ const NewDirectoryComponent: React.FC<NewDirectoryComponentProps> = ({ isOpen, o
     if (isOpen) {
       setupInitialPath()
     }
-  }, [isOpen, parentDirectoryPath, selectedDirectory])
+  }, [isOpen, parentDirectoryPath, currentDirectory])
 
   useEffect(() => {
     if (!isOpen) {
