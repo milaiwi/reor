@@ -118,6 +118,7 @@ const fileSystem = {
   getFiles: createIPCHandler<(filePaths: string[]) => Promise<FileInfoWithContent[]>>('get-files'),
   getFileInfo:
     createIPCHandler<(absolutePath: string, parentRelativePath: string) => Promise<FileInfo>>('get-file-info'),
+  moveDirectory: createIPCHandler<(props: { sourcePath: string, destinationPath: string }) => Promise<void>>('move-directory'),
 }
 
 const path = {

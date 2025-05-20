@@ -222,6 +222,13 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
     this.updateFileTree()
   }
 
+  async moveDirectory(sourcePath: string, destinationPath: string): Promise<void> {
+    if (!this.ready)
+      throw new Error('Vault manager is not ready yet')
+    await this.fileOperationsManager.moveDirectory(sourcePath, destinationPath)
+    await this.updateFileTree()
+  }
+
   async createDirectory(dirPath: string): Promise<void> {
     if (!this.ready)
       throw new Error('Vault Manager is not ready yet')

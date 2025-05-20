@@ -29,6 +29,10 @@ class FileSystemService {
     return await window.fileSystem.createDirectory(dirPath)
   }
 
+  async moveDirectory(sourcePath: string, destinationPath: string): Promise<void> {
+    return await window.fileSystem.moveDirectory({ sourcePath, destinationPath })
+  }
+
   async checkFileExists(filePath: string): Promise<boolean> {
     return await window.fileSystem.checkFileExists(filePath)
   }

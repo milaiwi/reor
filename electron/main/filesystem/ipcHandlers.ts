@@ -1,14 +1,22 @@
 import * as fs from 'fs'
 import * as path from 'path'
 
-import { ipcMain, dialog, app } from 'electron'
+import { ipcMain, dialog, app, BrowserWindow } from 'electron'
 import Store from 'electron-store'
 
 import WindowsManager from '../common/windowManager'
 import { StoreSchema } from '../electron-store/storeConfig'
 import { handleFileRename, handleFileReplace, updateFileInTable } from '../vector-database/tableHelperFunctions'
 
-import { GetFilesInfoTree, createFileRecursive, isHidden, GetFilesInfoListForListOfPaths } from './filesystem'
+import { 
+  GetFilesInfoTree, 
+  createFileRecursive, 
+  isHidden, 
+  GetFilesInfoListForListOfPaths,
+  GetFilesInfoList,
+  startWatchingDirectory,
+  updateFileListForRenderer
+} from './filesystem'
 import { FileInfoTree, WriteFileProps, RenameFileProps, ReplaceFileProps, FileInfoWithContent, FileInfo } from './types'
 import ImageStorage from './storage/ImageStore'
 import VideoStorage from './storage/VideoStore'
@@ -147,6 +155,70 @@ const registerFileHandlers = (store: Store<StoreSchema>, _windowsManager: Window
     }
   
     await handleFileReplace(windowsManager, windowInfo, replaceFileProps, event.sender)
+  })
+
+  ipcMain.handle('move-directory', async (event, { sourcePath, destinationPath }: { sourcePath: string, destinationPath: string }) => {
+    const windowInfo = windowsManager.getWindowInfoForContents(event.sender)
+  
+    if (!windowInfo) {
+      throw new Error('Window info not found.')
+    }
+
+    windowsManager.watcher?.unwatch(windowInfo.vaultDirectoryForWindow)
+
+    try {
+      // First check if destination exists
+      if (fs.existsSync(destinationPath)) {
+        throw new Error(`Directory already exists at destination: ${destinationPath}`)
+      }
+
+      // Create parent directory if it doesn't exist
+      const parentDir = path.dirname(destinationPath)
+      if (!fs.existsSync(parentDir)) {
+        fs.mkdirSync(parentDir, { recursive: true })
+      }
+
+      // Move the directory
+      if (process.platform === 'win32') {
+        await windowsManager.watcher?.close()
+        await new Promise<void>((resolve, reject) => {
+          fs.rename(sourcePath, destinationPath, (err) => {
+            if (err) {
+              reject(err)
+              return
+            }
+
+            const win = BrowserWindow.fromWebContents(event.sender)
+            if (win) {
+              windowsManager.watcher = startWatchingDirectory(win, windowInfo.vaultDirectoryForWindow)
+              updateFileListForRenderer(win, windowInfo.vaultDirectoryForWindow)
+            }
+            resolve()
+          })
+        })
+      } else {
+        await new Promise<void>((resolve, reject) => {
+          fs.rename(sourcePath, destinationPath, (err) => {
+            if (err) {
+              reject(err)
+              return
+            }
+            windowsManager.watcher?.add(windowInfo.vaultDirectoryForWindow)
+            resolve()
+          })
+        })
+      }
+
+      // Update database entries for all files in the moved directory
+      const filesInDir = GetFilesInfoList(sourcePath)
+      for (const file of filesInDir) {
+        const newPath = file.path.replace(sourcePath, destinationPath)
+        await windowInfo.dbTableClient.updateDBItemsWithNewFilePath(file.path, newPath)
+      }
+    } catch (error) {
+      console.error(`Error in move-directory: ${error}`)
+      throw error
+    }
   })
 
   ipcMain.handle('index-file-in-database', async (event, filePath: string) => {

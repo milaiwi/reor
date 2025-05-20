@@ -171,6 +171,24 @@ class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
     })
   }
 
+  async moveDirectory(sourcePath: string, destinationPath: string): Promise<void> {
+    await Promise.all([
+      this.queue.waitFor(sourcePath),
+      this.queue.waitFor(destinationPath),
+    ])
+
+    return this.queue.enqueue(destinationPath, async () => {
+      try {
+        await this.service.moveDirectory(sourcePath, destinationPath)
+        this.state.updatePath(sourcePath, destinationPath)
+        console.log(`Successfully moved directory from ${sourcePath} to ${destinationPath}`)
+      } catch (error) {
+        console.error(`Error in moveDirectory: ${error}`)
+        throw error
+      }
+    })
+  }
+
   async createDirectory(dirPath: string): Promise<void> {
     this.queue.enqueue(dirPath, async () => {
       await this.service.createDirectory(dirPath)

@@ -26,6 +26,7 @@ const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data })
     renameFile,
     deleteFile,
     replaceFile,
+    moveDirectory,
     setNoteToBeRenamed,
     isFileInDirectory,
   } = useVault()
@@ -67,8 +68,10 @@ const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data })
       e.stopPropagation()
       e.dataTransfer.setData('text/plain', file.path)
       e.dataTransfer.effectAllowed = 'move'
+      // Add a custom data attribute to identify if it's a directory
+      e.dataTransfer.setData('isDirectory', isDirectory.toString())
     },
-    [file.path],
+    [file.path, isDirectory],
   )
 
   const handleDrop = useCallback(
@@ -77,9 +80,21 @@ const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data })
       e.stopPropagation()
       setIsDragOver(false)
       const sourcePath = e.dataTransfer.getData('text/plain')
+      const isSourceDirectory = e.dataTransfer.getData('isDirectory') === 'true'
       const destinationDirectory = isDirectory ? file.path : getDirname(file.path)
       const fileName = getPathBasename(sourcePath)
       const destinationPath = joinPaths(destinationDirectory, fileName)
+
+      // Prevent dropping a directory into itself or its subdirectories
+      if (isSourceDirectory && destinationPath.startsWith(sourcePath)) {
+        toast.error("Cannot move a directory into itself or its subdirectories", {
+          className: 'mt-5',
+          autoClose: false,
+          closeOnClick: false,
+          draggable: false,
+        })
+        return
+      }
 
       const currentFilePath = editorRef.current?.currentFilePath
       if (currentFilePath && normalizePath(sourcePath) === normalizePath(currentFilePath)) {
@@ -96,29 +111,40 @@ const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data })
       if (normalizePath(sourcePath) === normalizePath(destinationPath))
         return
 
-      console.log(`Checking if file exists: `, destinationDirectory, fileName)
+      // Check if destination already exists
       const fileExists = isFileInDirectory(destinationDirectory, fileName)
       if (fileExists) {
-        const confirmReplace = window.confirm(`A file named "${fileName}" already exists in this location. Do you want to replace it?`)
+        const confirmReplace = window.confirm(
+          `A ${isSourceDirectory ? 'directory' : 'file'} named "${fileName}" already exists in this location. Do you want to replace it?`
+        )
 
         if (confirmReplace) {
           try {
-            console.log(`Replacing file! ${normalizePath(destinationPath)} with ${normalizePath(sourcePath)}`)
-            await replaceFile(normalizePath(sourcePath), normalizePath(destinationPath))
+            if (isSourceDirectory) {
+              await moveDirectory(sourcePath, destinationPath)
+            } else {
+              await replaceFile(normalizePath(sourcePath), normalizePath(destinationPath))
+            }
           } catch (error) {
-            console.error('Failed to replace file:', error)
+            console.error('Failed to replace:', error)
+            toast.error(`Failed to replace ${isSourceDirectory ? 'directory' : 'file'}`)
           }
         }
       } else {
-        console.log(`File does not exist!`)
         try {
-          renameFile(normalizePath(sourcePath), normalizePath(destinationPath))
+          console.log(`Dropping ${sourcePath} into ${destinationPath}`)
+          if (isSourceDirectory) {
+            await moveDirectory(sourcePath, destinationPath)
+          } else {
+            renameFile(normalizePath(sourcePath), normalizePath(destinationPath))
+          }
         } catch (error) {
-          console.error(`Failed to move file:`, error)
+          console.error(`Failed to move ${isSourceDirectory ? 'directory' : 'file'}:`, error)
+          toast.error(`Failed to move ${isSourceDirectory ? 'directory' : 'file'}`)
         }
       }
     },
-    [file.path, isDirectory, renameFile, editorRef],
+    [file.path, isDirectory, renameFile, replaceFile, isFileInDirectory],
   )
 
   // Click handler for files and directories
