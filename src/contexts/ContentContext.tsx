@@ -64,7 +64,6 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
         // It's a chat, open it
         openNewChat(pathOrChatID)
       } else {
-        console.log(`Opening in editor`)
         // It's a file, open it in the editor
         setShowEditor(true)
         openOrCreateFile(pathOrChatID, optionalContentToWriteOnCreate, startingPos)
@@ -90,8 +89,6 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
         vaultDirectory
 
       // Get files in the selected directory
-      console.log(`Parent Directory: `, parentDirectory)
-      console.log(`File in directory ${directoryToMakeFileIn}:`, getFilesInDirectory(directoryToMakeFileIn))
       const filesInDirectory = parentDirectory ?
         getFilesInDirectory(directoryToMakeFileIn) :
         flattenedFiles.filter(file => getDirname(file.path) === directoryToMakeFileIn)
@@ -102,10 +99,8 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
         'Untitled',
       )
 
-      console.log(`DirectoryToMakeFileIn: ${directoryToMakeFileIn}, with fileName: ${fileName}`)
       // Create the full path and open the content
       const finalPath = joinPaths(directoryToMakeFileIn, fileName)
-      console.log(`Final path to open is: ${finalPath}`)
       openContent(finalPath, `## `)
       
       // Analytics

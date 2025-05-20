@@ -56,7 +56,6 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
 
     const rawVaultDirectory = await window.electronStore.getVaultDirectoryForWindow()
     this.vaultDirectory = normalizePath(rawVaultDirectory)
-    console.log(`This vault directory: `, this.vaultDirectory)
   }
 
   /**
@@ -147,7 +146,6 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
     
     return this.flattenedFiles.filter(file => {
       const fileDir = getDirname(file.path)
-      console.log(`isFileInDirectory ${normalizePath(fileDir)} for ${normalizePath(directoryPath)} equal ${normalizePath(fileDir) === normalizePath(directoryPath)}`)
       return normalizePath(fileDir) === normalizePath(directoryPath)
     })
   }
@@ -177,7 +175,6 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
   async saveFile(path: string, content: string): Promise<void> {
     if (!this.ready)
       throw new Error('VaultManager is not ready yet')
-    console.log(`Inside vault savefile!`)
     return this.fileOperationsManager.saveFile(normalizePath(path), content)
   }
 
@@ -209,7 +206,6 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
       : joinPaths(this.vaultDirectory, filePathWithExtension)
      
     const fileState = this.getFileAtPath(absolutePath)
-    console.log(`FileState: ${fileState}`)
     if (!fileState) {
       const newFile = await this.fileOperationsManager.createFile(absolutePath, initialContent)
       if (!newFile) throw new Error(`Could not create file ${filePathWithExtension}`)
@@ -243,7 +239,6 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
   getFileAtPath(path: string): FileState | undefined {
     if (!this.ready)
       throw new Error('Vault manager is not ready yet')
-    console.log(`Path: `, path)
     return this.fileOperationsManager.getFileAtPath(normalizePath(path))
   }
 
