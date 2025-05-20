@@ -74,6 +74,7 @@ type VaultContextType = {
   // Initialization state
   isReady: boolean
   error: Error | null
+  currentlyChangingFilePath: boolean
 }
 
 // Create the context with a default value
@@ -529,7 +530,8 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     
     // Initialization state
     isReady,
-    error
+    error,
+    currentlyChangingFilePath
   }), [
     fileTree,
     flattenedFiles,
@@ -565,7 +567,8 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     noteToBeRenamed,
     setNoteToBeRenamed,
     isReady,
-    error
+    error,
+    currentlyChangingFilePath
   ])
   
 

@@ -10,11 +10,12 @@ import {
   LinkToolbarPositioner,
 } from '@/lib/blocknote'
 import SearchBar from './Search/SearchBar'
+import LoadingAnimation from './ui/src/LoadingAnimation'
 
 const EditorManager: React.FC = () => {
   const [editorFlex, setEditorFlex] = useState(true)
 
-  const { editor, suggestionsState, flattenedFiles } = useVault()
+  const { editor, suggestionsState, flattenedFiles, currentlyChangingFilePath } = useVault()
   const [showDocumentStats, setShowDocumentStats] = useState(false)
 
   useEffect(() => {
@@ -54,13 +55,17 @@ const EditorManager: React.FC = () => {
         className={`relative h-full py-4 ${editorFlex ? 'flex justify-center px-24' : 'px-12'} ${showDocumentStats ? 'pb-3' : ''}`}
       >
         <YStack className="relative size-full">
-          {editor && (
-            <BlockNoteView editor={editor}>
-              <FormattingToolbarPositioner editor={editor} />
-              <SlashMenuPositioner editor={editor} />
-              <SideMenuPositioner editor={editor} placement="left" />
-              <LinkToolbarPositioner editor={editor} />
-            </BlockNoteView>
+          {currentlyChangingFilePath ? (
+            <LoadingAnimation />
+          ) : (
+            editor && (
+              <BlockNoteView editor={editor}>
+                <FormattingToolbarPositioner editor={editor} />
+                <SlashMenuPositioner editor={editor} />
+                <SideMenuPositioner editor={editor} placement="left" />
+                <LinkToolbarPositioner editor={editor} />
+              </BlockNoteView>
+            )
           )}
         </YStack>
       </YStack>
