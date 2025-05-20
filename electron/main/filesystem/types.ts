@@ -39,3 +39,8 @@ export type RenameFileProps = {
   oldFilePath: string
   newFilePath: string
 }
+
+export interface ReplaceFileProps {
+  sourcePath: string;
+  destinationPath: string;
+}

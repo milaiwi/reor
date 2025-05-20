@@ -147,9 +147,14 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
     
     return this.flattenedFiles.filter(file => {
       const fileDir = getDirname(file.path)
-      console.log(`File dir ${fileDir} for ${file}`)
-      return fileDir === normalizePath(directoryPath)
+      console.log(`isFileInDirectory ${normalizePath(fileDir)} for ${normalizePath(directoryPath)} equal ${normalizePath(fileDir) === normalizePath(directoryPath)}`)
+      return normalizePath(fileDir) === normalizePath(directoryPath)
     })
+  }
+
+  isFileInDirectory(directoryPath: string, name: string): boolean {
+    const flatFiles = this.getFilesInDirectory(directoryPath)
+    return flatFiles.some(file => file.name === name)
   }
 
   fileExists(path: string): boolean {
@@ -196,9 +201,6 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
     if (!this.ready)
       throw new Error('Vault Manager is not ready yet')
     const pathNormalized = normalizePath(path)
-    const invalidCharacters = getInvalidCharacterInFilePath(pathNormalized)
-    if (invalidCharacters)
-      throw new Error(`File path contains invalid characters: ${invalidCharacters}`)
 
     const filePathWithExtension = addExtensionIfNoExtensionPresent(pathNormalized)
     const isAbsolutePath = isPathAbsolute(filePathWithExtension)
@@ -217,15 +219,17 @@ class VaultManager extends EventEmitter<VaultEventTypes> {
     return fileState.file
   }
 
+  async replaceFile(sourcePath: string, destinationPath: string): Promise<void> {
+    if (!this.ready)
+      throw new Error('VaultManager is not ready yet')
+    await this.fileOperationsManager.replaceFile(sourcePath, destinationPath)
+    this.updateFileTree()
+  }
+
   async createDirectory(dirPath: string): Promise<void> {
     if (!this.ready)
       throw new Error('Vault Manager is not ready yet')
     const pathNormalized = normalizePath(dirPath)
-    const invalidCharacters = getInvalidCharacterInFilePath(pathNormalized)
-    if (invalidCharacters)
-      throw new Error(`File path contains invalid characters: ${invalidCharacters}`)
-
-    console.log(`Creating directory at path: ${pathNormalized}`)
     await this.fileOperationsManager.createDirectory(pathNormalized)
     await this.updateFileTree()
   }

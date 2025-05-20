@@ -1,6 +1,6 @@
 import { FileInfo, FileState } from "electron/main/filesystem/types"
 import EventEmitter from "@/lib/blocknote/core/shared/EventEmitter"
-import { normalizePath } from "@/lib/utils"
+import { getPathBasename, normalizePath } from "@/lib/utils"
 
 export type FileStateEventTypes = {
   'fileStateChanged': { path: string, state: FileState }
@@ -44,12 +44,13 @@ class FileStateManager extends EventEmitter<FileStateEventTypes> {
    */
   updatePath(oldPath: string, newPath: string) {
     const oldFileObject = this.stateMap.get(oldPath)
-    const newFileObject = this.stateMap.get(newPath)
     // For this to work, a file at oldPath must exist and a file at newFile cannot exist.
-    if (!oldFileObject || newFileObject)
+    if (!oldFileObject)
       return 
     
     oldFileObject.file.path = newPath
+    oldFileObject.file.name = getPathBasename(newPath)
+
     this.stateMap.set(newPath, oldFileObject)
     this.stateMap.delete(oldPath)
   }

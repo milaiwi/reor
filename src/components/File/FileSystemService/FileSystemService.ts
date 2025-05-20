@@ -13,6 +13,10 @@ class FileSystemService {
     return await window.fileSystem.renameFile({ oldFilePath: oldPath, newFilePath: newPath })
   }
 
+  async replaceFile(sourcePath: string, destinationPath: string): Promise<void> {
+    return await window.fileSystem.replaceFile({ sourcePath, destinationPath })
+  }
+
   async deleteFile(filePath: string): Promise<void> {
     return await window.fileSystem.deleteFile(filePath)
   }

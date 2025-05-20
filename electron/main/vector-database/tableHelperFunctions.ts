@@ -11,7 +11,7 @@ import {
   updateFileListForRenderer,
   startWatchingDirectory,
 } from '../filesystem/filesystem'
-import { FileInfo, FileInfoTree, RenameFileProps } from '../filesystem/types'
+import { FileInfo, FileInfoTree, RenameFileProps, ReplaceFileProps } from '../filesystem/types'
 
 import LanceDBTableWrapper, { convertRecordToDBType } from './lanceTableWrapper'
 import { DBEntry, DatabaseFields } from './schema'
@@ -84,6 +84,70 @@ export const handleFileRename = async (
   }
 
   await windowInfo.dbTableClient.updateDBItemsWithNewFilePath(renameFileProps.oldFilePath, renameFileProps.newFilePath)
+}
+
+export const handleFileReplace = async (
+  windowsManager: WindowsManager,
+  windowInfo: { vaultDirectoryForWindow: string; dbTableClient: any },
+  replaceFileProps: ReplaceFileProps,
+  sender: Electron.WebContents,
+): Promise<void> => {
+  windowsManager.watcher?.unwatch(windowInfo.vaultDirectoryForWindow)
+
+  try {
+    // First, delete the destination file if it exists
+    try {
+      await fsPromises.unlink(replaceFileProps.destinationPath)
+      console.log(`Deleted existing file at ${replaceFileProps.destinationPath}`)
+    } catch (error) {
+      // If the file doesn't exist, that's fine - proceed with the rename
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+        console.error(`Error deleting destination file: ${error}`)
+        throw error
+      }
+    }
+
+    // Now, rename the source file to the destination
+    if (process.platform === 'win32') {
+      await windowsManager.watcher?.close()
+      await new Promise<void>((resolve, reject) => {
+        fs.rename(replaceFileProps.sourcePath, replaceFileProps.destinationPath, (err) => {
+          if (err) {
+            reject(err)
+            return
+          }
+
+          const win = BrowserWindow.fromWebContents(sender)
+          if (win) {
+            // eslint-disable-next-line no-param-reassign
+            windowsManager.watcher = startWatchingDirectory(win, windowInfo.vaultDirectoryForWindow)
+            updateFileListForRenderer(win, windowInfo.vaultDirectoryForWindow)
+          }
+          resolve()
+        })
+      })
+    } else {
+      await new Promise<void>((resolve, reject) => {
+        fs.rename(replaceFileProps.sourcePath, replaceFileProps.destinationPath, (err) => {
+          if (err) {
+            reject(err)
+            return
+          }
+          windowsManager.watcher?.add(windowInfo.vaultDirectoryForWindow)
+          resolve()
+        })
+      })
+    }
+
+    // Update database if needed
+    await windowInfo.dbTableClient.updateDBItemsWithNewFilePath(
+      replaceFileProps.sourcePath, 
+      replaceFileProps.destinationPath
+    )
+  } catch (error) {
+    console.error(`Error in handleFileReplace: ${error}`)
+    throw error
+  }
 }
 
 export const convertFileInfoListToDBItems = async (filesInfoList: FileInfo[]): Promise<DBEntry[][]> => {

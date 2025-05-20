@@ -35,6 +35,7 @@ type VaultContextType = {
   expandedDirectories: Map<string, boolean>
   toggleDirectory: (path: string) => void
   getFilesInDirectory: (path: string) => FileInfo[]
+  isFileInDirectory: (directoryPath: string, name: string) => boolean 
   
   // File selection and opening
   currentFile: string | null
@@ -48,6 +49,7 @@ type VaultContextType = {
   renameFile: (oldPath: string, newPath: string) => void
   deleteFile: (path: string) => void
   createFile: (path: string, content: string) => Promise<FileInfo>
+  replaceFile: (sourcePath: string, destinationPath: string) => Promise<void>
   createDirectory: (dirPath: string) => Promise<void>
   
   // Advanced file operations
@@ -116,7 +118,6 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Save editor content to disk
   const saveEditorContentToDisk = async () => {
-    console.log(`CurrentFile`, currentFile)
     if (currentFile && needToWriteEditorContentToDisk && editor) {
       const blocks = editor.topLevelBlocks
       const markdownContent = await editor.blocksToMarkdown(blocks)
@@ -168,7 +169,6 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setFileTree(vaultManager.fileTreeData)
         setFlattenedFiles(vaultManager.flattenedFiles)
         setVaultDirectory(vaultManager.vaultDirectory)
-        console.log(`Vault directory is: ${vaultManager.vaultDirectory}`)
 
         // Load spell check setting
         const storedSpellCheckEnabled = await window.electronStore.getSpellCheckMode()
@@ -194,13 +194,11 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setExpandedDirectories(prev => {
         const newMap = new Map(prev)
         newMap.set(path, isExpanded)
-        console.log(`Updated expandedDirectories, ${path} = ${isExpanded}`);
         return newMap
       })
     })
 
     vaultManager.on('treeUpdated', ({ tree, flattenedFiles }) => {
-      console.log(`Tree updated event received`, tree)
       setFileTree(tree)
       setFlattenedFiles(flattenedFiles)
     })
@@ -237,7 +235,6 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     
     // Listen for file delete events
     vaultManager.on('fileDeleted', ({ path }) => {
-      console.log(`File got deleted!`)
       if (currentFile === path) {
         setCurrentFile(null)
         editor?.replaceBlocks(editor.topLevelBlocks, [])
@@ -297,7 +294,6 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     saveCurrentlyOpenedFileRef.current = async () => {
-      console.log(`CurrentFile`, currentFile)
       if (currentFile && needToWriteEditorContentToDisk && editor) {
         const blocks = editor.topLevelBlocks
         const markdownContent = await editor.blocksToMarkdown(blocks)
@@ -344,7 +340,6 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       addToNavigationHistory(newPath)
 
       if (currentFile === oldPath) {
-        console.log(`Rename is old path!`)
         setCurrentFile(newPath)
       }
     },
@@ -371,6 +366,11 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     [isReady]
   )
 
+  const replaceFile = useCallback(
+    (sourcePath: string, destinationPath: string) => vaultManager.replaceFile(sourcePath, destinationPath),
+    [isReady]
+  )
+
   const createDirectory = useCallback(
     (dirPath: string) => vaultManager.createDirectory(dirPath),
     [isReady]
@@ -388,7 +388,12 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const getFilesInDirectory = useCallback(
     (path: string) => vaultManager.getFilesInDirectory(path),
-    []
+    [isReady]
+  )
+
+  const isFileInDirectory = useCallback(
+    (directoryPath: string, name: string) => vaultManager.isFileInDirectory(directoryPath, name),
+    [isReady]
   )
   
   const selectFile = useCallback(
@@ -437,7 +442,6 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Advanced file operations
   // Loads the file content into the editor
   const loadFileIntoEditor = async (filePath: string, startingPos?: number) => {
-    console.log(`Current file: ${currentFile} and filePath: ${filePath}`)
     if (currentFile === filePath) return
     setCurrentlyChangingFilePath(true)
 
@@ -452,7 +456,6 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     // Read the file content using VaultManager
     const fileContent = await vaultManager.readFile(filePath)
-    console.log(`File content: `, fileContent)
     useSemanticCache.getState().setSemanticData(filePath, await getSimilarFiles(filePath))
 
     // Load content into editor
@@ -482,12 +485,9 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     optionalContentToWriteOnCreate?: string,
     startingPos?: number,
   ): Promise<void> => {
-    console.log(`Inside openOrCreateFile at path: ${filePath}`)
     let fileObject = vaultManager.getFileAtPath(filePath)
-    console.log(`File object: `, fileObject)
     if (!fileObject) {
       const newFileObject = await createFile(filePath, optionalContentToWriteOnCreate)
-      console.log(`New file object: `, newFileObject)
       await loadFileIntoEditor(newFileObject.path, startingPos ?? undefined)
     } else {
       await loadFileIntoEditor(fileObject.file.path, startingPos ?? undefined)
@@ -532,6 +532,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     expandedDirectories,
     toggleDirectory,
     getFilesInDirectory,
+    isFileInDirectory,
     
     // File selection and opening
     currentFile,
@@ -545,6 +546,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     renameFile,
     deleteFile,
     createFile,
+    replaceFile,
     createDirectory,
     
     // Advanced file operations
@@ -581,6 +583,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     expandedDirectories,
     toggleDirectory,
     getFilesInDirectory,
+    isFileInDirectory,
     currentFile,
     currentDirectory,
     selectFile,
@@ -590,6 +593,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     renameFile,
     deleteFile,
     createFile,
+    replaceFile,
     createDirectory,
     openOrCreateFile,
     saveCurrentlyOpenedFile,

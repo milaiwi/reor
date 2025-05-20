@@ -9,7 +9,7 @@ import { removeFileExtension } from '@/lib/file'
 import { useContentContext } from '@/contexts/ContentContext'
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/ui/context-menu'
 import NewDirectoryComponent from '@/components/File/NewDirectory'
-import { getDirname } from '@/lib/utils'
+import { getDirname, getPathBasename, joinPaths, normalizePath } from '@/lib/utils'
 
 const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data }) => {
   const { file, indentation } = data.filesAndIndentations[index]
@@ -22,7 +22,9 @@ const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data })
     selectDirectory,
     renameFile,
     deleteFile,
+    replaceFile,
     setNoteToBeRenamed,
+    isFileInDirectory,
   } = useVault()
 
   const { openContent, createUntitledNote } = useContentContext()
@@ -63,9 +65,35 @@ const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data })
       e.stopPropagation()
       setIsDragOver(false)
       const sourcePath = e.dataTransfer.getData('text/plain')
-      const destinationDirectory = isDirectory ? file.path : await window.path.dirname(file.path)
-      const destinationPath = await window.path.join(destinationDirectory, await window.path.basename(sourcePath))
-      renameFile(sourcePath, destinationPath)
+      const destinationDirectory = isDirectory ? file.path : getDirname(file.path)
+      const fileName = getPathBasename(sourcePath)
+      const destinationPath = joinPaths(destinationDirectory, fileName)
+      
+      // If src and destination are the same, do nothing
+      if (normalizePath(sourcePath) === normalizePath(destinationPath))
+        return
+
+      console.log(`Checking if file exists: `, destinationDirectory, fileName)
+      const fileExists = isFileInDirectory(destinationDirectory, fileName)
+      if (fileExists) {
+        const confirmReplace = window.confirm(`A file named "${fileName}" already exists in this location. Do you want to replace it?`)
+
+        if (confirmReplace) {
+          try {
+            console.log(`Replacing file! ${normalizePath(destinationPath)} with ${normalizePath(sourcePath)}`)
+            await replaceFile(normalizePath(sourcePath), normalizePath(destinationPath))
+          } catch (error) {
+            console.error('Failed to replace file:', error)
+          }
+        }
+      } else {
+        console.log(`File does not exist!`)
+        try {
+          renameFile(normalizePath(sourcePath), normalizePath(destinationPath))
+        } catch (error) {
+          console.error(`Failed to move file:`, error)
+        }
+      }
     },
     [file.path, isDirectory, renameFile],
   )

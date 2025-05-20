@@ -17,66 +17,34 @@ interface NewDirectoryComponentProps {
 }
 
 const NewDirectoryComponent: React.FC<NewDirectoryComponentProps> = ({ isOpen, onClose, parentDirectoryPath }) => {
-  const [directoryRelativePath, setDirectoryRelativePath] = useState<string>('')
+  const [directoryName, setDirectoryName] = useState<string>('')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-
-  // const { selectedDirectory } = useFileContext()
-  const { currentDirectory, vaultDirectory, createDirectory } = useVault()
-
-  console.log(`Current directory: `, currentDirectory)
-
-  useEffect(() => {
-    const setupInitialPath = async () => {
-
-      let fullPath = ''
-      if (parentDirectoryPath) {
-        fullPath = parentDirectoryPath
-      } else if (currentDirectory) {
-        fullPath = currentDirectory
-      }
-
-      if (fullPath) {
-        const relativePath = getRelativePath(vaultDirectory, fullPath)
-        const pathWithSeparator = relativePath ? `${relativePath}${getPlatformSpecificSep()}` : ''
-        setDirectoryRelativePath(pathWithSeparator)
-      }
-    }
-
-    if (isOpen) {
-      setupInitialPath()
-    }
-  }, [isOpen, parentDirectoryPath, currentDirectory])
+  const { currentDirectory, createDirectory } = useVault()
 
   useEffect(() => {
     if (!isOpen) {
-      setDirectoryRelativePath('')
+      setDirectoryName('')
       setErrorMessage(null)
     }
   }, [isOpen])
 
-  const handleValidName = (name: string) => {
-    const invalidCharacters = getInvalidCharacterInFilePath(name)
-    if (invalidCharacters) {
-      setErrorMessage(`Cannot put ${invalidCharacters} in file name`)
-      return false
-    }
-    setErrorMessage(null)
-    return true
-  }
-
   const handleNameChange = (newName: string) => {
-    handleValidName(newName)
-    setDirectoryRelativePath(newName)
+    setDirectoryName(newName)
   }
 
   const createNewDirectory = async () => {
-    const validName = handleValidName(directoryRelativePath)
-    if (!directoryRelativePath || errorMessage || !validName) return
+    const invalidName = getInvalidCharacterInFilePath(directoryName) // if true, there is invalid
+    if (invalidName) {
+      setErrorMessage(`Directory cannot have invalid characters ${invalidName} in file name.`)
+      return
+    }
 
-    const directoryPath = vaultDirectory
+    if (!directoryName) return
 
-    const finalPath = joinPaths(directoryPath, directoryRelativePath)
-    createDirectory(finalPath)
+    if (currentDirectory) {
+      const finalPath = joinPaths(currentDirectory, directoryName)
+      createDirectory(finalPath)
+    }
     posthog.capture('created_new_directory_from_new_directory_modal')
     onClose()
   }
@@ -97,7 +65,7 @@ const NewDirectoryComponent: React.FC<NewDirectoryComponentProps> = ({ isOpen, o
           paddingHorizontal="$3"
           paddingVertical="$2"
           focusStyle={{ borderColor: '$blue7', outlineStyle: 'none' }}
-          value={directoryRelativePath}
+          value={directoryName}
           onChangeText={handleNameChange}
           onKeyPress={(e: NativeSyntheticEvent<TextInputKeyPressEventData>) => {
             if (e.nativeEvent.key === 'Enter') {

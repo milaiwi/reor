@@ -77,13 +77,19 @@ export const getInvalidCharacterInFilePath = (filePath: string): string | null =
 
   switch (platform) {
     case 'win32':
-      invalidCharacters = /["*<>?|]/;
+      // Reserved: < > : " / \ | ? * and control chars (0–31)
+      // We skip / and \ since those are path separators, not filename chars
+      invalidCharacters = /[<>:"|?*\x00-\x1F]/;
       break;
     case 'darwin':
+      // macOS (HFS+): colon `:` is invalid in filenames
       invalidCharacters = /[:]/;
       break;
+    case 'linux':
     default:
-      invalidCharacters = /$^/;
+      // Linux: only slash `/` and null byte are invalid in filenames
+      // Again, we skip `/` since you're passing full path, not individual segments
+      invalidCharacters = /[\x00]/;
       break;
   }
 

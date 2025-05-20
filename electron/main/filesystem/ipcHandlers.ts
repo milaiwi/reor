@@ -6,10 +6,10 @@ import Store from 'electron-store'
 
 import WindowsManager from '../common/windowManager'
 import { StoreSchema } from '../electron-store/storeConfig'
-import { handleFileRename, updateFileInTable } from '../vector-database/tableHelperFunctions'
+import { handleFileRename, handleFileReplace, updateFileInTable } from '../vector-database/tableHelperFunctions'
 
 import { GetFilesInfoTree, createFileRecursive, isHidden, GetFilesInfoListForListOfPaths } from './filesystem'
-import { FileInfoTree, WriteFileProps, RenameFileProps, FileInfoWithContent, FileInfo } from './types'
+import { FileInfoTree, WriteFileProps, RenameFileProps, ReplaceFileProps, FileInfoWithContent, FileInfo } from './types'
 import ImageStorage from './storage/ImageStore'
 import VideoStorage from './storage/VideoStore'
 
@@ -137,6 +137,16 @@ const registerFileHandlers = (store: Store<StoreSchema>, _windowsManager: Window
     }
 
     await handleFileRename(windowsManager, windowInfo, renameFileProps, event.sender)
+  })
+
+  ipcMain.handle('replace-file', async (event, replaceFileProps: ReplaceFileProps) => {
+    const windowInfo = windowsManager.getWindowInfoForContents(event.sender)
+  
+    if (!windowInfo) {
+      throw new Error('Window info not found.')
+    }
+  
+    await handleFileReplace(windowsManager, windowInfo, replaceFileProps, event.sender)
   })
 
   ipcMain.handle('index-file-in-database', async (event, filePath: string) => {

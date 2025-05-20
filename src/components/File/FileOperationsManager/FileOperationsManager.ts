@@ -147,6 +147,30 @@ class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
     }
   }
 
+  async replaceFile(sourcePath: string, destinationPath: string): Promise<void> {
+    await Promise.all([
+      this.queue.waitFor(sourcePath),
+      this.queue.waitFor(destinationPath),
+    ])
+
+    // Single queue operation for atomicity
+    return this.queue.enqueue(destinationPath, async () => {
+      try {
+        // Use the new specialized service method
+        await this.service.replaceFile(sourcePath, destinationPath)
+        
+        // Update the file state
+        this.state.clear(destinationPath) // Clear the old destination file state
+        this.state.updatePath(sourcePath, destinationPath) // Update the path
+        
+        console.log(`Successfully replaced ${destinationPath} with ${sourcePath}`)
+      } catch (error) {
+        console.error(`Error in replaceFile: ${error}`)
+        throw error
+      }
+    })
+  }
+
   async createDirectory(dirPath: string): Promise<void> {
     this.queue.enqueue(dirPath, async () => {
       await this.service.createDirectory(dirPath)

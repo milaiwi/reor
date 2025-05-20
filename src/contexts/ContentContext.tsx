@@ -102,6 +102,7 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
         'Untitled',
       )
 
+      console.log(`DirectoryToMakeFileIn: ${directoryToMakeFileIn}, with fileName: ${fileName}`)
       // Create the full path and open the content
       const finalPath = joinPaths(directoryToMakeFileIn, fileName)
       console.log(`Final path to open is: ${finalPath}`)

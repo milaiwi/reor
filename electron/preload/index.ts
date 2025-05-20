@@ -14,6 +14,7 @@ import {
   FileInfoTree,
   FileInfoWithContent,
   RenameFileProps,
+  ReplaceFileProps,
   WriteFileProps,
 } from 'electron/main/filesystem/types'
 import { DBQueryResult } from 'electron/main/vector-database/schema'
@@ -108,6 +109,7 @@ const fileSystem = {
   getVideo: createIPCHandler<(fileName: string) => Promise<string | null>>('get-video'),
   isDirectory: createIPCHandler<(filePath: string) => Promise<boolean>>('is-directory'),
   renameFile: createIPCHandler<(renameFileProps: RenameFileProps) => Promise<void>>('rename-file'),
+  replaceFile: createIPCHandler<(replaceFileProps: ReplaceFileProps) => Promise<void>>('replace-file'),
   createFile: createIPCHandler<(filePath: string, content: string) => Promise<FileInfo | undefined>>('create-file'),
   createDirectory: createIPCHandler<(dirPath: string) => Promise<void>>('create-directory'),
   checkFileExists: createIPCHandler<(filePath: string) => Promise<boolean>>('check-file-exists'),
