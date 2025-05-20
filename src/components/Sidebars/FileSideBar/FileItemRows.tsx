@@ -132,12 +132,11 @@ const FileItemRows: React.FC<ListChildComponentProps> = ({ index, style, data })
         }
       } else {
         try {
-          console.log(`Dropping ${sourcePath} into ${destinationPath}`)
-          if (isSourceDirectory) {
+          if (isSourceDirectory)
             await moveDirectory(sourcePath, destinationPath)
-          } else {
+          else
             renameFile(normalizePath(sourcePath), normalizePath(destinationPath))
-          }
+          
         } catch (error) {
           console.error(`Failed to move ${isSourceDirectory ? 'directory' : 'file'}:`, error)
           toast.error(`Failed to move ${isSourceDirectory ? 'directory' : 'file'}`)

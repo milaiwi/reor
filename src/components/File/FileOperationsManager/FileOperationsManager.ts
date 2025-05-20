@@ -115,7 +115,6 @@ class FileOperationsManager extends EventEmitter<FileOperationsEventTypes> {
   }
 
   async deleteFile(path: string): Promise<void> {
-    console.log(`Deleting file at path: ${path}`)
     this.emit('fileDeleteStarted', path)
 
     try {

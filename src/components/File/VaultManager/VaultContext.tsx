@@ -1,18 +1,13 @@
 // VaultContext.tsx
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react'
-import { toast } from 'react-toastify'
 import { useDebounce } from 'use-debounce'
 import VaultManager from './VaultManager'
 import { FileInfo, FileInfoTree, FileState } from 'electron/main/filesystem/types'
-import {
-  generateFileNameFromFileContent,
-  getInvalidCharacterInFilePath,
-  getNextAvailableFileNameGivenBaseName
-} from '@/lib/file'
+
 import { SuggestionsState } from '@/components/Editor/BacklinkSuggestionsDisplay'
 import useOrderedSet from '@/lib/hooks/use-ordered-set'
 import welcomeNote from '@/lib/welcome-note'
-import { useBlockNote, BlockNoteEditor } from '@/lib/blocknote'
+import { useBlockNote, BlockNoteEditor, getBlockInfoFromPos } from '@/lib/blocknote'
 import { hmBlockSchema } from '@/components/Editor/schema'
 import { arePathsEqual, setGroupTypes } from '@/lib/utils'
 import useSemanticCache from '@/lib/utils/editor-state'
@@ -20,7 +15,6 @@ import slashMenuItems from '@/components/Editor/slash-menu-items'
 import { getSimilarFiles } from '@/lib/semanticService'
 import {
   getDirname,
-  joinPaths,
 } from '@/lib/utils'
 
 // Create a singleton VaultManager
@@ -155,7 +149,7 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   })
 
   // Debounced editor content for auto-save
-  const [debouncedEditor] = useDebounce(editor?.topLevelBlocks, 200000)
+  const [debouncedEditor] = useDebounce(editor?.topLevelBlocks, 40000)
 
   // Initialize the VaultManager
   useEffect(() => {
@@ -250,11 +244,6 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     if (debouncedEditor && !currentlyChangingFilePath && editor?.currentFilePath) {
       saveEditorContentToDisk()
-
-      // Check if we need to rename a new file based on content
-      if (editor) {
-        handleNewFileRenaming(editor.currentFilePath)
-      }
     }
   }, [
     debouncedEditor,
@@ -484,35 +473,6 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       await loadFileIntoEditor(newFileObject.path, startingPos ?? undefined)
     } else {
       await loadFileIntoEditor(fileObject.file.path, startingPos ?? undefined)
-    }
-  }
-
-  const handleNewFileRenaming = async (filePath: string) => {
-    if (!editor) return
-
-    const fileState = vaultManager.getFileAtPath(filePath)
-    if (
-      fileState &&
-      fileState.file.name.startsWith('Untitled') &&
-      new Date().getTime() - fileState.file.dateCreated.getTime() < 60000
-    ) {
-      const editorText = await editor.blocksToMarkdown(editor.topLevelBlocks)
-      if (editorText) {
-        const newProposedFileName = generateFileNameFromFileContent(editorText)
-        if (newProposedFileName) {
-          const directoryToMakeFileIn = getDirname(filePath)
-          // Get files in directory using flattenedFiles but filtered by directory
-          const filesInDirectory = flattenedFiles.filter(
-            file => getDirname(file.path) === directoryToMakeFileIn
-          )
-          const fileName = getNextAvailableFileNameGivenBaseName(
-            filesInDirectory.map((file) => file.name),
-            newProposedFileName,
-          )
-          const newFilePath = joinPaths(directoryToMakeFileIn, fileName)
-          await vaultManager.renameFile(filePath, newFilePath)
-        }
-      }
     }
   }
   
