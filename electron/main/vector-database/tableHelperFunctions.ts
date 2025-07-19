@@ -28,7 +28,7 @@ const convertFileTypeToDBType = async (file: FileInfo): Promise<DBEntry[]> => {
     timeadded: new Date(),
     filemodified: file.dateModified,
     filecreated: file.dateCreated,
-    headingContext: block.headingContext,
+    headingContext: block.headingContext ?? '',
     blockStartingPos: block.startingPos,
   }))
   return entries
@@ -183,7 +183,7 @@ export const updateFileInTable = async (dbTable: LanceDBTableWrapper, filePath: 
     timeadded: new Date(),
     filemodified: stats.mtime,
     filecreated: stats.birthtime,
-    headingContext: block.headingContext,
+    headingContext: block.headingContext ?? '',
     blockStartingPos: block.startingPos,
   }))
   await dbTable.add(dbEntries)
@@ -194,7 +194,9 @@ export const RepopulateTableWithMissingItems = async (
   directoryPath: string,
   onProgress?: (progress: number) => void,
 ) => {
+  console.log(`directoryPath: `, directoryPath)
   const filesInfoTree = GetFilesInfoList(directoryPath)
+  console.log(`filesInfoTree: `, filesInfoTree)
 
   const tableArray = await getTableAsArray(table)
   const itemsToRemove = await computeDBItemsToRemoveFromTable(filesInfoTree, tableArray)

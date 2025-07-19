@@ -28,6 +28,7 @@ class LanceDBTableWrapper {
 
   async initialize(dbConnection: Connection, userDirectory: string, embeddingModelConfig: EmbeddingModelConfig) {
     this.embedFun = await createEmbeddingFunction(embeddingModelConfig, 'content')
+    console.log(`embedFun: `, this.embedFun)
 
     this.lanceTable = await GetOrCreateLanceTable(dbConnection, this.embedFun, userDirectory)
   }

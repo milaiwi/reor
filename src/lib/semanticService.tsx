@@ -35,6 +35,7 @@ export async function getSimilarFiles(filePath: string | null, limit: number = 2
   const databaseFields = await window.database.getDatabaseFields()
   const filterString = `${databaseFields.NOTE_PATH} != '${filePath}'`
 
+  console.log(`get similar files`)
   const searchResults: DBQueryResult[] = await window.database.search(sanitizedText, limit, filterString)
 
   setSemanticData(filePath, searchResults)

@@ -34,32 +34,48 @@ async function downloadAndSaveFile(repo: string, HFFilePath: string, systemFileP
 }
 
 const DownloadModelFilesFromHFRepo = async (repo: string, saveDirectory: string, quantized = true) => {
-  // List the files:
-  const fileList = await listFiles({
-    repo,
-    recursive: true,
-    fetch: customFetchUsingElectronNet,
-  })
+  console.log(`Starting download for repo: ${repo} to directory: ${saveDirectory}`)
+  
+  try {
+    // List the files:
+    console.log(`Listing files for repo: ${repo}`)
+    const fileList = await listFiles({
+      repo,
+      recursive: true,
+      fetch: customFetchUsingElectronNet,
+    })
 
-  const files = []
-  for await (const file of fileList) {
-    if (file.type === 'file') {
-      if (file.path.endsWith('onnx')) {
-        const isQuantizedFile = file.path.includes('quantized')
-        if (quantized === isQuantizedFile) {
+    const files = []
+    for await (const file of fileList) {
+      if (file.type === 'file') {
+        if (file.path.endsWith('onnx')) {
+          const isQuantizedFile = file.path.includes('quantized')
+          if (quantized === isQuantizedFile) {
+            files.push(file)
+          }
+        } else {
           files.push(file)
         }
-      } else {
-        files.push(file)
       }
     }
+
+    console.log(`Found ${files.length} files to download for repo: ${repo}`)
+    console.log('Files to download:', files.map(f => f.path))
+
+    if (files.length === 0) {
+      throw new Error(`No files found to download for repo: ${repo}`)
+    }
+
+    // Create an array of promises for each file download:
+    const downloadPromises = files.map((file) => downloadAndSaveFile(repo, file.path, path.join(saveDirectory, repo)))
+
+    // Execute all download promises in parallel:
+    await Promise.all(downloadPromises)
+    console.log(`Successfully downloaded all files for repo: ${repo}`)
+  } catch (error) {
+    console.error(`Error downloading files for repo ${repo}:`, error)
+    throw error
   }
-
-  // Create an array of promises for each file download:
-  const downloadPromises = files.map((file) => downloadAndSaveFile(repo, file.path, path.join(saveDirectory, repo)))
-
-  // Execute all download promises in parallel:
-  await Promise.all(downloadPromises)
 }
 
 export default DownloadModelFilesFromHFRepo

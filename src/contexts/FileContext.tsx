@@ -25,6 +25,7 @@ import useSemanticCache from '@/lib/utils/editor-state'
 import useFileSearchIndex from '@/lib/utils/cache/fileSearchIndex'
 import slashMenuItems from '../components/Editor/slash-menu-items'
 import { getSimilarFiles } from '@/lib/semanticService'
+import { useFileCache } from './FileCache'
 
 type FileContextType = {
   vaultFilesTree: FileInfoTree
@@ -76,6 +77,8 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [noteToBeRenamed, setNoteToBeRenamed] = useState<string>('')
   const [fileDirToBeRenamed, setFileDirToBeRenamed] = useState<string>('')
   const [currentlyChangingFilePath, setCurrentlyChangingFilePath] = useState(false)
+  const { useReadFile, useWriteFile } = useFileCache()
+  const writeFileMutation = useWriteFile()
   // TODO: Add highlighting data on search
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [highlightData, setHighlightData] = useState<HighlightData>({
@@ -130,9 +133,10 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       window.database.indexFileInDatabase(currentlyOpenFilePath)
       setNeedToIndexEditorContent(false)
     }
-    const fileContent = (await window.fileSystem.readFile(filePath, 'utf-8')) ?? ''
+    // const fileContent = (await window.fileSystem.readFile(filePath, 'utf-8')) ?? ''
+    const { data: fileContent } = useReadFile(filePath)
     useSemanticCache.getState().setSemanticData(filePath, await getSimilarFiles(filePath))
-    const blocks = await editor.markdownToBlocks(fileContent)
+    const blocks = await editor.markdownToBlocks(fileContent ?? '')
     // @ts-expect-error
     editor.replaceBlocks(editor.topLevelBlocks, blocks)
     setGroupTypes(editor?._tiptapEditor, blocks)
@@ -194,10 +198,7 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const blocks = editor.topLevelBlocks
       const markdownContent = await editor.blocksToMarkdown(blocks)
       if (markdownContent !== null) {
-        await window.fileSystem.writeFile({
-          filePath,
-          content: markdownContent,
-        })
+        writeFileMutation.mutate({ path: filePath, content: markdownContent })
         setNeedToWriteEditorContentToDisk(false)
       }
     }
@@ -261,10 +262,10 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (currentlyOpenFilePath !== null && editor && editor.topLevelBlocks !== null) {
         const blocks = editor.topLevelBlocks
         const markdownContent = await editor.blocksToMarkdown(blocks)
-        await window.fileSystem.writeFile({
-          filePath: currentlyOpenFilePath,
-          content: markdownContent,
-        })
+        const { isPending } = useWriteFile()
+        if (!isPending) {
+          await window.database.indexFileInDatabase(currentlyOpenFilePath)
+        }
         await window.database.indexFileInDatabase(currentlyOpenFilePath)
       }
     }

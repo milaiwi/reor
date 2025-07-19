@@ -22,6 +22,8 @@ import CommonModals from './Common/CommonModals'
 import useAppShortcuts from '../lib/shortcuts/use-shortcut'
 import WindowControls from './ui/window-controls'
 import SimilarFilesSidebarComponent from '@/components/Sidebars/SimilarFilesSidebar'
+import FileCacheProvider from '@/contexts/FileCache'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 interface MainContentProps {
   togglePanel: (panel: 'chat' | 'similarFiles' | null) => void
@@ -126,16 +128,21 @@ const MainPageContent: React.FC = () => {
 }
 
 const MainPageComponent: React.FC = () => {
+  const queryClient = new QueryClient()
   return (
-    <FileProvider>
-      <ChatProvider>
-        <ContentProvider>
-          <ModalProvider>
-            <MainPageContent />
-          </ModalProvider>
-        </ContentProvider>
-      </ChatProvider>
-    </FileProvider>
+    <QueryClientProvider client={queryClient}>
+      <FileCacheProvider queryClient={queryClient}>
+      <FileProvider>
+        <ChatProvider>
+          <ContentProvider>
+            <ModalProvider>
+              <MainPageContent />
+            </ModalProvider>
+          </ContentProvider>
+          </ChatProvider>
+        </FileProvider>
+      </FileCacheProvider>
+    </QueryClientProvider>
   )
 }
 

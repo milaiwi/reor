@@ -133,7 +133,7 @@ export async function createEmbeddingFunctionForRepo(
   let functionName = ''
   const { pipeline, env } = await import('@xenova/transformers')
   env.cacheDir = path.join(app.getPath('userData'), 'models', 'embeddings') // set for all. Just to deal with library and remote inconsistencies
-
+  
   repoName = embeddingModelConfig.repoName
   env.allowRemoteModels = true
   functionName = embeddingModelConfig.repoName
