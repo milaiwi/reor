@@ -17,6 +17,10 @@ import { ContentProvider, useContentContext } from '../contexts/ContentContext'
 // import WritingAssistant from './WritingAssistant/WritingAssistant'
 import { ChatProvider, useChatContext } from '@/contexts/ChatContext'
 import { FileProvider, useFileContext } from '@/contexts/FileContext'
+import { FileSystemProvider } from '@/contexts/FileSystemProvider'
+import { EditorProvider } from '@/contexts/EditorProvider'
+import { NavigationProvider } from '@/contexts/NavigationProvider'
+import { UISettingsProvider } from '@/contexts/UISettingsProvider'
 import ModalProvider from '@/contexts/ModalContext'
 import CommonModals from './Common/CommonModals'
 import useAppShortcuts from '../lib/shortcuts/use-shortcut'
@@ -132,15 +136,23 @@ const MainPageComponent: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <FileCacheProvider queryClient={queryClient}>
-      <FileProvider>
-        <ChatProvider>
-          <ContentProvider>
-            <ModalProvider>
-              <MainPageContent />
-            </ModalProvider>
-          </ContentProvider>
-          </ChatProvider>
-        </FileProvider>
+        <FileSystemProvider>
+          <EditorProvider>
+            <NavigationProvider>
+              <UISettingsProvider>
+                <FileProvider>
+                  <ChatProvider>
+                    <ContentProvider>
+                      <ModalProvider>
+                        <MainPageContent />
+                      </ModalProvider>
+                    </ContentProvider>
+                  </ChatProvider>
+                </FileProvider>
+              </UISettingsProvider>
+            </NavigationProvider>
+          </EditorProvider>
+        </FileSystemProvider>
       </FileCacheProvider>
     </QueryClientProvider>
   )
