@@ -22,7 +22,6 @@ import { useBlockNote, BlockNoteEditor } from '@/lib/blocknote'
 import { hmBlockSchema } from '@/components/Editor/schema'
 import { setGroupTypes } from '@/lib/utils'
 import useSemanticCache from '@/lib/utils/editor-state'
-import useFileSearchIndex from '@/lib/utils/cache/fileSearchIndex'
 import slashMenuItems from '../components/Editor/slash-menu-items'
 import { getSimilarFiles } from '@/lib/semanticService'
 import { useFileCache } from './FileCache'
@@ -77,8 +76,10 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [noteToBeRenamed, setNoteToBeRenamed] = useState<string>('')
   const [fileDirToBeRenamed, setFileDirToBeRenamed] = useState<string>('')
   const [currentlyChangingFilePath, setCurrentlyChangingFilePath] = useState(false)
-  const { useReadFile, useWriteFile } = useFileCache()
-  const writeFileMutation = useWriteFile()
+  
+  // Use the FileCache context
+  const { readFileDirect, writeFileDirect, prefetchFile } = useFileCache()
+  
   // TODO: Add highlighting data on search
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [highlightData, setHighlightData] = useState<HighlightData>({
@@ -133,8 +134,9 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       window.database.indexFileInDatabase(currentlyOpenFilePath)
       setNeedToIndexEditorContent(false)
     }
-    // const fileContent = (await window.fileSystem.readFile(filePath, 'utf-8')) ?? ''
-    const { data: fileContent } = useReadFile(filePath)
+    
+    // Use the direct file reading method
+    const fileContent = await readFileDirect(filePath)
     useSemanticCache.getState().setSemanticData(filePath, await getSimilarFiles(filePath))
     const blocks = await editor.markdownToBlocks(fileContent ?? '')
     // @ts-expect-error
@@ -158,10 +160,8 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     startingPos?: number,
   ): Promise<void> => {
     const fileObject = await createFileIfNotExists(filePath, optionalContentToWriteOnCreate)
+    await prefetchFile(fileObject.path)
     await loadFileIntoEditor(fileObject.path, startingPos ?? undefined)
-    if (!useFileSearchIndex.getState().getPath(fileObject.name)) {
-      useFileSearchIndex.getState().add(fileObject)
-    }
   }
 
   const editor = useBlockNote<typeof hmBlockSchema>({
@@ -198,7 +198,7 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const blocks = editor.topLevelBlocks
       const markdownContent = await editor.blocksToMarkdown(blocks)
       if (markdownContent !== null) {
-        writeFileMutation.mutate({ path: filePath, content: markdownContent })
+        await writeFileDirect(filePath, markdownContent)
         setNeedToWriteEditorContentToDisk(false)
       }
     }
@@ -262,10 +262,7 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (currentlyOpenFilePath !== null && editor && editor.topLevelBlocks !== null) {
         const blocks = editor.topLevelBlocks
         const markdownContent = await editor.blocksToMarkdown(blocks)
-        const { isPending } = useWriteFile()
-        if (!isPending) {
-          await window.database.indexFileInDatabase(currentlyOpenFilePath)
-        }
+        await writeFileDirect(currentlyOpenFilePath, markdownContent ?? '')
         await window.database.indexFileInDatabase(currentlyOpenFilePath)
       }
     }
@@ -275,7 +272,7 @@ export const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return () => {
       removeWindowCloseListener()
     }
-  }, [currentlyOpenFilePath, editor])
+  }, [currentlyOpenFilePath, editor, writeFileDirect])
 
   const deleteFile = async (path: string | undefined) => {
     if (!path) return false
