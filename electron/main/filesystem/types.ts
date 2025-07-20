@@ -22,7 +22,7 @@ export interface AugmentPromptWithFileProps {
   filePath: string
 }
 
-export type WriteFileProps = {
+export type writeFileAndCacheProps = {
   filePath: string
   content: string
 }

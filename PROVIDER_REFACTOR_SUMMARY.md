@@ -31,7 +31,7 @@ We've broken down the monolithic `FileProvider` into **4 focused providers**:
 - `renameFile()`: Rename files
 - `deleteFile()`: Delete files
 - `readFileContent()`: Read file content
-- `writeFileContent()`: Write file content
+- `writeFileAndCacheContent()`: Write file content
 - `prefetchFile()`: Preload file content
 - `handleNewFileRenaming()`: Auto-rename logic
 - `handleDirectoryToggle()`: Directory expansion

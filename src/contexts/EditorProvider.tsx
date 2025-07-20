@@ -51,7 +51,7 @@ export const EditorProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const {
     createFileIfNotExists,
     readFileContent,
-    writeFileContent,
+    writeFileAndCacheContent,
     prefetchFile,
     handleNewFileRenaming,
   } = useFileSystem()
@@ -79,7 +79,7 @@ export const EditorProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       const blocks = editor.topLevelBlocks
       const markdownContent = await editor.blocksToMarkdown(blocks)
       if (markdownContent !== null) {
-        await writeFileContent(filePath, markdownContent)
+        await writeFileAndCacheContent(filePath, markdownContent)
         setNeedToWriteEditorContentToDisk(false)
       }
     }
@@ -125,7 +125,6 @@ export const EditorProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     startingPos?: number,
   ): Promise<void> => {
     const fileObject = await createFileIfNotExists(filePath, optionalContentToWriteOnCreate)
-    await prefetchFile(fileObject.path)
     await loadFileIntoEditor(fileObject.path, startingPos ?? undefined)
   }
 
@@ -176,7 +175,7 @@ export const EditorProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       if (currentlyOpenFilePath !== null && editor && editor.topLevelBlocks !== null) {
         const blocks = editor.topLevelBlocks
         const markdownContent = await editor.blocksToMarkdown(blocks)
-        await writeFileContent(currentlyOpenFilePath, markdownContent ?? '')
+        await writeFileAndCacheContent(currentlyOpenFilePath, markdownContent ?? '')
         await window.database.indexFileInDatabase(currentlyOpenFilePath)
       }
     }
@@ -186,7 +185,7 @@ export const EditorProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     return () => {
       removeWindowCloseListener()
     }
-  }, [currentlyOpenFilePath, editor, writeFileContent])
+  }, [currentlyOpenFilePath, editor, writeFileAndCacheContent])
 
   const contextValue: EditorContextType = {
     editor,

@@ -2,26 +2,85 @@
 import React, { useContext, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient, QueryClient } from '@tanstack/react-query'
 
-type ReadFileResult = {
-  isPending: boolean
-  error: Error | null
-  data?: string
+// Global reference to the query client for use outside of React components
+let globalQueryClient: QueryClient | null = null
+
+export const setGlobalQueryClient = (queryClient: QueryClient) => {
+  globalQueryClient = queryClient
 }
 
-type WriteFileResult = {
-  mutate: (variables: { path: string; content: string }) => void
-  isPending: boolean
-  error: Error | null
+export const getGlobalQueryClient = () => {
+  if (!globalQueryClient) {
+    throw new Error('Global query client not set. Make sure FileCacheProvider is initialized.')
+  }
+  return globalQueryClient
 }
 
-interface FileCacheContextType {
-  // Hook-based operations for reactive components
-  useReadFile: (path: string) => ReadFileResult
-  useWriteFile: () => WriteFileResult
+/**
+ *  ========================================================
+ * 
+ *    GLOBAL FILE CACHE TO USE OUTSIDE OF REACT COMPONENTS
+ *      PREVENTS react-hook ERRORS
+ * 
+ *  ========================================================
+ */
+export const readFileCached = async (path: string): Promise<string | null> => {
+  const queryClient = getGlobalQueryClient()
   
-  // Direct operations for programmatic use
-  readFileDirect: (path: string) => Promise<string | null>
-  writeFileDirect: (path: string, content: string) => Promise<void>
+  try {
+    // Check if the file is in the cache
+    const cachedData = queryClient.getQueryData(['file', path])
+    if (cachedData) {
+      return cachedData as string
+    }
+    
+    // If not in cache, fetch and cache it
+    const fileContent = await queryClient.fetchQuery({
+      queryKey: ['file', path],
+      queryFn: async () => {
+        const content = await window.fileSystem.readFile(path, 'utf-8')
+        return content
+      },
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 10,
+    })
+    
+    return fileContent
+  } catch (error) {
+    console.error('Error reading file:', error)
+    return null
+  }
+}
+
+export const writeFileAndCache = async (path: string, content: string): Promise<void> => {
+  const queryClient = getGlobalQueryClient()
+  
+  try {
+    await window.fileSystem.writeFile({
+      filePath: path,
+      content,
+    })
+    // Invalidate the cache after writing
+    queryClient.invalidateQueries({ queryKey: ['file', path] })
+  } catch (error) {
+    console.error('Error writing file:', error)
+    throw error
+  }
+}
+/**
+ *  =============================
+ * 
+ *    END OF GLOBAL FILE CACHE
+ * 
+ *  =============================
+ */
+
+interface FileCacheContextType {  
+  // File operations with cache validation and invalidation
+  readFileAndCache: (path: string) => Promise<string | null>
+  writeFileAndCache: (path: string, content: string) => Promise<void>
+  renameFileAndCache: (oldPath: string, newPath: string) => Promise<void>
+  deleteFileAndCache: (path: string) => Promise<void>
   
   // Cache management
   invalidateFile: (path: string) => void
@@ -30,79 +89,66 @@ interface FileCacheContextType {
 
 const FileCacheContext = React.createContext<FileCacheContextType | undefined>(undefined)
 
-// ✅ Move hook definitions to top-level
-const useReadFile = (path: string): ReadFileResult => {
-  const { isPending, error, data } = useQuery({
-    queryKey: ['file', path],
-    queryFn: async () => {
-      const fileContent = await window.fileSystem.readFile(path, 'utf-8')
-      return fileContent
-    },
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 10,
-    enabled: !!path, // Only run query if path is provided
-  })
-
-  return { isPending, error, data }
-}
-
-const useWriteFile = (): WriteFileResult => {
-  const queryClient = useQueryClient()
-
-  const { mutate, isPending, error } = useMutation({
-    mutationFn: async ({ path, content }: { path: string; content: string }) => {
-      await window.fileSystem.writeFile({
-        filePath: path,
-        content,
-      })
-    },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['file', variables.path] })
-    },
-  })
-
-  return { mutate, isPending, error }
-}
-
-// Custom hook for components that need reactive file reading
-export const useReactiveFile = (path: string | null) => {
-  const { useReadFile } = useFileCache()
-  
-  if (!path) {
-    return { isPending: false, error: null, data: undefined }
-  }
-  
-  return useReadFile(path)
-}
-
-// Custom hook for components that need reactive file writing
-export const useReactiveFileWrite = () => {
-  const { useWriteFile } = useFileCache()
-  return useWriteFile()
-}
-
 const FileCacheProvider: React.FC<{ children: React.ReactNode, queryClient: QueryClient }> = ({ children, queryClient }) => {
-  // Direct file operations that don't use hooks
-  const readFileDirect = async (path: string): Promise<string | null> => {
+  // Set global query client reference for use outside of React components
+  setGlobalQueryClient(queryClient)
+  
+  const readFileAndCache = async (path: string): Promise<string | null> => {
     try {
-      return await window.fileSystem.readFile(path, 'utf-8')
+      // Use the cache instead of bypassing it
+      const cachedData = queryClient.getQueryData(['file', path])
+      if (cachedData) {
+        return cachedData as string
+      }
+      
+      // If not in cache, fetch and cache it
+      const fileContent = await queryClient.fetchQuery({
+        queryKey: ['file', path],
+        queryFn: async () => {
+          const content = await window.fileSystem.readFile(path, 'utf-8')
+          return content
+        },
+        staleTime: 1000 * 60 * 5,
+        gcTime: 1000 * 60 * 10,
+      })
+      
+      return fileContent
     } catch (error) {
       console.error('Error reading file:', error)
       return null
     }
   }
 
-  const writeFileDirect = async (path: string, content: string): Promise<void> => {
+  const writeFileAndCache = async (path: string, content: string): Promise<void> => {
     try {
       await window.fileSystem.writeFile({
         filePath: path,
         content,
       })
-      // Invalidate the cache after writing
+
       queryClient.invalidateQueries({ queryKey: ['file', path] })
     } catch (error) {
       console.error('Error writing file:', error)
       throw error
+    }
+  }
+
+  const renameFileAndCache = async (oldPath: string, newPath: string): Promise<void> => {
+    try {
+      await window.fileSystem.renameFile({ oldFilePath: oldPath, newFilePath: newPath })
+      queryClient.invalidateQueries({ queryKey: ['file', oldPath] })
+      queryClient.invalidateQueries({ queryKey: ['file', newPath] })
+    } catch (error) {
+      console.error('Error renaming file:', error)
+    }
+  }
+
+  const deleteFileAndCache = async (path: string): Promise<void> => {
+    try {
+      await window.fileSystem.deleteFile(path)
+      queryClient.invalidateQueries({ queryKey: ['file', path] })
+    } catch (error) {
+      console.error('Error deleting file:', error)
     }
   }
 
@@ -123,10 +169,10 @@ const FileCacheProvider: React.FC<{ children: React.ReactNode, queryClient: Quer
   }
 
   const value = useMemo(() => ({
-    useReadFile,
-    useWriteFile,
-    readFileDirect,
-    writeFileDirect,
+    readFileAndCache,
+    writeFileAndCache,
+    renameFileAndCache,
+    deleteFileAndCache,
     invalidateFile,
     prefetchFile,
   }), [queryClient])

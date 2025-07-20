@@ -1,13 +1,15 @@
 import { DBQueryResult } from 'electron/main/vector-database/schema'
 import removeMd from 'remove-markdown'
 import useSemanticCache from '@/lib/utils/editor-state'
+import { readFileCached } from '@/contexts/FileCache'
 
 export async function getSanitizedChunk(filePath: string | null): Promise<string | undefined> {
   if (!filePath) {
     return undefined
   }
 
-  const fileContent: string = await window.fileSystem.readFile(filePath, 'utf-8')
+  // Use cached file read instead of direct file system access
+  const fileContent: string | null = await readFileCached(filePath)
   if (!fileContent) {
     return undefined
   }

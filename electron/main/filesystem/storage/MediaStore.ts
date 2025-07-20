@@ -86,7 +86,7 @@ class MediaStore {
     const fileName = `${MediaStore.generateFileName(originalName)}.${type.ext}`
     const filePath = path.join(this.storageDir, fileName)
 
-    await fs.promises.writeFile(filePath, buffer)
+    await fs.promises.writeFileAndCache(filePath, buffer)
 
     const metadata = this.getMetadata()
     metadata[blockId] = {

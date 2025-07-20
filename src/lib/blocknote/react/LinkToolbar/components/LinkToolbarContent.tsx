@@ -65,7 +65,7 @@ const LinkToolbarContent = <BSchema extends BlockSchema>(
     <ThemedMenu defaultOpened closeDelay={10000000} opened closeOnClickOutside>
       <ThemedDropdown onMouseDown={(e) => e.preventDefault()}>
         {similarFiles.slice(0, 5).map((file) => (
-          <ThemedMenuItem onClick={() => props.editor.addLink(file.notepath, file.name)}>
+          <ThemedMenuItem key={file.notepath} onClick={() => props.editor.addLink(file.notepath, file.name)}>
             <Stack spacing={0} w={250}>
               <Text>{file.name}</Text>
               <Text size={10} truncate>

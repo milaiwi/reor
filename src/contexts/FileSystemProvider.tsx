@@ -29,7 +29,7 @@ type FileSystemContextType = {
   
   // File content operations
   readFileContent: (filePath: string) => Promise<string | null>
-  writeFileContent: (filePath: string, content: string) => Promise<void>
+  writeFileAndCacheContent: (filePath: string, content: string) => Promise<void>
   prefetchFile: (filePath: string) => Promise<void>
   
   // Auto-rename logic
@@ -51,7 +51,13 @@ export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children
   const [vaultFilesFlattened, setVaultFilesFlattened] = useState<FileInfo[]>([])
   const [expandedDirectories, setExpandedDirectories] = useState<Map<string, boolean>>(new Map())
   
-  const { readFileDirect, writeFileDirect, prefetchFile: prefetchFileCache } = useFileCache()
+  const { 
+    readFileAndCache, 
+    writeFileAndCache, 
+    renameFileAndCache, 
+    deleteFileAndCache,
+    prefetchFile: prefetchFileCache 
+  } = useFileCache()
 
   // File tree management
   const refreshFileTree = useCallback(async () => {
@@ -98,25 +104,22 @@ export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children
   }
 
   const renameFile = async (oldFilePath: string, newFilePath: string) => {
-    await window.fileSystem.renameFile({
-      oldFilePath,
-      newFilePath,
-    })
+    await renameFileAndCache(oldFilePath, newFilePath)
   }
 
   const deleteFile = async (path: string | undefined) => {
     if (!path) return false
-    await window.fileSystem.deleteFile(path)
+    await deleteFileAndCache(path)
     return true
   }
 
   // File content operations
   const readFileContent = async (filePath: string): Promise<string | null> => {
-    return await readFileDirect(filePath)
+    return await readFileAndCache(filePath)
   }
 
-  const writeFileContent = async (filePath: string, content: string): Promise<void> => {
-    await writeFileDirect(filePath, content)
+  const writeFileAndCacheContent = async (filePath: string, content: string): Promise<void> => {
+    await writeFileAndCache(filePath, content)
   }
 
   const prefetchFile = async (filePath: string): Promise<void> => {
@@ -178,7 +181,7 @@ export const FileSystemProvider: React.FC<{ children: ReactNode }> = ({ children
     handleDirectoryToggle,
     refreshFileTree,
     readFileContent,
-    writeFileContent,
+    writeFileAndCacheContent,
     prefetchFile,
     handleNewFileRenaming,
   }

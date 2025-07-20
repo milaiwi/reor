@@ -9,7 +9,7 @@ import { StoreSchema } from '../electron-store/storeConfig'
 import { handleFileRename, updateFileInTable } from '../vector-database/tableHelperFunctions'
 
 import { GetFilesInfoTree, createFileRecursive, isHidden, GetFilesInfoListForListOfPaths } from './filesystem'
-import { FileInfoTree, WriteFileProps, RenameFileProps, FileInfoWithContent, FileInfo } from './types'
+import { FileInfoTree, writeFileAndCacheProps, RenameFileProps, FileInfoWithContent, FileInfo } from './types'
 import ImageStorage from './storage/ImageStore'
 import VideoStorage from './storage/VideoStore'
 
@@ -71,13 +71,13 @@ const registerFileHandlers = (store: Store<StoreSchema>, _windowsManager: Window
     })
   })
 
-  ipcMain.handle('write-file', async (event, writeFileProps: WriteFileProps) => {
-    if (!fs.existsSync(path.dirname(writeFileProps.filePath))) {
-      fs.mkdirSync(path.dirname(writeFileProps.filePath), {
+  ipcMain.handle('write-file', async (event, writeFileAndCacheProps: writeFileAndCacheProps) => {
+    if (!fs.existsSync(path.dirname(writeFileAndCacheProps.filePath))) {
+      fs.mkdirSync(path.dirname(writeFileAndCacheProps.filePath), {
         recursive: true,
       })
     }
-    fs.writeFileSync(writeFileProps.filePath, writeFileProps.content, 'utf-8')
+    fs.writeFileSync(writeFileAndCacheProps.filePath, writeFileAndCacheProps.content, 'utf-8')
   })
 
   ipcMain.handle('store-image', async (event, imageData: string, originalName: string, blockID: string) => {
