@@ -1,6 +1,5 @@
 import { Box, Menu } from '@mantine/core'
-import { XStack } from 'tamagui'
-import { Forward, RefreshCcw } from '@tamagui/lucide-icons'
+import { Forward, RefreshCcw } from 'lucide-react'
 import * as _ from 'lodash'
 import React, { useCallback, useRef, useState } from 'react'
 import {
@@ -162,13 +161,13 @@ const TurnIntoMenu = <BSchema extends BlockSchema>(props: DragHandleMenuProps<BS
     <DragHandleMenuItem onMouseOver={stopMenuCloseTimer} onMouseLeave={startMenuCloseTimer}>
       <ThemedMenu opened={opened} position="right">
         <Menu.Target>
-          <XStack gap="$2">
+          <div className="flex gap-2">
             <RefreshCcw size={14} />
             <div style={{ flex: 1 }}>Turn into</div>
             <Box style={{ display: 'flex', alignItems: 'center' }}>
               <Forward size={12} />
             </Box>
-          </XStack>
+          </div>
         </Menu.Target>
         <Menu.Dropdown
           onMouseLeave={startMenuCloseTimer}

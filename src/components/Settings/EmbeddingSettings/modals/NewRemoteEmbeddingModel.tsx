@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { EmbeddingModelWithRepo } from 'electron/main/electron-store/storeConfig'
 import posthog from 'posthog-js'
-import { Input } from 'tamagui'
+import { Input } from '@/components/ui/input'
 import { NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native'
 import { Button } from '@/components/ui/button'
 import {
@@ -49,8 +49,8 @@ const NewRemoteEmbeddingModelModal: React.FC<NewRemoteEmbeddingModelModalProps> 
     onClose()
   }
 
-  const handleKeyPress = (e: NativeSyntheticEvent<TextInputKeyPressEventData>) => {
-    if (e.nativeEvent.key === 'Enter') {
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
       saveModelConfigToElectronStore()
     }
   }
@@ -69,12 +69,9 @@ const NewRemoteEmbeddingModelModal: React.FC<NewRemoteEmbeddingModelModalProps> 
           <div className="grid gap-4 py-4">
             <Input
               value={huggingfaceRepo}
-              onChangeText={setHuggingfaceRepo}
+              onChange={(e) => setHuggingfaceRepo(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Xenova/bge-base-en-v1.5"
-              size="$1"
-              py="$3"
-              px="$2"
             />
             <p className="text-xs italic text-muted-foreground">
               <ExternalLink href="https://huggingface.co/models?pipeline_tag=feature-extraction&sort=downloads&search=xenova">

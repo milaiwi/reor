@@ -2,8 +2,8 @@
 import React, { useState } from 'react'
 import { LLMAPIConfig } from 'electron/main/electron-store/storeConfig'
 import posthog from 'posthog-js'
-import { Input, XStack, YStack } from 'tamagui'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   Dialog,
   DialogContent,
@@ -37,22 +37,19 @@ const ModelNameInput: React.FC<ModelNameInputProps> = ({ modelNames, setModelNam
   }
 
   return (
-    <YStack className="">
+    <div className="">
       <h4 className="mb-1 font-medium">Model Names</h4>
-      <XStack flex={1} gap="$2">
+      <div className="flex flex-1 gap-2">
         <Input
           className="mt-0 w-full"
           placeholder="Add model name"
           value={newModelName}
-          onChangeText={setNewModelName}
-          size="$1"
-          py="$4"
-          px="$2"
+          onChange={(e) => setNewModelName(e.target.value)}
         />
         <Button onClick={addModelName} type="button" variant="secondary">
           Add
         </Button>
-      </XStack>
+      </div>
       <div className="flex flex-wrap gap-2">
         {modelNames.map((name, index) => (
           // eslint-disable-next-line react/no-array-index-key
@@ -61,7 +58,7 @@ const ModelNameInput: React.FC<ModelNameInputProps> = ({ modelNames, setModelNam
           </span>
         ))}
       </div>
-    </YStack>
+    </div>
   )
 }
 
@@ -132,10 +129,7 @@ const CustomLLMAPISetupModal: React.FC<RemoteLLMModalProps> = ({ isOpen, onClose
                 id="apiUrl"
                 placeholder="API URL"
                 value={apiURL}
-                onChangeText={setApiURL}
-                size="$1"
-                py="$4"
-                px="$2"
+                onChange={(e) => setApiURL(e.target.value)}
               />
               <p className="mt-0 text-xs text-muted-foreground">
                 (This must be an OpenAI compatible API endpoint. That typically is the part of the url before
@@ -148,10 +142,7 @@ const CustomLLMAPISetupModal: React.FC<RemoteLLMModalProps> = ({ isOpen, onClose
                 id="apiName"
                 placeholder="API Name"
                 value={apiName}
-                onChangeText={setApiName}
-                size="$1"
-                py="$4"
-                px="$2"
+                onChange={(e) => setApiName(e.target.value)}
               />
               <p className="mt-0 text-xs text-muted-foreground">(A name for your new api)</p>
             </div>
@@ -161,10 +152,7 @@ const CustomLLMAPISetupModal: React.FC<RemoteLLMModalProps> = ({ isOpen, onClose
                 id="apiKey"
                 placeholder="API Key"
                 value={apiKey}
-                onChangeText={setApiKey}
-                size="$1"
-                py="$4"
-                px="$2"
+                onChange={(e) => setApiKey(e.target.value)}
               />
               <p className="mt-0 text-xs text-muted-foreground">(If your endpoint requires an API key.)</p>
             </div>

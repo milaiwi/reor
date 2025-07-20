@@ -2,9 +2,13 @@
 import React, { useState } from 'react'
 import { NodeViewProps } from '@tiptap/core'
 import { NodeViewContent } from '@tiptap/react'
-import { Popover, Button, SizableText, ScrollView } from 'tamagui'
-import { ChevronDown } from '@tamagui/lucide-icons'
-import { XStack, YStack } from '@/components/Editor/ui/src'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import { Button } from '@/components/ui/button'
+import { ChevronDown } from 'lucide-react'
 
 const languages = [
   'Arduino',
@@ -60,64 +64,53 @@ const CodeBlockView = ({ props }: { props: NodeViewProps }) => {
 
   const customLanguageClass = `language-${language}`
   return (
-    <YStack onHoverIn={() => setHovered(true)} onHoverOut={() => setHovered(false)}>
-      <XStack
-        position="absolute"
-        top={24}
-        right={0}
-        zIndex="$zIndex.5"
-        ai="center"
-        jc="flex-end"
-        gap="$4"
-        // @ts-ignore
+    <div 
+      className="relative"
+      onMouseEnter={() => setHovered(true)} 
+      onMouseLeave={() => setHovered(false)}
+    >
+      <div
+        className={`absolute top-6 right-0 z-50 flex items-center justify-end gap-4 opacity-0 pointer-events-none transition-opacity ${
+          hovered ? 'opacity-100 pointer-events-auto' : ''
+        }`}
         contentEditable={false}
-        opacity={hovered ? 1 : 0}
-        pointerEvents={hovered ? 'auto' : 'none'}
       >
         <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-          <Popover.Trigger asChild>
+          <PopoverTrigger asChild>
             <Button
-              onPress={() => setPopoverOpen(!popoverOpen)}
-              size={20}
-              fontSize={12}
-              color="$gray9"
-              backgroundColor="transparent"
+              onClick={() => setPopoverOpen(!popoverOpen)}
+              size="sm"
+              variant="ghost"
+              className="h-5 text-xs text-gray-600 bg-transparent"
             >
-              {language} <ChevronDown color="$gray9" size={12} />
+              {language} <ChevronDown className="text-gray-600" size={12} />
             </Button>
-          </Popover.Trigger>
+          </PopoverTrigger>
 
-          <Popover.Content p={0}>
-            <YStack borderRadius="$4" backgroundColor="$background" borderWidth={1} borderColor="$gray6">
+          <PopoverContent className="p-0">
+            <div className="rounded-md bg-white border border-gray-300">
               {/* List of selectable items */}
-              <ScrollView maxHeight={200} padding="$2">
+              <div className="max-h-[200px] overflow-y-auto p-2">
                 {languages.map((lang) => (
-                  <XStack
+                  <div
                     key={lang}
-                    padding="$2"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    onPress={() => handleChange(lang)}
-                    hoverStyle={{ backgroundColor: lang === language ? '$blue9' : 'rgba(0, 0, 0, 0.1)' }}
-                    cursor="pointer"
-                    width={200}
-                    borderRadius="$2"
-                    backgroundColor={lang === language ? '$blue9' : ''}
+                    className="flex items-center justify-between p-2 cursor-pointer w-50 rounded-md hover:bg-gray-100"
+                    onClick={() => handleChange(lang)}
                   >
-                    <SizableText fontSize={12}>{lang}</SizableText>
-                  </XStack>
+                    <span className="text-xs">{lang}</span>
+                  </div>
                 ))}
-              </ScrollView>
-            </YStack>
-          </Popover.Content>
+              </div>
+            </div>
+          </PopoverContent>
         </Popover>
-      </XStack>
+      </div>
       <pre>
         <code className={customLanguageClass}>
           <NodeViewContent />
         </code>
       </pre>
-    </YStack>
+    </div>
   )
 }
 

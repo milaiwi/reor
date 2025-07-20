@@ -3,14 +3,14 @@ import React, { useEffect, useRef, useCallback, useState } from 'react'
 import { DBQueryResult } from 'electron/main/vector-database/schema'
 import posthog from 'posthog-js'
 import { debounce } from 'lodash'
-import { Input, XStack, YStack, ScrollView, Slider, Text } from 'tamagui'
-import { TextInput } from 'react-native'
-import { Search, Filter, FilterX } from '@tamagui/lucide-icons'
+import { Search, Filter, FilterX } from 'lucide-react'
 import { SearchProps as SearchParamsType } from 'electron/main/electron-store/types'
-import { DBSearchPreview } from '../File/DBResultPreview'
+import DBSearchPreview from '../File/DBResultPreview'
 import { useContentContext } from '@/contexts/ContentContext'
 import { hybridSearch } from '@/lib/db'
 import { ToggleButton, ToggleThumb } from '@/components/Editor/ui/src/toggle'
+import { Input } from '@/components/ui/input'
+import { Slider } from '@/components/ui/slider'
 
 interface SearchComponentProps {
   searchQuery: string
@@ -47,7 +47,7 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
   setSearchResults,
 }) => {
   const { openContent: openTabContent } = useContentContext()
-  const searchInputRef = useRef<TextInput>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
   const [searchParams, setSearchParams] = useState<SearchParamsType>({
     searchMode: 'vector',
     vectorWeight: 0.7,
@@ -118,136 +118,91 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
   }
 
   return (
-    <ScrollView>
-      <YStack padding="$1">
-        <XStack position="relative" marginRight="$1" borderRadius="$3" padding="$2">
-          <XStack position="absolute" left={0} top={14} alignItems="center" paddingLeft="$3">
-            <Search size={14} color="$gray13" />
-          </XStack>
+    <div className="overflow-y-auto">
+      <div className="p-1">
+        <div className="relative mr-1 rounded-md p-2">
+          <div className="absolute left-0 top-3.5 flex items-center pl-3">
+            <Search size={14} className="text-gray-600" />
+          </div>
           <Input
             ref={searchInputRef}
-            width="100%"
-            height="$2"
-            paddingLeft="$5"
-            borderRadius="$2"
-            backgroundColor="$gray1"
-            color="$gray13"
-            borderWidth={1}
-            borderColor="$gray13"
-            focusStyle={{
-              borderColor: '$gray13',
-              outlineWidth: 0,
-            }}
+            className="w-full h-8 pl-5 rounded-md bg-gray-100 text-gray-600 border border-gray-600 focus:border-gray-600 focus:outline-none text-sm"
             value={searchQuery}
-            onChangeText={setSearchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={searchParams.searchMode === 'hybrid' ? 'Search Hybrid...' : 'Search Vector...'}
-            fontSize="$1"
           />
-          <XStack
-            position="absolute"
-            right={16}
-            top={14}
-            alignItems="center"
-            backgroundColor="transparent"
-            focusStyle={{ outlineWidth: 0 }}
-            onPress={() => setShowSearchOptions(!showSearchOptions)}
+          <div
+            className="absolute right-4 top-3.5 flex items-center bg-transparent focus:outline-none cursor-pointer"
+            onClick={() => setShowSearchOptions(!showSearchOptions)}
             aria-label="Search options"
-            cursor="pointer"
           >
-            {showSearchOptions ? <FilterX color="$gray10" size={14} /> : <Filter color="$gray10" size={14} />}
-          </XStack>
-        </XStack>
+            {showSearchOptions ? <FilterX className="text-gray-500" size={14} /> : <Filter className="text-gray-500" size={14} />}
+          </div>
+        </div>
 
         {showSearchOptions && (
-          <YStack className="max-h-[100px] animate-slide-down">
-            <YStack
-              marginTop="$2"
-              borderRadius="$2"
-              borderWidth={1}
-              borderColor="$gray6"
-              padding="$3"
-              mx={10}
-              shadowColor="$shadowColor"
-              shadowRadius="$1"
-              elevation="$1"
-              backgroundColor="$gray2"
-            >
-              <XStack alignItems="center" justifyContent="space-between">
-                <Text fontSize="$1" fontWeight="500">
+          <div className="max-h-[100px] animate-slide-down">
+            <div className="mt-2 rounded-md border border-gray-600 p-3 mx-10 shadow-sm bg-gray-200">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium">
                   Hybrid Search
-                </Text>
+                </p>
                 <ToggleSwitch
                   isHybrid={searchParams.searchMode === 'hybrid'}
                   onChange={(mode) => setSearchParams((prev) => ({ ...prev, searchMode: mode }))}
                   label="Hybrid Search"
                 />
-              </XStack>
+              </div>
 
               {searchParams.searchMode === 'hybrid' && (
-                <YStack marginTop="$3" className="animate-slide-down overflow-hidden">
-                  <XStack marginBottom="$2" alignItems="center" justifyContent="space-between">
-                    <Text fontSize="$1" fontWeight="500">
+                <div className="mt-3 animate-slide-down overflow-hidden">
+                  <div className="mb-2 flex items-center justify-between">
+                    <p className="text-sm font-medium">
                       Search Balance
-                    </Text>
-                    <Text fontSize="$1" paddingHorizontal="$2" paddingVertical="$1" borderRadius="$1">
+                    </p>
+                    <p className="text-sm px-2 py-1 rounded">
                       {Math.round(searchParams.vectorWeight * 100)}% Semantic -{' '}
                       {Math.round((1 - searchParams.vectorWeight) * 100)}% Keywords
-                    </Text>
-                  </XStack>
-                  <XStack position="relative" px={5}>
+                    </p>
+                  </div>
+                  <div className="relative px-5">
                     <Slider
                       min={0}
                       max={1}
                       step={0.1}
                       value={[searchParams.vectorWeight]}
                       onValueChange={handleVectorWeightChange}
-                      height="$1"
-                      width="100%"
-                      borderRadius="$10"
+                      className="w-full"
                       aria-label="Search balance slider"
-                    >
-                      {/* Track is the comoonent to the right of the button, 
-                        TractActive is the component to the left of the button. */}
-                      <Slider.Track backgroundColor="$gray6">
-                        <Slider.TrackActive backgroundColor="$blue9" />
-                      </Slider.Track>
-                      <Slider.Thumb
-                        index={0}
-                        circular
-                        size={20}
-                        backgroundColor="white"
-                        hoverStyle={{ backgroundColor: 'rgba(255, 255, 255, 86%)' }}
-                        focusStyle={{ backgroundColor: 'rgba(255, 255, 255, 86%)' }}
-                      />
-                    </Slider>
-                  </XStack>
-                  <XStack marginTop="$1.5" justifyContent="space-between">
-                    <Text fontSize="$1" color="$gray10">
+                    />
+                  </div>
+                  <div className="mt-1.5 flex justify-between">
+                    <p className="text-sm text-gray-500">
                       Keywords
-                    </Text>
-                    <Text fontSize="$1" color="$gray10">
+                    </p>
+                    <p className="text-sm text-gray-500">
                       Balanced
-                    </Text>
-                    <Text fontSize="$1" color="$gray10">
+                    </p>
+                    <p className="text-sm text-gray-500">
                       Semantic
-                    </Text>
-                  </XStack>
-                </YStack>
+                    </p>
+                  </div>
+                </div>
               )}
-            </YStack>
-          </YStack>
+            </div>
+          </div>
         )}
 
         {/* Search Results */}
         {searchResults.length > 0 && (
-          <YStack marginTop="$2" width="100%" px="$3">
+          <div className="mt-2 w-full px-3">
             {searchResults.map((result, index) => (
               <DBSearchPreview key={index} dbResult={result} onSelect={openFileSelectSearch} />
             ))}
-          </YStack>
+          </div>
         )}
-      </YStack>
-    </ScrollView>
+      </div>
+    </div>
   )
 }
 

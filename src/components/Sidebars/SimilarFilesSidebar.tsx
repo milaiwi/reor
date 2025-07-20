@@ -1,72 +1,74 @@
 import React, { useEffect, useState } from 'react'
-
 import { DBQueryResult } from 'electron/main/vector-database/schema'
-import { toast } from 'react-toastify'
-import '../../styles/global.css'
-import posthog from 'posthog-js'
-import { Stack } from 'tamagui'
-
-import { getSimilarFiles } from '@/lib/semanticService'
-import errorToStringRendererProcess from '@/lib/error'
-import SimilarEntriesComponent from './SemanticSidebar/SimilarEntriesComponent'
 import { useFileContext } from '@/contexts/FileContext'
 import { useContentContext } from '@/contexts/ContentContext'
+import { hybridSearch } from '@/lib/db'
+import DBResultPreview from '@/components/File/DBResultPreview'
 
 const SimilarFilesSidebarComponent: React.FC = () => {
-  const [similarEntries, setSimilarEntries] = useState<DBQueryResult[]>([])
-  const [isLoadingSimilarEntries, setIsLoadingSimilarEntries] = useState(false)
+  const { currentlyOpenFilePath, saveCurrentlyOpenedFile } = useFileContext()
+  const { openContent } = useContentContext()
+  const [similarFiles, setSimilarFiles] = useState<DBQueryResult[]>([])
+  const [isLoading, setIsLoading] = useState(false)
 
-  const { currentlyOpenFilePath } = useFileContext()
-  const { openContent: openTabContent } = useContentContext()
+  const updateSimilarFiles = async () => {
+    if (!currentlyOpenFilePath) {
+      setSimilarFiles([])
+      return
+    }
 
-  const fetchSimilarEntries = async (path: string) => {
+    setIsLoading(true)
     try {
-      setIsLoadingSimilarEntries(true)
-
-      const searchResults = await getSimilarFiles(path)
-
-      setSimilarEntries(searchResults ?? [])
+      await saveCurrentlyOpenedFile()
+      const results = await hybridSearch(currentlyOpenFilePath, 10, undefined, 0.7)
+      setSimilarFiles(results)
     } catch (error) {
-      toast.error(errorToStringRendererProcess(error), {
-        className: 'mt-5',
-        autoClose: false,
-        closeOnClick: false,
-        draggable: false,
-      })
+      console.error('Error fetching similar files:', error)
+      setSimilarFiles([])
     } finally {
-      setIsLoadingSimilarEntries(false)
+      setIsLoading(false)
     }
   }
 
   useEffect(() => {
-    if (currentlyOpenFilePath) {
-      fetchSimilarEntries(currentlyOpenFilePath)
-    }
+    updateSimilarFiles()
   }, [currentlyOpenFilePath])
 
-  const updateSimilarEntries = async () => {
-    if (!currentlyOpenFilePath) {
-      toast.error('No file currently open.')
-      return
-    }
+  const handleFileSelect = (path: string) => {
+    openContent(path)
+  }
 
-    await fetchSimilarEntries(currentlyOpenFilePath)
+  if (!currentlyOpenFilePath) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <p className="text-gray-500">No file selected</p>
+      </div>
+    )
   }
 
   return (
-    <Stack height="100%">
-      <SimilarEntriesComponent
-        similarEntries={similarEntries}
-        setSimilarEntries={setSimilarEntries}
-        onSelect={(path, startingPos) => {
-          openTabContent(path, undefined, undefined, startingPos)
-          posthog.capture('open_file_from_related_notes')
-        }}
-        updateSimilarEntries={updateSimilarEntries}
-        isLoadingSimilarEntries={isLoadingSimilarEntries}
-        titleText="Related notes"
-      />
-    </Stack>
+    <div className="flex h-full flex-col">
+      <div className="border-b border-gray-200 p-4 dark:border-gray-700">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Similar Files</h3>
+      </div>
+      <div className="flex-1 overflow-y-auto p-4">
+        {isLoading ? (
+          <div className="flex items-center justify-center">
+            <p className="text-gray-500">Loading...</p>
+          </div>
+        ) : similarFiles.length > 0 ? (
+          <div className="space-y-2">
+            {similarFiles.map((file, index) => (
+              <DBResultPreview key={index} dbResult={file} onSelect={handleFileSelect} />
+            ))}
+          </div>
+        ) : (
+          <div className="flex items-center justify-center">
+            <p className="text-gray-500">No similar files found</p>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }
 

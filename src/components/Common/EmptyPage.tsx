@@ -1,8 +1,7 @@
 import React from 'react'
-import { SizableText, YStack } from 'tamagui'
-import { File } from '@tamagui/lucide-icons'
 import { useContentContext } from '@/contexts/ContentContext'
 import { useModalOpeners } from '@/contexts/ModalContext'
+import { File } from 'lucide-react'
 
 const EmptyPage: React.FC = () => {
   const { setIsNewDirectoryModalOpen } = useModalOpeners()
@@ -14,13 +13,13 @@ const EmptyPage: React.FC = () => {
         <div className="mb-2 opacity-10">
           <File size={168} color="$brand3" />
         </div>
-        <SizableText color="$gray11" size="$6" fontWeight={400} className="mb-0">
+        <p className='mt-2 text-sm text-gray-500 dark:text-gray-400'>
           No File Selected!
-        </SizableText>
-        <SizableText color="$gray11" paddingTop={6}>
+        </p>
+        <p className='mt-2 text-sm text-gray-500 dark:text-gray-400'>
           Open a file and get back to work!
-        </SizableText>
-        <YStack paddingTop={20}>
+        </p>
+        <div className='mt-4'>
           <button
             className="cursor-pointer border-0 bg-transparent pb-1 pr-0 text-left text-2lg text-blue-500"
             onClick={() => createUntitledNote()}
@@ -35,7 +34,7 @@ const EmptyPage: React.FC = () => {
           >
             Create a Folder
           </button>
-        </YStack>
+        </div>
       </div>
     </div>
   )

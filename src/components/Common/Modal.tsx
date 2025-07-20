@@ -1,7 +1,6 @@
 import React, { useRef } from 'react'
 import ReactDOM from 'react-dom'
-import { YStack, XStack } from '@tamagui/stacks'
-import { X } from '@tamagui/lucide-icons'
+import { X } from 'lucide-react'
 
 interface ModalProps {
   isOpen: boolean
@@ -24,44 +23,29 @@ const ReorModal: React.FC<ModalProps> = ({ isOpen, onClose, children, hideCloseB
   }
 
   const modalContent = (
-    <YStack
-      position="absolute"
-      top={0}
-      left={0}
-      right={0}
-      bottom={0}
-      alignItems="center"
-      justifyContent="center"
-      backgroundColor="rgba(0, 0, 0, 0.4)"
-      height="100vh"
-      // @ts-ignore
-      onPress={handleBackdropClick}
-      zIndex={9999}
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40"
+      onClick={handleBackdropClick}
     >
-      <YStack
+      <div
         ref={modalRef}
-        borderRadius="$4"
-        borderWidth={1}
-        borderColor="$gray7"
-        backgroundColor="$background"
-        shadowColor="$shadowColor"
-        shadowOpacity={0.5}
-        shadowRadius={10}
-        padding="$4"
-        onPress={(e: any) => e.stopPropagation()}
+        className="rounded-lg border border-gray-700 bg-white p-4 shadow-lg dark:bg-gray-800"
+        onClick={(e) => e.stopPropagation()}
       >
         {!hideCloseButton && (
-          <XStack position="absolute" top={10} right={15}>
-            <button type="button" onClick={onClose} style={{ background: 'transparent', border: 'none' }}>
-              <span style={{ fontSize: 24, cursor: 'pointer' }}>
-                <X size={18} />
-              </span>
+          <div className="absolute right-4 top-4">
+            <button 
+              type="button" 
+              onClick={onClose} 
+              className="bg-transparent border-none text-2xl cursor-pointer"
+            >
+              <X size={18} />
             </button>
-          </XStack>
+          </div>
         )}
         {children}
-      </YStack>
-    </YStack>
+      </div>
+    </div>
   )
 
   return ReactDOM.createPortal(modalContent, document.body)

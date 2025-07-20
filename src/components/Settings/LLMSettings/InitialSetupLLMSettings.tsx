@@ -1,7 +1,6 @@
 import React from 'react'
 import { CheckCircleIcon, CogIcon } from '@heroicons/react/24/solid'
 import { Button } from '@material-tailwind/react'
-import { SizableText, XStack, ScrollView } from 'tamagui'
 import useLLMConfigs from '../../../lib/hooks/use-llm-configs'
 import LLMSettingsContent from './LLMSettingsContent'
 import { Dialog, DialogContent, DialogTrigger, DialogOverlay } from '@/components/ui/dialog'
@@ -22,10 +21,10 @@ const InitialSetupLLMSettings: React.FC<InitialSetupLLMSettingsProps> = () => {
   }
 
   return (
-    <XStack width="100%" justifyContent="space-between" alignItems="center" paddingTop="$2">
-      <SizableText color="$gray13" fontWeight={600}>
+    <div className="flex w-full items-center justify-between pt-2">
+      <h3 className="font-semibold text-gray-900 dark:text-white">
         LLM
-      </SizableText>
+      </h3>
       <Dialog open={isSetupModalOpen} onOpenChange={handleOpenChange}>
         <DialogTrigger asChild>
           <Button
@@ -51,13 +50,13 @@ const InitialSetupLLMSettings: React.FC<InitialSetupLLMSettingsProps> = () => {
         </DialogTrigger>
         <DialogOverlay>
           <DialogContent style={{ maxHeight: '60vh', display: 'flex', flexDirection: 'column' }}>
-            <ScrollView style={{ flex: 1 }}>
+            <div className="flex-1 overflow-y-auto">
               <LLMSettingsContent />
-            </ScrollView>
+            </div>
           </DialogContent>
         </DialogOverlay>
       </Dialog>
-    </XStack>
+    </div>
   )
 }
 

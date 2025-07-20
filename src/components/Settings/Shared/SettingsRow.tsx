@@ -1,5 +1,4 @@
 import React, { ReactNode } from 'react'
-import { YStack, XStack, SizableText } from 'tamagui'
 
 interface SettingsSectionProps {
   title: string
@@ -16,46 +15,46 @@ interface SettingsRowProps {
 }
 
 const SettingsSection: React.FC<SettingsSectionProps> = ({ title, children, footnote, error }) => (
-  <YStack px="$4" backgroundColor="$gray1" width="100%" height="100%" justifyContent="space-between">
-    <YStack>
+  <div className="flex h-full w-full flex-col justify-between bg-gray-50 px-4 dark:bg-gray-900">
+    <div>
       <h2 className="mb-2">{title}</h2>
-      <XStack className="h-[2px] w-full bg-neutral-700" />
-      <YStack maxWidth="100%" width="100%" overflow="hidden">
+      <div className="h-[2px] w-full bg-neutral-700" />
+      <div className="w-full max-w-full overflow-hidden">
         {children}
         {error && (
-          <SizableText size="$1" color="$red" py="$2">
+          <p className="py-2 text-sm text-red-500">
             {error}
-          </SizableText>
+          </p>
         )}
-      </YStack>
-    </YStack>
+      </div>
+    </div>
     {footnote && (
-      <SizableText size="$1" py="$2">
+      <p className="py-2 text-sm text-gray-600 dark:text-gray-400">
         {footnote}
-      </SizableText>
+      </p>
     )}
-  </YStack>
+  </div>
 )
 
 export const SettingsRow: React.FC<SettingsRowProps> = ({ title, description, control, divider = true }) => {
   return (
     <>
-      <XStack width="100%">
-        <XStack justifyContent="space-between" alignItems="center" py="$3" width="100%">
-          <YStack flex={1} pr="$4">
-            <SizableText size="$3" fontWeight="semi-bold">
+      <div className="w-full">
+        <div className="flex w-full items-center justify-between py-3">
+          <div className="flex-1 pr-4">
+            <p className="text-base font-semibold text-gray-900 dark:text-white">
               {title}
-            </SizableText>
+            </p>
             {description && (
-              <SizableText size="$1" py="$2">
+              <p className="py-2 text-sm text-gray-600 dark:text-gray-400">
                 {description}
-              </SizableText>
+              </p>
             )}
-          </YStack>
+          </div>
           {control}
-        </XStack>
-      </XStack>
-      {divider && <XStack className="h-[2px] w-full bg-neutral-700" />}
+        </div>
+      </div>
+      {divider && <div className="h-[2px] w-full bg-neutral-700" />}
     </>
   )
 }

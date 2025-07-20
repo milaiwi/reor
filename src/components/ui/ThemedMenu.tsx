@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react'
 import { Menu, MenuProps, MenuLabelProps, MenuDropdownProps } from '@mantine/core'
-import { useTheme } from 'tamagui'
+import { useThemeManager } from '@/contexts/ThemeContext'
 
 interface ThemedMenuProps {
   children: ReactNode
@@ -12,10 +12,13 @@ type ThemedMenuItemProps<C extends React.ElementType = 'button'> = {
 } & React.ComponentPropsWithoutRef<C>
 
 const ThemedMenu: React.FC<ThemedMenuProps & MenuProps> = ({ children, ...restProps }) => {
-  const theme = useTheme()
+  const { state } = useThemeManager()
+  const isDark = state === 'dark' || (state === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  
+  const backgroundColor = isDark ? '#151515' : '#f9f9f9'
 
   return (
-    <Menu {...restProps} styles={{ dropdown: { backgroundColor: theme.background.val } }}>
+    <Menu {...restProps} styles={{ dropdown: { backgroundColor } }}>
       {children}
     </Menu>
   )
@@ -25,37 +28,44 @@ export const ThemedMenuItem: React.FC<ThemedMenuItemProps> = <C extends React.El
   style,
   ...props
 }: ThemedMenuItemProps<C>) => {
-  const theme = useTheme()
+  const { state } = useThemeManager()
+  const isDark = state === 'dark' || (state === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  
+  const backgroundColor = isDark ? '#151515' : '#f9f9f9'
+  const color = isDark ? '#ffffff' : '#000000'
+  const hoverBackgroundColor = isDark ? 'rgba(10, 132, 255, 1)' : 'hsl(0, 0%, 93.3%)'
 
   return (
     <Menu.Item
       {...props}
       style={{
-        backgroundColor: theme.background.val,
-        color: theme.color.val,
+        backgroundColor,
+        color,
         ...style,
       }}
       onMouseEnter={(e: any) => {
-        // TODO: Temporary fix for hover background color. Original is too light.
-        e.currentTarget.style.backgroundColor =
-          theme.background.val === '#f9f9f9' ? 'hsl(0, 0%, 93.3%)' : theme.backgroundHover.val
+        e.currentTarget.style.backgroundColor = hoverBackgroundColor
       }}
       onMouseLeave={(e: any) => {
-        e.currentTarget.style.backgroundColor = theme.background.val
+        e.currentTarget.style.backgroundColor = backgroundColor
       }}
     />
   )
 }
 
 export const ThemedLabel: React.FC<ThemedMenuProps & MenuLabelProps> = ({ children, ...restProps }) => {
-  const theme = useTheme()
+  const { state } = useThemeManager()
+  const isDark = state === 'dark' || (state === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  
+  const backgroundColor = isDark ? '#151515' : '#f9f9f9'
+  const color = isDark ? '#ffffff' : '#000000'
 
   return (
     <Menu.Label
       {...restProps}
       style={{
-        backgroundColor: theme.background.val,
-        color: theme.color.val,
+        backgroundColor,
+        color,
       }}
     >
       {children}
@@ -64,14 +74,18 @@ export const ThemedLabel: React.FC<ThemedMenuProps & MenuLabelProps> = ({ childr
 }
 
 export const ThemedDropdown: React.FC<ThemedMenuProps & MenuDropdownProps> = ({ children, ...restProps }) => {
-  const theme = useTheme()
+  const { state } = useThemeManager()
+  const isDark = state === 'dark' || (state === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  
+  const backgroundColor = isDark ? '#151515' : '#f9f9f9'
+  const color = isDark ? '#ffffff' : '#000000'
 
   return (
     <Menu.Dropdown
       {...restProps}
       style={{
-        backgroundColor: theme.background.val,
-        color: theme.color.val,
+        backgroundColor,
+        color,
       }}
     >
       {children}

@@ -1,11 +1,10 @@
 import React from 'react'
 
 import { DBQueryResult } from 'electron/main/vector-database/schema'
-import { RefreshCw } from '@tamagui/lucide-icons'
+import { RefreshCw } from 'lucide-react'
 import { PiGraph } from 'react-icons/pi'
 import '../../../styles/global.css'
 // import ResizableComponent from '@/components/Common/ResizableComponent'
-import { ScrollView, Stack, YStack, XStack, Text, Button } from 'tamagui'
 import { DBResultPreview } from '@/components/File/DBResultPreview'
 import { useFileContext } from '@/contexts/FileContext'
 import Spinner from '@/components/ui/Spinner'
@@ -32,68 +31,63 @@ const SimilarEntriesComponent: React.FC<SimilarEntriesComponentProps> = ({
 
   if (similarEntries.length > 0) {
     content = (
-      <Stack flex={1} width="100%">
+      <div className="flex-1 w-full">
         {similarEntries
           .filter((dbResult) => dbResult)
           .map((dbResult) => (
-            <Stack
+            <div
               key={`${dbResult.notepath}-${dbResult.subnoteindex}`}
-              paddingHorizontal="$2"
-              paddingVertical="$1"
-              width="100%"
+              className="px-2 py-1 w-full"
             >
               <DBResultPreview dbResult={dbResult} onSelect={onSelect} />
-            </Stack>
+            </div>
           ))}
-      </Stack>
+      </div>
     )
   } else if (!isLoadingSimilarEntries) {
     content = (
-      <Stack height="100%" width="100%">
-        <Text fontSize="$2" fontFamily="$body" margin={0} lineHeight="$1" color="$gray11" textAlign="center">
+      <div className="h-full w-full">
+        <p className="text-sm font-body m-0 leading-relaxed text-gray-600 text-center">
           No items found
-        </Text>
-      </Stack>
+        </p>
+      </div>
     )
   }
 
   return (
-    <ScrollView maxHeight="100%" backgroundColor="$gray3">
-      <Stack flex={1}>
-        <YStack>
+    <div className="max-h-full overflow-y-auto bg-gray-800">
+      <div className="flex-1">
+        <div>
           {/* Header */}
-          <XStack alignItems="center" paddingHorizontal="$4" paddingVertical="$2" backgroundColor="$neutral800">
-            <XStack flex={1} />
-            <XStack alignItems="center" justifyContent="center">
-              <PiGraph size={16} color="$gray300" />
-              <Text marginLeft="$1" fontSize="$2" color="$gray300">
+          <div className="flex items-center px-4 py-2 bg-neutral-800">
+            <div className="flex-1" />
+            <div className="flex items-center justify-center">
+              <PiGraph size={16} className="text-gray-300" />
+              <p className="ml-1 text-sm text-gray-300">
                 {titleText}
-              </Text>
-            </XStack>
-            <XStack flex={1} justifyContent="flex-end">
+              </p>
+            </div>
+            <div className="flex-1 flex justify-end">
               {updateSimilarEntries && setSimilarEntries && (
-                <Button
-                  onPress={async () => {
+                <button
+                  onClick={async () => {
                     setSimilarEntries([]) // simulate refresh
                     await saveCurrentlyOpenedFile()
                     updateSimilarEntries()
                   }}
-                  size="$2"
-                  backgroundColor="transparent"
-                  borderWidth={0}
-                  padding={0}
+                  className="bg-transparent border-0 p-0"
                 >
                   {isLoadingSimilarEntries ? <Spinner size="small" /> : <RefreshCw size={16} />}
-                </Button>
+                </button>
               )}
-            </XStack>
-          </XStack>
+            </div>
+          </div>
 
           {/* Content */}
-          <YStack>{content}</YStack>
-        </YStack>
-      </Stack>
-    </ScrollView>
+          <div>{content}</div>
+        </div>
+      </div>
+    </div>
   )
 }
 

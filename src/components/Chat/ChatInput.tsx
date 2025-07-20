@@ -1,23 +1,20 @@
-import React from 'react'
-
-import { PiPaperPlaneRight } from 'react-icons/pi'
-import { TextArea } from 'tamagui'
-import { ToggleButton, ToggleThumb } from '@/components/Editor/ui/src/toggle'
-import { AgentConfig, LoadingState } from '../../lib/llm/types'
-import { Button } from '../ui/button'
-import LLMSelectOrButton from '../Settings/LLMSettings/LLMSelectOrButton'
-import { Label } from '@/components/ui/label'
-import { useThemeManager } from '@/contexts/ThemeContext'
+import React, { useState, useRef, useEffect } from 'react'
+import { Button } from '@material-tailwind/react'
+import { Send } from 'lucide-react'
+import { useChatContext } from '@/contexts/ChatContext'
+import { useContentContext } from '@/contexts/ContentContext'
+import useLLMConfigs from '@/lib/hooks/use-llm-configs'
+import useAgentConfig from '@/lib/hooks/use-agent-configs'
 
 interface ChatInputProps {
   userTextFieldInput: string
-  setUserTextFieldInput: (value: string) => void
+  setUserTextFieldInput: (input: string) => void
   handleSubmitNewMessage: () => void
-  loadingState: LoadingState
+  loadingState: string
   selectedLLM: string | undefined
-  setSelectedLLM: (value: string | undefined) => void
-  agentConfig: AgentConfig | undefined
-  setAgentConfig: React.Dispatch<React.SetStateAction<AgentConfig | undefined>>
+  setSelectedLLM: (llm: string) => void
+  agentConfig: any
+  setAgentConfig: (config: any) => void
 }
 
 const ChatInput: React.FC<ChatInputProps> = ({
@@ -30,84 +27,51 @@ const ChatInput: React.FC<ChatInputProps> = ({
   agentConfig,
   setAgentConfig,
 }) => {
-  const { state } = useThemeManager()
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const { llmConfigs } = useLLMConfigs()
+  const { agentConfig: currentAgentConfig } = useAgentConfig()
 
-  const handleDbSearchToggle = (checked: boolean) => {
-    setAgentConfig((prevConfig) => {
-      if (!prevConfig) throw new Error('Agent config must be initialized before setting db search filters')
-      return {
-        ...prevConfig,
-        dbSearchFilters: checked
-          ? {
-              limit: 22,
-              minDate: undefined,
-              maxDate: undefined,
-              passFullNoteIntoContext: true,
-            }
-          : undefined,
-      }
-    })
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto'
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
+    }
+  }, [userTextFieldInput])
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSubmitNewMessage()
+    }
+  }
+
+  const handleSubmit = () => {
+    if (userTextFieldInput.trim() && loadingState !== 'waiting-for-first-token') {
+      handleSubmitNewMessage()
+    }
   }
 
   return (
-    <div className="flex w-full">
-      <div className="z-50 flex w-full flex-col overflow-hidden rounded border-2">
-        <TextArea
+    <div className="flex items-end gap-2 p-4">
+      <div className="flex-1">
+        <textarea
+          ref={textareaRef}
           value={userTextFieldInput}
-          // @ts-expect-error
-          onKeyPress={(e: KeyboardEvent) => {
-            if (!e.shiftKey && e.key === 'Enter') {
-              e.preventDefault()
-              handleSubmitNewMessage()
-            }
-          }}
-          placeholder="What can Reor help you with today?"
-          onChangeText={(text: string) => setUserTextFieldInput(text)}
-          autoFocus
-          h={100}
-          w="100%"
-          resize="none"
-          bg="transparent"
-          p="$4"
-          color="$foreground"
-          borderWidth={2}
-          borderColor="$border"
-          focusStyle={{
-            borderColor: '$ring',
-            borderWidth: 2,
-          }}
-          fontSize={12}
+          onChange={(e) => setUserTextFieldInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Type your message..."
+          className="w-full resize-none rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+          rows={1}
+          disabled={loadingState === 'waiting-for-first-token'}
         />
-        <div className="mx-auto h-px w-[96%] bg-background/20" />
-        <div className="flex h-10 flex-col items-center justify-between gap-2  py-2 md:flex-row md:gap-4">
-          <div className="flex flex-col items-center justify-between rounded-md border-0 py-2 md:flex-row">
-            <LLMSelectOrButton selectedLLM={selectedLLM} setSelectedLLM={setSelectedLLM} />
-          </div>
-
-          <div className="flex">
-            <div className="mr-[-8px] mt-[8px] flex flex-col items-center">
-              <ToggleButton
-                hybrid={!!agentConfig?.dbSearchFilters}
-                onPress={() => handleDbSearchToggle(!agentConfig?.dbSearchFilters)}
-                aria-checked={!!agentConfig?.dbSearchFilters}
-                role="switch"
-                aria-label="Search notes"
-              >
-                <ToggleThumb hybrid={!!agentConfig?.dbSearchFilters} />
-              </ToggleButton>
-              <Label className="mt-0 text-[8px] text-muted-foreground">Search notes</Label>
-            </div>
-
-            <Button
-              className="flex items-center justify-between bg-transparent text-[10px] text-primary hover:bg-transparent hover:text-accent-foreground"
-              onClick={handleSubmitNewMessage}
-              disabled={loadingState !== 'idle'}
-            >
-              <PiPaperPlaneRight className="size-4" color={state === 'light' ? 'black' : 'white'} />
-            </Button>
-          </div>
-        </div>
       </div>
+      <Button
+        onClick={handleSubmit}
+        disabled={!userTextFieldInput.trim() || loadingState === 'waiting-for-first-token'}
+        className="flex h-10 w-10 items-center justify-center rounded-md bg-blue-500 p-0 text-white hover:bg-blue-600 disabled:bg-gray-400"
+      >
+        <Send size={16} />
+      </Button>
     </div>
   )
 }

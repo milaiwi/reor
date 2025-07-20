@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { ProgressResponse } from 'ollama'
 import posthog from 'posthog-js'
 import { toast } from 'react-toastify'
-import { Input } from 'tamagui'
+import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -96,11 +96,8 @@ const NewOllamaModelModal: React.FC<NewOllamaModelModalProps> = ({ isOpen, onClo
           <div className="grid gap-4 py-4">
             <Input
               value={modelNameBeingInputted}
-              onChangeText={setModelNameBeingInputted}
+              onChange={(e) => setModelNameBeingInputted(e.target.value)}
               placeholder="llama3.2"
-              size="$1"
-              py="$3"
-              px="$2"
             />
             <p className="text-xs italic text-muted-foreground">
               We recommended either nemotron-mini, llama3.2, or qwen2.5.

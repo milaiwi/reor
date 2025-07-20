@@ -1,32 +1,19 @@
 import React from 'react'
-import ReactMarkdown from 'react-markdown'
-import rehypeRaw from 'rehype-raw'
-import { SizableText } from 'tamagui'
-import { ReorChatMessage } from '../../../lib/llm/types'
-import { getDisplayMessage } from '../../../lib/llm/chat'
+import { ReorChatMessage } from '@/lib/llm/types'
+import MarkdownRenderer from '@/components/Common/MarkdownRenderer'
 
 interface UserMessageProps {
   message: ReorChatMessage
 }
 
 const UserMessage: React.FC<UserMessageProps> = ({ message }) => {
-  const displayMessage: string | undefined = getDisplayMessage(message)
-  const messageLength = displayMessage?.length || 0
-
-  // Determine font size class based on message length
-  const getFontSizeClass = () => {
-    if (messageLength > 100) return 'text-lg'
-    if (messageLength > 50) return 'text-xl'
-    return 'text-2xl'
-  }
-
   return (
-    <div className="mb-0 flex w-full flex-col gap-1 text-center">
-      <SizableText fontWeight="bold" color="$gray13">
-        <ReactMarkdown rehypePlugins={[rehypeRaw]} className={`max-w-[95%] break-words ${getFontSizeClass()}`}>
-          {displayMessage}
-        </ReactMarkdown>
-      </SizableText>
+    <div className="flex justify-end">
+      <div className="max-w-[80%] rounded-lg bg-blue-500 p-3 text-white">
+        <div className="text-sm">
+          <MarkdownRenderer content={message.content as string} />
+        </div>
+      </div>
     </div>
   )
 }

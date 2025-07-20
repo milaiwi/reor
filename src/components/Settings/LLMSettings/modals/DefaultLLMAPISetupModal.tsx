@@ -6,8 +6,7 @@ import {
   openAIDefaultAPIName,
   openAIDefaultLLMs,
 } from '@shared/defaultLLMs'
-import { Input } from 'tamagui'
-import { NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native'
+import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -57,8 +56,8 @@ const DefaultLLMAPISetupModal: React.FC<CloudLLMSetupModalProps> = ({ isOpen, on
     onClose()
   }
 
-  const handleKeyPress = (e: NativeSyntheticEvent<TextInputKeyPressEventData>) => {
-    if (e.nativeEvent.key === 'Enter') {
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
       handleSave()
     }
   }
@@ -74,13 +73,10 @@ const DefaultLLMAPISetupModal: React.FC<CloudLLMSetupModalProps> = ({ isOpen, on
           <div className="grid gap-4 pt-4">
             <Input
               value={apiKey}
-              onChangeText={setAPIKey}
+              onChange={(e) => setAPIKey(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder={`${LLMDisplayName} API Key`}
-              size="$1"
-              py="$3"
-              px="$2"
-              secureTextEntry
+              type="password"
             />
             <p className="mt-0 text-xs text-muted-foreground">
               <i>You&apos;ll then be able to choose an {LLMDisplayName} model in the model dropdown...</i>

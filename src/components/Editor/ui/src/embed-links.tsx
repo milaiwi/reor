@@ -1,7 +1,13 @@
-import { YStack, XStack, Button, Popover, Separator, Input, Theme, SizableText } from 'tamagui'
 import React, { useState } from 'react'
 import { IconType } from 'react-icons'
 import { MediaType } from '@/components/Editor/types/media-render'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 
 interface EmbedRenderProps {
   props: {
@@ -32,112 +38,60 @@ const EmbedComponent: React.FC<EmbedRenderProps> = ({ props, submit, assign }) =
   const handleClick = () => setIsClicked(!isClicked)
 
   return (
-    <Popover allowFlip size="$5" onOpenChange={() => setErrorRaised('')}>
-      <Popover.Trigger asChild>
-        <YStack
-          position="relative"
-          borderColor="$color8"
-          borderWidth={0}
-          backgroundColor="$purple4"
-          borderRadius="$4"
-          outlineWidth={0}
-          // @ts-expect-error
+    <Popover onOpenChange={() => setErrorRaised('')}>
+      <PopoverTrigger asChild>
+        <div
+          className="relative border-0 bg-purple-100 rounded-md outline-none cursor-pointer h-[50px] hover:bg-purple-200 transition-colors"
           contentEditable={false}
           onClick={handleClick}
-          height={50}
-          hoverStyle={{
-            backgroundColor: '$purple5',
-            cursor: 'pointer',
-          }}
         >
-          <XStack
-            alignItems="center"
-            justifyContent="flex-start"
-            borderRadius="$2"
-            height="100%"
-            paddingLeft={10}
-            gap={8}
-            opacity={0.4}
-          >
+          <div className="flex items-center justify-start rounded h-full pl-2.5 gap-2 opacity-40">
             {icon && React.createElement(icon)}
-            <SizableText size="$4" fontFamily="$mono">
+            <span className="text-sm font-mono">
               {hint}
-            </SizableText>
-          </XStack>
-        </YStack>
-      </Popover.Trigger>
+            </span>
+          </div>
+        </div>
+      </PopoverTrigger>
 
-      <Popover.Content
-        borderWidth={1}
-        borderColor="$color8"
-        borderRadius={10}
-        enterStyle={{ y: -10, opacity: 0 }}
-        exitStyle={{ y: -10, opacity: 0 }}
-        elevate
-        animation={[
-          'medium',
-          {
-            opacity: {
-              overshootClamping: true,
-            },
-          },
-        ]}
-        paddingTop={3}
-        paddingHorizontal={12}
-      >
-        <Popover.Arrow borderWidth={1} borderColor="$color8" />
-        <YStack gap="$2" width={300}>
-          <XStack gap="$1">
+      <PopoverContent className="w-[300px] p-3">
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-1">
             <Button
-              size="$2"
-              onPress={() => {
+              size="sm"
+              variant={selectedOption === 'upload' ? 'default' : 'outline'}
+              onClick={() => {
                 setSelectedOption('upload')
                 setIsClicked(false)
                 setErrorRaised('')
               }}
-              borderRadius={0}
-              hoverStyle={{
-                borderRadius: 8,
-              }}
-              fontWeight={selectedOption === 'upload' ? 'bold' : 'normal'}
+              className="rounded-none hover:rounded-md font-medium"
             >
               Upload
             </Button>
             {mediaType === 'image' && (
               <Button
-                size="$2"
-                onPress={() => {
+                size="sm"
+                variant={selectedOption === 'embed' ? 'default' : 'outline'}
+                onClick={() => {
                   setSelectedOption('embed')
                   setIsClicked(false)
                   setErrorRaised('')
                 }}
-                borderRadius={0}
-                hoverStyle={{
-                  borderRadius: 8,
-                }}
-                fontWeight={selectedOption === 'embed' ? 'bold' : 'normal'}
+                className="rounded-none hover:rounded-md font-medium"
               >
                 Embed
               </Button>
             )}
-          </XStack>
+          </div>
 
-          <Separator />
+          <div className="h-px bg-gray-200" />
 
           {selectedOption === 'upload' ? (
-            <YStack gap="$3" paddingTop={3}>
+            <div className="flex flex-col gap-3 pt-3">
               <Button
-                size={14}
-                color="$color10"
-                fontFamily="$mono"
-                padding={16}
-                backgroundColor="hsl(0, 0%, 96.0%)"
-                borderRadius="$4"
-                hoverStyle={{
-                  backgroundColor: 'hsl(0, 0%, 92.0%)',
-                  cursor: 'pointer',
-                }}
-                onPress={() => {
+                className="h-9 text-gray-700 bg-gray-100 hover:bg-gray-200 font-mono p-4 rounded-md cursor-pointer"
+                onClick={() => {
                   if (submit) {
                     submit(assign, 'upload', undefined, setErrorRaised)
                   }
@@ -146,64 +100,40 @@ const EmbedComponent: React.FC<EmbedRenderProps> = ({ props, submit, assign }) =
               >
                 {uploadOptionHint}
               </Button>
-            </YStack>
+            </div>
           ) : (
             mediaType === 'image' && (
-              <YStack gap="$2">
+              <div className="flex flex-col gap-2">
                 <Input
                   autoFocus
-                  color="$white"
-                  height={32}
-                  fontFamily="$mono"
-                  backgroundColor={errorRaised ? '$color5' : 'color7'}
-                  borderRadius="$4"
-                  hoverStyle={{
-                    backgroundColor: '$gray4',
-                  }}
-                  focusStyle={{
-                    outlineColor: '$blue7',
-                    outlineWidth: 2,
-                    outlineStyle: 'solid',
-                  }}
+                  className={`h-8 font-mono bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-blue-700 focus:outline-2 focus:outline ${errorRaised ? 'bg-red-500' : ''}`}
                   placeholder={embedPlaceholder}
                   value={url}
-                  onChangeText={setURL}
+                  onChange={(e) => setURL(e.target.value)}
                 />
                 {errorRaised && (
-                  <SizableText size="$2" color="red" fontWeight="semiBold">
+                  <p className="text-sm text-red-500 font-semibold">
                     {errorRaised}
-                  </SizableText>
+                  </p>
                 )}
-                <XStack justifyContent="center">
-                  <Theme name="blue">
-                    <Button
-                      width="50%"
-                      size={14}
-                      color="white"
-                      fontFamily="$mono"
-                      padding={16}
-                      backgroundColor="$blue9"
-                      borderRadius="$4"
-                      hoverStyle={{
-                        backgroundColor: '$blue8',
-                        cursor: 'pointer',
-                      }}
-                      onPress={() => {
-                        if (submit) {
-                          submit(assign, 'embed', url, setErrorRaised)
-                        }
-                        setURL('')
-                      }}
-                    >
-                      {embedOptionHint}
-                    </Button>
-                  </Theme>
-                </XStack>
-              </YStack>
+                <div className="flex justify-center">
+                  <Button
+                    className="w-1/2 h-9 text-white font-mono p-4 bg-blue-600 rounded-md hover:bg-blue-700 cursor-pointer"
+                    onClick={() => {
+                      if (submit) {
+                        submit(assign, 'embed', url, setErrorRaised)
+                      }
+                      setURL('')
+                    }}
+                  >
+                    {embedOptionHint}
+                  </Button>
+                </div>
+              </div>
             )
           )}
-        </YStack>
-      </Popover.Content>
+        </div>
+      </PopoverContent>
     </Popover>
   )
 }

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
 import { Button } from '@material-tailwind/react'
-import { SizableText } from 'tamagui'
 import { truncateName } from '../Chat/MessageComponents/ChatSources'
 
 interface DirectorySelectorProps {
@@ -47,9 +46,9 @@ const DirectorySelector: React.FC<DirectorySelectorProps> = ({ setErrorMsg }) =>
         Select Directory
       </Button>
       {userDirectory && (
-        <SizableText fontSize={12} width="100%" textAlign="left" marginTop={1} fontWeight={300}>
+        <p className="mt-1 w-full text-left text-xs font-light text-gray-600 dark:text-gray-400">
           <strong>{truncateName(userDirectory, 60)}</strong>
-        </SizableText>
+        </p>
       )}
     </div>
   )

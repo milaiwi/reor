@@ -1,16 +1,16 @@
 import React, { createContext, useContext, useEffect, useState, PropsWithChildren, FC } from 'react'
-import type { TamaguiThemeTypes } from 'electron/main/electron-store/storeConfig'
-import { TamaguiProvider, useTheme } from 'tamagui'
-import config from '../../tamagui.config'
+
+// shadcn theme types
+type Theme = "dark" | "light" | "system"
 
 interface ThemeActions {
   toggle: () => void
-  set: (theme: TamaguiThemeTypes) => void
+  set: (theme: Theme) => void
   syncWithSystem: () => void
 }
 
 export interface ThemeContextValue {
-  state: TamaguiThemeTypes
+  state: Theme
   actions: ThemeActions
 }
 
@@ -49,9 +49,10 @@ const styles = {
  * tamagui styles to mantine styles.
  */
 export const MantineStyleProps = () => {
-  const theme = useTheme()
-
-  const colors = styles[theme.background.val as keyof typeof styles]
+  // Get current theme from CSS classes
+  const isDark = document.documentElement.classList.contains('dark')
+  const themeKey = isDark ? '#151515' : '#f9f9f9'
+  const colors = styles[themeKey]
 
   return {
     input: {
@@ -76,19 +77,37 @@ export const MantineStyleProps = () => {
 const ThemeContext = createContext<ThemeContextValue | null>(null)
 
 export class ThemeManager {
-  private state: TamaguiThemeTypes
+  private state: Theme
+  private setState: (theme: Theme) => void
 
-  private setState: (theme: TamaguiThemeTypes) => void
-
-  constructor(initialTheme: TamaguiThemeTypes, setState: (theme: TamaguiThemeTypes) => void) {
+  constructor(initialTheme: Theme, setState: (theme: Theme) => void) {
     this.state = initialTheme
     this.setState = setState
   }
 
-  private async updateTheme(newTheme: TamaguiThemeTypes) {
+  private async updateTheme(newTheme: Theme) {
     this.state = newTheme
     this.setState(newTheme)
-    await window.electronStore.setTamaguiTheme(newTheme)
+    
+    // Store in electron store
+    const electronTheme = newTheme === 'system' ? 
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : 
+      newTheme
+    await window.electronStore.setTamaguiTheme(electronTheme)
+    
+    // Update localStorage
+    localStorage.setItem('vite-ui-theme', newTheme)
+    
+    // Update CSS classes
+    const root = window.document.documentElement
+    root.classList.remove('light', 'dark')
+
+    if (newTheme === 'system') {
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      root.classList.add(systemTheme)
+    } else {
+      root.classList.add(newTheme)
+    }
   }
 
   getContextValue(): ThemeContextValue {
@@ -96,15 +115,17 @@ export class ThemeManager {
       state: this.state,
       actions: {
         toggle: () => {
-          const newTheme = this.state === 'light' ? 'dark' : 'light'
+          const currentTheme = this.state === 'system' ? 
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : 
+            this.state
+          const newTheme = currentTheme === 'light' ? 'dark' : 'light'
           this.updateTheme(newTheme)
         },
-        set: (theme: TamaguiThemeTypes) => {
+        set: (theme: Theme) => {
           this.updateTheme(theme)
         },
         syncWithSystem: () => {
-          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-          this.updateTheme(prefersDark ? 'dark' : 'light')
+          this.updateTheme('system')
         },
       },
     }
@@ -115,14 +136,24 @@ export class ThemeManager {
  * Stores, gets, and updates the theme
  */
 export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
-  const [theme, setTheme] = useState<TamaguiThemeTypes>('light')
+  const [theme, setTheme] = useState<Theme>('light')
   const [manager, setManager] = useState<ThemeManager | null>(null)
 
   useEffect(() => {
     const initTheme = async () => {
-      const savedTheme = await window.electronStore.getTamaguiTheme()
-      setTheme(savedTheme || 'light')
-      setManager(new ThemeManager(savedTheme || 'light', setTheme))
+      // Try to get theme from localStorage first
+      const savedTheme = localStorage.getItem('vite-ui-theme') as Theme
+      
+      if (savedTheme && ['light', 'dark', 'system'].includes(savedTheme)) {
+        setTheme(savedTheme)
+        setManager(new ThemeManager(savedTheme, setTheme))
+      } else {
+        // Fallback to electron store
+        const electronTheme = await window.electronStore.getTamaguiTheme()
+        const defaultTheme = electronTheme === 'dark' ? 'dark' : 'light'
+        setTheme(defaultTheme)
+        setManager(new ThemeManager(defaultTheme, setTheme))
+      }
     }
 
     initTheme()
@@ -131,9 +162,7 @@ export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
   if (!manager) return null // Prevent rendering before the theme is set
   return (
     <ThemeContext.Provider value={manager.getContextValue()}>
-      <TamaguiProvider config={config} defaultTheme={theme}>
-        {children}
-      </TamaguiProvider>
+      {children}
     </ThemeContext.Provider>
   )
 }

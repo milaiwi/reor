@@ -3,7 +3,6 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 /* eslint-disable no-nested-ternary */
 import React from 'react'
-import { YStack } from 'tamagui'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 
 import '../styles/global.css'
@@ -72,7 +71,7 @@ const MainPageContent: React.FC = () => {
   }
 
   return (
-    <YStack className="relative flex h-screen flex-col overflow-hidden">
+    <div className="relative flex h-screen flex-col overflow-hidden">
       <TitleBar activePanel={activePanel} togglePanel={togglePanel} />
       <div className="flex min-h-0 flex-1">
         <div className="border-y-0 border-l-0 border-r-[0.001px] border-solid border-neutral-700">
@@ -127,7 +126,7 @@ const MainPageContent: React.FC = () => {
 
         <CommonModals />
       </div>
-    </YStack>
+    </div>
   )
 }
 

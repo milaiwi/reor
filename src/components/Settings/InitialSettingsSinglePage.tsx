@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 
 import { Button } from '@material-tailwind/react'
 
-import { YStack, H2, SizableText, XStack } from 'tamagui'
 import ReorModal from '../Common/Modal'
 
 import DirectorySelector from './DirectorySelector'
@@ -29,49 +28,49 @@ const InitialSetupSinglePage: React.FC<OldInitialSettingsProps> = ({ readyForInd
 
   return (
     <ReorModal isOpen onClose={onClose || (() => {})} hideCloseButton={!onClose}>
-      <YStack className="ml-2 mr-4 w-[620px] py-3">
-        <YStack className="ml-2 mt-0 h-[450px]  ">
-          <H2 marginBottom={0} textAlign="center" fontWeight={600}>
+      <div className="ml-2 mr-4 w-[620px] py-3">
+        <div className="ml-2 mt-0 h-[450px]">
+          <h2 className="mb-0 text-center text-2xl font-semibold text-gray-900 dark:text-white">
             Welcome to the Reor Project
-          </H2>
-          <SizableText marginTop={3} textAlign="center" fontWeight={300}>
+          </h2>
+          <p className="mt-3 text-center font-light text-gray-600 dark:text-gray-400">
             Reor is a private AI personal knowledge management tool. Each note will be saved as a markdown file to a
             vault directory on your machine.
-          </SizableText>
-          <XStack className="mt-10 flex w-full items-center justify-between border-0 border-b-2 border-solid border-neutral-700 pb-4">
-            <YStack className="w-80 flex-col">
-              <SizableText fontSize={16} fontWeight="bold">
+          </p>
+          <div className="mt-10 flex w-full items-center justify-between border-b-2 border-solid border-neutral-700 pb-4">
+            <div className="w-80 flex-col">
+              <h3 className="text-base font-bold text-gray-900 dark:text-white">
                 Vault Directory
-              </SizableText>
-              <SizableText margin={0} paddingTop={1} fontSize={12}>
+              </h3>
+              <p className="mt-0 pt-1 text-sm text-gray-600 dark:text-gray-400">
                 Your vault directory doesn&apos;t need to be empty. Only markdown files will be indexed.
-              </SizableText>
-            </YStack>
-            <YStack className="flex-col">
+              </p>
+            </div>
+            <div className="flex-col">
               <DirectorySelector setErrorMsg={setDirectoryErrorMsg} />
               {showError && directoryErrorMsg && (
-                <SizableText className="text-xs text-red-500">{directoryErrorMsg}</SizableText>
+                <p className="text-xs text-red-500">{directoryErrorMsg}</p>
               )}
-            </YStack>
-          </XStack>
-          <YStack className="mt-2 border-0 border-b-2 border-solid border-neutral-700 pb-2">
+            </div>
+          </div>
+          <div className="mt-2 border-b-2 border-solid border-neutral-700 pb-2">
             <InitialEmbeddingModelSettings setErrorMsg={setEmbeddingErrorMsg} />
             {showError && embeddingErrorMsg && (
-              <SizableText className="text-xs text-red-500">{embeddingErrorMsg}</SizableText>
+              <p className="text-xs text-red-500">{embeddingErrorMsg}</p>
             )}
-          </YStack>
+          </div>
           <InitialSetupLLMSettings />
-        </YStack>
+        </div>
         <div className="flex justify-end">
           <Button
-            className="mb-3 mt-4 h-10  w-[80px] cursor-pointer border-none bg-blue-500 px-2 py-0 text-center hover:bg-blue-600"
+            className="mb-3 mt-4 h-10 w-[80px] cursor-pointer border-none bg-blue-500 px-2 py-0 text-center hover:bg-blue-600"
             onClick={handleNext}
             placeholder=""
           >
             Next
           </Button>
         </div>
-      </YStack>
+      </div>
     </ReorModal>
   )
 }

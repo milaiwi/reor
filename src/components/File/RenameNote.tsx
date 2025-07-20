@@ -3,8 +3,6 @@ import React, { useState } from 'react'
 import { Button } from '@material-tailwind/react'
 import { toast } from 'react-toastify'
 
-import { YStack, SizableText, Input, XStack } from 'tamagui'
-import { NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native'
 import ReorModal from '../Common/Modal'
 
 import { getInvalidCharacterInFileName } from '@/lib/file'
@@ -51,38 +49,28 @@ const RenameNoteModal: React.FC = () => {
     onClose()
   }
 
-  const handleKeyPress = (e: NativeSyntheticEvent<TextInputKeyPressEventData>) => {
-    if (e.nativeEvent.key === 'Enter') {
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
       handleNoteRename()
     }
   }
 
   return (
     <ReorModal isOpen={!!noteToBeRenamed} onClose={onClose}>
-      <YStack my={2} ml={3} mr={6} h="100%" minWidth={400}>
-        <SizableText mb={3} fontSize={18} fontWeight="bold">
+      <div className="my-2 ml-3 mr-6 h-full min-w-[400px]">
+        <h3 className="mb-3 text-lg font-bold">
           Rename Note
-        </SizableText>
+        </h3>
 
-        <Input
-          width="100%"
-          borderRadius="$4"
-          borderWidth={1}
-          borderColor="$gray6"
-          mt={10}
+        <input
+          className="w-full rounded-md border border-gray-600 mt-10 px-3 py-2 text-sm h-12 placeholder-gray-400 focus:border-blue-600 focus:outline-none"
           value={newNoteName}
-          onChangeText={handleNameChange}
+          onChange={(e) => handleNameChange(e.target.value)}
           onKeyPress={handleKeyPress}
-          fontSize="$1"
-          height="$3"
           placeholder="New Note Name"
-          focusStyle={{
-            borderColor: '$blue6',
-            outlineWidth: 0,
-          }}
         />
 
-        <XStack alignItems="center" gap={12}>
+        <div className="flex items-center gap-12">
           <Button
             className="mb-2 mt-3 h-[40px] w-[80px] cursor-pointer border-none bg-blue-500 px-2 py-0 text-center hover:bg-blue-600"
             onClick={handleNoteRename}
@@ -90,12 +78,12 @@ const RenameNoteModal: React.FC = () => {
             Rename
           </Button>
           {errorMessage && (
-            <SizableText fontSize={12} color="$red10">
+            <p className="text-xs text-red-500">
               {errorMessage}
-            </SizableText>
+            </p>
           )}
-        </XStack>
-      </YStack>
+        </div>
+      </div>
     </ReorModal>
   )
 }

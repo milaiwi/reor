@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { Editor } from '@tiptap/core' // Adjust import based on your setup}
 import { Button } from '@material-tailwind/react'
-import { XStack, YStack, Separator } from 'tamagui'
-import { ChevronDown, ChevronUp, X, Replace } from '@tamagui/lucide-icons'
+import { ChevronDown, ChevronUp, X, Replace } from 'lucide-react'
 import { StyledIconButton } from '@/components/Editor/ui/src/button'
 
 interface SearchBarProps {
@@ -141,10 +140,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ editor }) => {
         outline: 'rgba(35, 131, 226, 0.14) solid 3px',
       }}
     >
-      <XStack
-        alignItems="center"
-        width="100%"
-        className={`rounded-t-md ${!showReplace ? 'rounded-b-md' : ''} bg-gray-800 p-2 shadow-lg`}
+      <div
+        className={`rounded-t-md ${!showReplace ? 'rounded-b-md' : ''} bg-gray-800 p-2 shadow-lg flex items-center`}
       >
         <div className="relative flex-1">
           <input
@@ -162,7 +159,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ editor }) => {
 
         <div className="mx-2 h-6 w-px bg-gray-500" />
 
-        <XStack alignItems="center" gap={10}>
+        <div className="flex items-center gap-10">
           <StyledIconButton onPress={(event: any) => handleSearch(event, editor?.commands.previousSearchResult)}>
             <ChevronUp {...iconProps} />
           </StyledIconButton>
@@ -177,12 +174,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ editor }) => {
           <StyledIconButton onPress={toggleSearch}>
             <X {...iconProps} />
           </StyledIconButton>
-        </XStack>
-      </XStack>
+        </div>
+      </div>
       {showReplace && (
-        <YStack className="animate-shift-in-down">
-          <Separator />
-          <YStack alignItems="center" gap={3} className="rounded-b-md bg-gray-800 p-2 shadow-lg">
+        <div className="animate-shift-in-down">
+          <div className="h-px bg-gray-500" />
+          <div className="rounded-b-md bg-gray-800 p-2 shadow-lg">
             <input
               value={replaceTerm}
               onChange={(event) => handleReplaceChange(event.target.value)}
@@ -214,8 +211,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ editor }) => {
                 Replace Next
               </Button>
             </div>
-          </YStack>
-        </YStack>
+          </div>
+        </div>
       )}
     </div>
   )

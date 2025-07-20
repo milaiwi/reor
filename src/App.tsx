@@ -9,7 +9,7 @@ import { FileInfo } from 'electron/main/filesystem/types'
 import IndexingProgress from './components/Common/IndexingProgress'
 import MainPageComponent from './components/MainPage'
 import InitialSetupSinglePage from './components/Settings/InitialSettingsSinglePage'
-import { ThemeProvider } from './contexts/ThemeContext'
+import { ThemeProvider, useThemeManager } from './contexts/ThemeContext'
 import useFileSearchIndex from './lib/utils/cache/fileSearchIndex'
 import { flattenFileInfoTree } from './lib/file'
 
@@ -26,11 +26,6 @@ const App: React.FC<AppProps> = () => {
       setIndexingProgress(newProgress)
     }
     window.ipcRenderer.receive('indexing-progress', handleProgressUpdate)
-  }, [])
-
-  useEffect(() => {
-    const root = window.document.documentElement
-    root.classList.add('dark')
   }, [])
 
   useEffect(() => {
@@ -109,10 +104,12 @@ const App: React.FC<AppProps> = () => {
           />{' '}
         </Portal>
         {!userHasConfiguredSettingsForIndexing && userHasConfiguredSettingsForIndexing !== undefined && (
-          <InitialSetupSinglePage readyForIndexing={handleAllInitialSettingsAreReady} />
+          // <InitialSetupSinglePage readyForIndexing={handleAllInitialSettingsAreReady} />
+          <h1>Testing</h1>
         )}
         {userHasConfiguredSettingsForIndexing && indexingProgress < 1 && (
-          <IndexingProgress indexingProgress={indexingProgress} />
+          // <IndexingProgress indexingProgress={indexingProgress} />
+          <h1>Testing</h1>
         )}
         {userHasConfiguredSettingsForIndexing && indexingProgress >= 1 && <MainPageComponent />}
       </div>

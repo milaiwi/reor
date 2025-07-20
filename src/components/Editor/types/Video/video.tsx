@@ -1,7 +1,6 @@
 /* eslint react/destructuring-assignment: "off" */
 import React, { useEffect, useState } from 'react'
 import { isValidUrl, youtubeParser } from '../utils'
-import { XStack } from '@/components/Editor/ui/src'
 import ResizeHandle from '@/components/Editor/ui/src/resize-handle'
 import { Block, BlockNoteEditor, defaultProps, createReactBlockSpec } from '@/lib/blocknote'
 import MediaContainer from '../media-container'
@@ -15,7 +14,7 @@ export const getSourceType = (name: string) => {
 
 /**
  *  Depending on start of video data type, uses
- *  <video /> html element or <XStack />
+ *  <video /> html element or <div />
  */
 export function displayVideoType(videoURL: string) {
   if (videoURL.startsWith('data:video/')) {
@@ -28,16 +27,17 @@ export function displayVideoType(videoURL: string) {
     )
   }
   return (
-    <XStack
-      width="100%"
-      pointerEvents="auto"
-      tag="iframe"
-      className="video-iframe"
-      // @ts-expect-error
-      src={videoURL}
-      frameBorder="0"
-      allowFullScreen
-    />
+    <div
+      className="video-iframe w-full"
+      style={{ pointerEvents: 'auto' }}
+    >
+      <iframe
+        src={videoURL}
+        frameBorder="0"
+        allowFullScreen
+        className="w-full"
+      />
+    </div>
   )
 }
 

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { YStack } from 'tamagui'
 import InEditorBacklinkSuggestionsDisplay from './BacklinkSuggestionsDisplay'
 import { useFileContext } from '@/contexts/FileContext'
 import {
@@ -47,13 +46,13 @@ const EditorManager: React.FC = () => {
   }, [])
 
   return (
-    <YStack className="relative size-full cursor-text overflow-y-auto">
+    <div className="relative size-full cursor-text overflow-y-auto">
       {editor && <SearchBar editor={editor._tiptapEditor} />}
 
-      <YStack
+      <div
         className={`relative h-full py-4 ${editorFlex ? 'flex px-32' : 'px-24'} ${showDocumentStats ? 'pb-3' : ''}`}
       >
-        <YStack className="relative size-full">
+        <div className="relative size-full">
           {editor && (
             <BlockNoteView editor={editor}>
               <FormattingToolbarPositioner editor={editor} />
@@ -62,8 +61,8 @@ const EditorManager: React.FC = () => {
               <LinkToolbarPositioner editor={editor} />
             </BlockNoteView>
           )}
-        </YStack>
-      </YStack>
+        </div>
+      </div>
       {suggestionsState && (
         <InEditorBacklinkSuggestionsDisplay
           suggestionsState={suggestionsState}
@@ -76,7 +75,7 @@ const EditorManager: React.FC = () => {
           <div>Words: {editor.storage.characterCount.words()}</div>
         </div>
       )} */}
-    </YStack>
+    </div>
   )
 }
 

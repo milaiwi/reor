@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import posthog from 'posthog-js'
 import { IoMdArrowRoundBack, IoMdArrowRoundForward } from 'react-icons/io'
-import { YStack, XStack, View, Text } from 'tamagui'
 import { removeFileExtension } from '@/lib/file'
 import '../../styles/history.scss'
 import { useFileContext } from '@/contexts/FileContext'
@@ -94,21 +93,24 @@ const NavigationButtons: React.FC = () => {
     return (
       showMenu !== '' &&
       menuChild.length > 0 && (
-        <View ref={ref} tabIndex={0} position="absolute" left={offsetLeft} top={offsetTop + offsetHeight}>
-          <YStack>
+        <div 
+          ref={ref} 
+          tabIndex={0} 
+          className="absolute"
+          style={{ left: offsetLeft, top: offsetTop + offsetHeight }}
+        >
+          <div>
             {menuChild.map((pathOrChatID) => (
-              <XStack
+              <div
                 key={pathOrChatID}
-                padding="$3"
-                cursor="pointer"
-                hoverStyle={{ backgroundColor: '$backgroundHover' }}
-                onPress={() => goSelected(pathOrChatID)}
+                className="p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                onClick={() => goSelected(pathOrChatID)}
               >
-                <Text>{removeFileExtension(pathOrChatID.replace(/\\/g, '/').split('/').pop() || '')}</Text>
-              </XStack>
+                <p>{removeFileExtension(pathOrChatID.replace(/\\/g, '/').split('/').pop() || '')}</p>
+              </div>
             ))}
-          </YStack>
-        </View>
+          </div>
+        </div>
       )
     )
   }

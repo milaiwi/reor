@@ -1,6 +1,4 @@
 import React, { ComponentProps } from 'react'
-import { styled } from '@tamagui/core'
-import { XStack, YStack } from '@tamagui/stacks'
 
 const variants = {
   hide: {
@@ -21,68 +19,48 @@ const variants = {
   },
 } as const
 
-export const PageContainer = ({ children, ...props }: ComponentProps<typeof YStack>) => {
+export const PageContainer = ({ children, ...props }: ComponentProps<'div'>) => {
   return (
-    <XStack jc="center" f={1}>
-      <YStack f={1} paddingHorizontal="$4" alignSelf="center" {...props}>
+    <div className="flex justify-center flex-1">
+      <div className="flex-1 px-4 self-center" {...props}>
         {children}
-      </YStack>
-    </XStack>
+      </div>
+    </div>
   )
 }
 
-export const ContainerDefault = styled(YStack, {
-  marginHorizontal: 'auto',
-  paddingHorizontal: '$4',
-  paddingVertical: '$6',
-  width: '100%',
-  $gtSm: {
-    maxWidth: 700,
-    paddingRight: '$2',
-  },
+export const ContainerDefault = ({ children, ...props }: ComponentProps<'div'>) => {
+  return (
+    <div 
+      className="mx-auto px-4 py-6 w-full sm:max-w-[700px] sm:pr-2 md:max-w-[740px] md:pr-2 lg:max-w-[800px] lg:pr-10"
+      {...props}
+    >
+      {children}
+    </div>
+  )
+}
 
-  $gtMd: {
-    maxWidth: 740,
-    paddingRight: '$2',
-  },
+export const ContainerLarge = ({ children, ...props }: ComponentProps<'div'>) => {
+  return (
+    <div 
+      className="mx-auto px-4 pt-6 w-full flex-shrink-0"
+      {...props}
+    >
+      {children}
+    </div>
+  )
+}
 
-  $gtLg: {
-    maxWidth: 800,
-    paddingRight: '$10',
-  },
-
-  variants,
-})
-
-export const ContainerLarge = styled(YStack, {
-  marginHorizontal: 'auto',
-  paddingHorizontal: '$4',
-  paddingTop: '$6',
-  width: '100%',
-  // maxWidth: "calc(85ch + 1em)",
-  flexShrink: 'unset',
-  variants,
-})
-
-export const ContainerXL = styled(YStack, {
-  marginHorizontal: 'auto',
-  paddingHorizontal: '$4',
-  paddingVertical: '$6',
-  width: '100%',
-  $gtSm: {
-    maxWidth: 980,
-  },
-
-  $gtMd: {
-    maxWidth: 1240,
-  },
-
-  $gtLg: {
-    maxWidth: 1440,
-  },
-
-  variants,
-})
+export const ContainerXL = ({ children, ...props }: ComponentProps<'div'>) => {
+  return (
+    <div 
+      className="mx-auto px-4 py-6 w-full sm:max-w-[980px] md:max-w-[1240px] lg:max-w-[1440px]"
+      {...props}
+    >
+      {children}
+    </div>
+  )
+}
 
 export const AppContainer = ContainerLarge
 export const Container = ContainerLarge

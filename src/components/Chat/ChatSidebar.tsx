@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { IoChatbubbles } from 'react-icons/io5'
 import { RiChatNewFill, RiArrowDownSLine } from 'react-icons/ri'
-import { YStack, XStack, SizableText } from 'tamagui'
 import { useChatContext } from '@/contexts/ChatContext'
 import { useContentContext } from '@/contexts/ContentContext'
 import { ChatMetadata } from '../../lib/llm/types'
@@ -33,21 +32,15 @@ export const ChatItem: React.FC<ChatItemProps> = ({ chatMetadata }) => {
   return (
     <ContextMenu>
       <ContextMenuTrigger>
-        <XStack
-          backgroundColor={isSelected ? '$gray7' : undefined}
-          gap="$2"
-          alignItems="center"
-          hoverStyle={{
-            backgroundColor: '$gray7',
-          }}
-          onPress={() => openContent(chatMetadata.id)}
-          className={itemClasses}
+        <div
+          className={`${itemClasses} ${isSelected ? 'bg-gray-700' : ''} hover:bg-gray-700`}
+          onClick={() => openContent(chatMetadata.id)}
         >
           <IoChatbubbles />
-          <SizableText fontSize={11} fontWeight={500} ellipse className="flex-1">
+          <p className="flex-1 truncate text-xs font-medium">
             {chatMetadata.displayName}
-          </SizableText>
-        </XStack>
+          </p>
+        </div>
       </ContextMenuTrigger>
       <ContextMenuContent>
         <ContextMenuItem onClick={handleDeleteChat}>Delete Chat</ContextMenuItem>
@@ -65,7 +58,7 @@ export const ChatSidebar: React.FC = () => {
   const toggleRecents = () => setIsRecentsOpen((prev) => !prev)
 
   return (
-    <YStack backgroundColor="$gray3" className="flex h-full flex-col overflow-y-auto px-2 pb-4 pt-2.5">
+    <div className="flex h-full flex-col overflow-y-auto bg-gray-800 px-2 pb-4 pt-2.5">
       <div className="flex h-full flex-col gap-2">
         <div className="flex min-h-0 flex-1 flex-col gap-4">
           <div className="mb-4 flex flex-col gap-6">
@@ -83,12 +76,15 @@ export const ChatSidebar: React.FC = () => {
           </div>
 
           <div className="flex-1">
-            <XStack className="flex cursor-pointer items-center justify-between" onPress={toggleRecents}>
+            <div 
+              className="flex cursor-pointer items-center justify-between" 
+              onClick={toggleRecents}
+            >
               <h4 className="mb-0 mt-1 text-xs font-medium tracking-wider">Recents</h4>
               <RiArrowDownSLine
                 className={`mt-1 transition-transform duration-200 ${!isRecentsOpen ? 'rotate-0' : 'rotate-180'}`}
               />
-            </XStack>
+            </div>
             {isRecentsOpen && (
               <ul className="m-0 flex list-none flex-col gap-0.5 p-0">
                 {allChatsMetadata
@@ -108,6 +104,6 @@ export const ChatSidebar: React.FC = () => {
           </div>
         </div>
       </div>
-    </YStack>
+    </div>
   )
 }

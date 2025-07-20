@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { Spinner, SizableText, YStack } from 'tamagui'
 import { DBQueryResult } from 'electron/main/vector-database/schema'
 import { Stack, Text } from '@mantine/core'
 import { BlockNoteEditor, BlockSchema } from '@/lib/blocknote/core'
 import { LinkToolbarPositionerProps } from '../LinkToolbarPositioner'
 import { getUniqueSimilarFiles } from '@/lib/semanticService'
 import ThemedMenu, { ThemedDropdown, ThemedMenuItem } from '@/components/ui/ThemedMenu'
+import Spinner from '@/components/ui/Spinner'
 
 const LinkToolbarContent = <BSchema extends BlockSchema>(
   props: LinkToolbarPositionerProps<BSchema> & {
@@ -40,20 +40,14 @@ const LinkToolbarContent = <BSchema extends BlockSchema>(
 
   if (loading) {
     return (
-      <YStack
-        background="$gray2"
-        padding="$2"
-        gap="$1"
-        borderRadius="$2"
-        borderWidth={1}
-        borderColor="$gray6"
-        elevation="$2"
-      >
-        <Spinner size="small" color="$blue9" />
-        <SizableText size="$2" textAlign="left" padding="$2">
-          Loading similar files...
-        </SizableText>
-      </YStack>
+      <div className="bg-gray-200 p-2 gap-1 rounded-md border border-gray-300 shadow-sm dark:bg-gray-800 dark:border-gray-600">
+        <div className="flex items-center gap-2 p-2">
+          <Spinner size="small" />
+          <p className="text-sm text-left">
+            Loading similar files...
+          </p>
+        </div>
+      </div>
     )
   }
 

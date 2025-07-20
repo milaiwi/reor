@@ -2,7 +2,6 @@ import React from 'react'
 import { FileInfoWithContent } from 'electron/main/filesystem/types'
 import { DBEntry } from 'electron/main/vector-database/schema'
 import posthog from 'posthog-js'
-import { Card, XStack, ScrollView } from 'tamagui'
 import { useContentContext } from '@/contexts/ContentContext'
 import Tooltip from '@/components/Editor/ui/src/tooltip'
 import MarkdownRenderer from '@/components/Common/MarkdownRenderer'
@@ -58,29 +57,18 @@ const ChatSources: React.FC<ChatSourcesProps> = ({ contextItems }) => {
           ${state === 'light' ? 'scrollbar-thumb-gray-200' : 'scrollbar-thumb-gray-700'}`}
       >
         {contextItems.map((contextItem) => (
-          <XStack key={getItemPath(contextItem)}>
+          <div key={getItemPath(contextItem)}>
             <Tooltip content={getItemContent(contextItem)} renderMarkdown placement="top">
-              <Card
-                cursor="pointer"
-                overflow="hidden"
-                borderRadius="$4"
-                borderWidth={1}
-                borderColor="$borderColor"
-                shadowColor="$gray7"
-                shadowRadius="$2"
-                px="$3"
-                hoverStyle={{
-                  shadowRadius: '$4',
-                }}
-                width="100%"
-                onPress={() => handleOpenContent(getItemPath(contextItem))}
+              <div
+                className="cursor-pointer overflow-hidden rounded-md border border-gray-200 bg-white px-3 py-2 shadow-sm hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
+                onClick={() => handleOpenContent(getItemPath(contextItem))}
               >
-                <ScrollView maxHeight="100px">
+                <div className="max-h-[100px] overflow-y-auto">
                   <MarkdownRenderer content={truncateName(getItemName(contextItem), 20)} />
-                </ScrollView>
-              </Card>
+                </div>
+              </div>
             </Tooltip>
-          </XStack>
+          </div>
         ))}
       </div>
     </div>

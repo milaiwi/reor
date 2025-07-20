@@ -1,17 +1,11 @@
 import React from 'react'
-import { XStack } from 'tamagui'
 
 const SideMenuButton = (props: { children: JSX.Element }) => (
-  <XStack
-    cursor="pointer"
-    padding="$1"
-    hoverStyle={{
-      backgroundColor: '$gray5',
-      borderRadius: '$2',
-    }}
+  <div
+    className="cursor-pointer p-1 hover:bg-gray-500 hover:rounded-md transition-colors"
   >
     {props.children}
-  </XStack>
+  </div>
 )
 
 export default SideMenuButton
