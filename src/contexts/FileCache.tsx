@@ -81,6 +81,7 @@ interface FileCacheContextType {
   writeFileAndCache: (path: string, content: string) => Promise<void>
   renameFileAndCache: (oldPath: string, newPath: string) => Promise<void>
   deleteFileAndCache: (path: string) => Promise<void>
+  createFileAndCache: (path: string, content: string) => Promise<void>
   
   // Cache management
   invalidateFile: (path: string) => void
@@ -152,6 +153,15 @@ const FileCacheProvider: React.FC<{ children: React.ReactNode, queryClient: Quer
     }
   }
 
+  const createFileAndCache = async (path: string, content: string): Promise<void> => {
+    try {
+      await window.fileSystem.createFile(path, content)
+      queryClient.invalidateQueries({ queryKey: ['file', path] })
+    } catch (error) {
+      console.error('Error creating file:', error)
+    }
+  }
+
   const invalidateFile = (path: string): void => {
     queryClient.invalidateQueries({ queryKey: ['file', path] })
   }
@@ -173,6 +183,7 @@ const FileCacheProvider: React.FC<{ children: React.ReactNode, queryClient: Quer
     writeFileAndCache,
     renameFileAndCache,
     deleteFileAndCache,
+    createFileAndCache,
     invalidateFile,
     prefetchFile,
   }), [queryClient])
